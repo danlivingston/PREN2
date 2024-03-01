@@ -14,7 +14,7 @@ start_script_paths = [
     # Beispiel-Pfad, anpassen an die tatsächliche Struktur
     # Fügen Sie hier weitere Skripte hinzu, die beim Starten ausgeführt werden sollen
 ]
-stop_script_path = os.path.join(base_dir, 'notausscript', 'abbruch.py')  # Beim Stoppen auszuführendes Skript
+stop_script_path = os.path.join(base_dir, 'notausscript', 'reboot.py')  # Beim Stoppen auszuführendes Skript
 
 start_sound_path = os.path.join(base_dir, 'sound', 'startsignal.wav')  # Anpassen
 stop_sound_path = os.path.join(base_dir, 'sound', 'stopsignal.wav')  # Anpassen
