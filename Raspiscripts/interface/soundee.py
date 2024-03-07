@@ -8,7 +8,7 @@ pygame.mixer.init()
 
 try:
     # Laden und Abspielen der Sounddatei 'piano.wav'
-    sound = pygame.mixer.Sound("piano.wav")
+    sound = pygame.mixer.Sound("soundwindows.wav")
     sound.play()
 
     # Warten, bis der Ton abgespielt ist

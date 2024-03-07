@@ -1,8 +1,12 @@
 import json
 import sys
+import os
 
-# Pfad zur JSON-Datei
-file_path = 'videos/config01.json'
+# Ermitteln des Basisverzeichnisses relativ zum aktuellen Skript
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Pfad zur JSON-Datei, relativ zum Basisverzeichnis
+file_path = os.path.join(base_dir, 'videos', 'config01.json')
 
 # JSON-Datei öffnen und einlesen
 with open(file_path, 'r') as file:

@@ -9,8 +9,10 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Aufbau der Pfade relativ zum Basisverzeichnis
 start_script_paths = [
+    os.path.join(base_dir, 'bilderkennung', 'segmentation_yolo.py'),
     os.path.join(base_dir, 'codejson.py'), 
     os.path.join(base_dir, 'displayausgabe.py'),
+   
     # Beispiel-Pfad, anpassen an die tatsächliche Struktur
     # Fügen Sie hier weitere Skripte hinzu, die beim Starten ausgeführt werden sollen
 ]
@@ -39,7 +41,7 @@ def start_files(file_paths):
     play_sound(start_sound_path)
     for file_path in file_paths:
         directory, script_name = os.path.split(file_path)
-        process = subprocess.Popen(['python3', script_name], cwd=directory)
+        process = subprocess.Popen(['python', script_name], cwd=directory)
         processes.append(process)
 
 def stop_files():
@@ -54,7 +56,7 @@ def stop_files():
     processes = []  # Leeren der Liste nach dem Beenden der Prozesse
     # Starten des Abbruch-Skripts
     directory, script_name = os.path.split(stop_script_path)
-    subprocess.Popen(['python3', script_name], cwd=directory)
+    subprocess.Popen(['python', script_name], cwd=directory)
 
 # Einrichten des Hauptfensters
 root = tk.Tk()
