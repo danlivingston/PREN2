@@ -19,4 +19,7 @@ def open_camera_profile(ip_address, username, password, profile):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-open_camera_profile('147.88.48.131', 'pren', '463997', 'pren_profile_small')
+
+open_camera_profile('147.88.48.131', 'pren', '463997', 'pren_profile_med')
+                                                                    #small
+
