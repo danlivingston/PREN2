@@ -14,9 +14,16 @@ r3 = PiRelay6.Relay("RELAY3")
 r2 = PiRelay6.Relay("RELAY4")
 
 def schrittmotorDrehen(grad):
+    # Überprüfung, ob grad gleich 0 oder 360 ist
+    if grad == 0 or grad == 360:
+        print("\tKeine Drehung erforderlich. Schrittmotor bleibt in Position.")
+        return  # Frühe Rückkehr, um die Funktion zu beenden
+    
+    modifizierterGrad = 360 - grad
+
     schritteProUmdrehung = 800  
-    grad = grad % 360  
-    schritte = int((grad / 360.0) * schritteProUmdrehung)  # Berechnet die erforderlichen Schritte basierend auf dem gewünschten Drehwinkel
+    modifizierterGrad = modifizierterGrad % 360  
+    schritte = int((modifizierterGrad / 360.0) * schritteProUmdrehung)  # Berechnet die erforderlichen Schritte basierend auf dem gewünschten Drehwinkel
 
     if grad != 0:
         print(f"\tSchrittmotor beginnt zu drehen um {grad} Grad vorwärts...")
@@ -71,7 +78,7 @@ def relaisAktivieren(zielRelais):
 def sortiereWuerfel(konfiguration):
     try:
         startZeit = time.time()
-        farbenZuPosition = {'blue': 0, 'red': 240, 'yellow': 120}
+        farbenZuPosition = {'blue': 0, 'red': 120, 'yellow': 240}
         print("Beginne Sortiervorgang...\n")
         for position, color in sorted(konfiguration.items(), key=lambda x: int(x[0])):
             if color:
@@ -100,8 +107,8 @@ konfiguration = {
     "2": "yellow",
     "3": "red",
     "4": "red",
-    "5": "blue",
-    "6": "yelloow",
+    "5": "",  
+    "6": "yellow",
     "7": "red",
     "8": "yellow"
 }
