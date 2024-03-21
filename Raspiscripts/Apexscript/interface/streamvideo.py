@@ -21,5 +21,5 @@ def open_camera_profile(ip_address, username, password, profile):
 
 
 open_camera_profile('147.88.48.131', 'pren', '463997', 'pren_profile_med')
-                                                                    #small
+                                                                    #small / med
 

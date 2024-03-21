@@ -26,7 +26,7 @@ def schrittmotorDrehen(grad):
     schritte = int((modifizierterGrad / 360.0) * schritteProUmdrehung)  # Berechnet die erforderlichen Schritte basierend auf dem gewünschten Drehwinkel
 
     if grad != 0:
-        print(f"\tSchrittmotor beginnt zu drehen um {grad} Grad vorwärts...")
+        print(f"\tSchrittmotor beginnt zu drehen um {modifizierterGrad} Grad vorwärts...")
         # Führt die Drehung aus, indem die berechnete Anzahl von Schritten an den Motor gesendet wird
         Motor2.TurnStep(Dir='forward', steps=schritte, stepdelay=0.0005)
         # Kurze Pause, um die Drehung abzuschließen, könnte je nach Anwendung angepasst werden
