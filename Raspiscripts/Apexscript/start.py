@@ -9,8 +9,8 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Aufbau der Pfade relativ zum Basisverzeichnis
 start_script_paths = [
-    os.path.join(base_dir, 'bilderkennung', 'segmentation_yolo.py'),
-    os.path.join(base_dir, 'codejson.py'), 
+    os.path.join(base_dir, 'interface', 'transmissionsignalstart.py'), 
+    os.path.join(base_dir, 'bilderkennung', 'probestreamerkennung.py'),
     os.path.join(base_dir, 'displayausgabe.py'),
    
     # Beispiel-Pfad, anpassen an die tatsächliche Struktur

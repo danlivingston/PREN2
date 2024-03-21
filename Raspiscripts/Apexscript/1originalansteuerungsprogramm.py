@@ -98,12 +98,12 @@ def sortiereWuerfel(konfiguration):
 konfiguration = {
     "1": "blue",  
     "2": "yellow",
-    "3": "blue",
-    "4": "yellow",
-    "5": "red",
-    "6": "red",
-    "7": "blue",
-    "8": "blue"
+    "3": "red",
+    "4": "red",
+    "5": "blue",
+    "6": "yelloow",
+    "7": "red",
+    "8": "yellow"
 }
 
 sortiereWuerfel(konfiguration)
