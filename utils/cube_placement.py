@@ -1,8 +1,12 @@
 import json
 from heapq import heappop, heappush
+from loguru import logger
 
 
-def get_cube_placing_moves(input):
+import motor_control
+
+
+def get_cube_placing_actions(input):
     input = json.loads(input)
     cube_color_map = {"": 0, "red": 1, "yellow": 2, "blue": 3}
     cube_plan = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -10,6 +14,9 @@ def get_cube_placing_moves(input):
     shaft_colors = ["red", "yellow", "blue"]
 
     # print("colors in shaft", shaft_colors)
+    logger.debug(
+        f"colors in shaft A:{shaft_colors[0]} B:{shaft_colors[1]} C:{shaft_colors[2]}"
+    )
 
     queue = []  # heappush(self._queue, (10, "item_with_priority_10"))
     pos = 0  # position of _shaft_colors[0]
@@ -17,11 +24,17 @@ def get_cube_placing_moves(input):
     def map_color(name):
         return cube_color_map[name]
 
+    def reverse_map_color(color):
+        reverse_cube_color_map = {v: k for k, v in cube_color_map.items()}
+        return reverse_cube_color_map[color]
+
     config = input["config"]
     cube_plan = list(map(lambda x: map_color(x[1]), config.items()))
     shaft_colors = list(map(map_color, shaft_colors))
 
-    moves = []
+    logger.debug(f"planning to place {list(map(reverse_map_color,cube_plan))}")
+
+    actions = []
 
     debug_last_resort_exit_counter = 0
     while (
@@ -33,6 +46,7 @@ def get_cube_placing_moves(input):
         # print(moves)
 
         queue = []
+        logger.debug(f"starting new calculation loop; current action queue {actions}")
 
         for i in range(4):
             tbp = to_be_placed[i]
@@ -42,40 +56,46 @@ def get_cube_placing_moves(input):
                 slot_index = (tbp * 3) % 12
 
                 if color_wanted == 0:
-                    print("no cube at", slot_index)
+                    logger.debug(f"no cube{" ":<6}at pos {tbp} ({slot_index});")
                     to_be_placed[i] = None
 
                 else:
                     color_shaft_pos = shaft_colors.index(color_wanted)
 
-                    shaft_index = color_shaft_pos * 4 + pos
+                    shaft_index = (color_shaft_pos * 4 + pos) % 12
                     distance = (slot_index - shaft_index) % 12
 
                     heappush(queue, (distance, tbp))
 
-                    print(
-                        "color",
-                        color_wanted,
-                        "at",
-                        slot_index,
-                        "; shaft at",
-                        shaft_index,
-                        "; distance",
-                        distance,
-                        "; queue",
-                        queue,
+                    # print(
+                    #     "color",
+                    #     color_wanted,
+                    #     "at",
+                    #     slot_index,
+                    #     "; shaft at",
+                    #     shaft_index,
+                    #     "; distance",
+                    #     distance,
+                    #     "; queue",
+                    #     queue,
+                    # )
+
+                    logger.debug(
+                        f"color {reverse_map_color(color_wanted):^6} at pos {tbp} ({slot_index}); shaft currently at {shaft_index}; distance between: {distance}"
                     )
 
         if len(queue) == 0:
-            return moves
+            return actions
 
         next = heappop(queue)
         move, drop = next
-        moves.append((move, drop % 4))
+        actions.append((move, drop % 4))
 
-        print(
-            "rotate by", move, "drop shaft", drop % 4, "dropped color", cube_plan[drop]
-        )
+        # print(
+        #     "rotate by", move, "drop shaft", drop % 4, "dropped color", cube_plan[drop]
+        # )
+        
+        logger.debug(f"best move chosen as move by {move} ({int(move/12*360):>3}°)")
 
         if drop < 4:
             to_be_placed[drop] = to_be_placed[drop] + 4
@@ -83,6 +103,15 @@ def get_cube_placing_moves(input):
             to_be_placed[drop % 4] = None
 
         pos = (pos + move) % 12
+
+
+def place_cubes(input):
+    logger.info("starting cube placement")
+    actions = get_cube_placing_actions(input)
+    logger.info("calculated actions")
+    logger.info("starting placement")
+    motor_control.execute_actions(actions)
+    logger.success("completed cube placement")
 
 
 test_config01 = """{
@@ -127,73 +156,77 @@ test_config03 = """{
   }
 }"""
 
+place_cubes(test_config01)
 
-class bcolors:
-    HEADER = "\033[95m"
-    OKBLUE = "\033[94m"
-    OKGREEN = "\033[92m"
-    WARNING = "\033[93m"
-    FAIL = "\033[91m"
-    ENDC = "\033[0m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
-
-
-def calc_total_moves_debug(placement):
-    d = 0
-    for move in placement:
-        d += move[0]
-    return d
+# class bcolors:
+#     HEADER = "\033[95m"
+#     OKBLUE = "\033[94m"
+#     OKGREEN = "\033[92m"
+#     WARNING = "\033[93m"
+#     FAIL = "\033[91m"
+#     ENDC = "\033[0m"
+#     BOLD = "\033[1m"
+#     UNDERLINE = "\033[4m"
 
 
-cube_placement = get_cube_placing_moves(test_config01)
-d = calc_total_moves_debug(cube_placement)
-print(bcolors.OKBLUE, test_config01, bcolors.ENDC)
-print(bcolors.OKGREEN, cube_placement, bcolors.ENDC)
-print(
-    bcolors.BOLD + bcolors.HEADER + bcolors.UNDERLINE,
-    "total distance",
-    d,
-    "->",
-    round(d / 12, 2),
-    "rotations ->",
-    int(d / 12 * 360),
-    "degrees",
-    bcolors.ENDC,
-)
-print()
+# def calc_total_moves_debug(placement):
+#     d = 0
+#     for move in placement:
+#         d += move[0]
+#     return d
 
 
-cube_placement = get_cube_placing_moves(test_config02)
-d = calc_total_moves_debug(cube_placement)
-print(bcolors.OKBLUE, test_config02, bcolors.ENDC)
-print(bcolors.OKGREEN, cube_placement, bcolors.ENDC)
-print(
-    bcolors.BOLD + bcolors.HEADER + bcolors.UNDERLINE,
-    "total distance",
-    d,
-    "->",
-    round(d / 12, 2),
-    "rotations ->",
-    int(d / 12 * 360),
-    "degrees",
-    bcolors.ENDC,
-)
-print()
+# actions = get_cube_placing_actions(test_config01)
+# d = calc_total_moves_debug(actions)
+# print(bcolors.OKBLUE, test_config01, bcolors.ENDC)
+# print(bcolors.OKGREEN, actions, bcolors.ENDC)
+# motor_control.execute_actions(actions)
+# print(
+#     bcolors.BOLD + bcolors.HEADER + bcolors.UNDERLINE,
+#     "total distance",
+#     d,
+#     "->",
+#     round(d / 12, 2),
+#     "rotations ->",
+#     int(d / 12 * 360),
+#     "degrees",
+#     bcolors.ENDC,
+# )
+# print()
 
-cube_placement = get_cube_placing_moves(test_config03)
-d = calc_total_moves_debug(cube_placement)
-print(bcolors.OKBLUE, test_config03, bcolors.ENDC)
-print(bcolors.OKGREEN, cube_placement, bcolors.ENDC)
-print(
-    bcolors.BOLD + bcolors.HEADER + bcolors.UNDERLINE,
-    "total distance",
-    d,
-    "->",
-    round(d / 12, 2),
-    "rotations ->",
-    int(d / 12 * 360),
-    "degrees",
-    bcolors.ENDC,
-)
-print()
+
+# actions = get_cube_placing_actions(test_config02)
+# d = calc_total_moves_debug(actions)
+# print(bcolors.OKBLUE, test_config02, bcolors.ENDC)
+# print(bcolors.OKGREEN, actions, bcolors.ENDC)
+# motor_control.execute_actions(actions)
+# print(
+#     bcolors.BOLD + bcolors.HEADER + bcolors.UNDERLINE,
+#     "total distance",
+#     d,
+#     "->",
+#     round(d / 12, 2),
+#     "rotations ->",
+#     int(d / 12 * 360),
+#     "degrees",
+#     bcolors.ENDC,
+# )
+# print()
+
+# actions = get_cube_placing_actions(test_config03)
+# d = calc_total_moves_debug(actions)
+# print(bcolors.OKBLUE, test_config03, bcolors.ENDC)
+# print(bcolors.OKGREEN, actions, bcolors.ENDC)
+# motor_control.execute_actions(actions)
+# print(
+#     bcolors.BOLD + bcolors.HEADER + bcolors.UNDERLINE,
+#     "total distance",
+#     d,
+#     "->",
+#     round(d / 12, 2),
+#     "rotations ->",
+#     int(d / 12 * 360),
+#     "degrees",
+#     bcolors.ENDC,
+# )
+# print()
