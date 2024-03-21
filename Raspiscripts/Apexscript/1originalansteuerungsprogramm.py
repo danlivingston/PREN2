@@ -32,7 +32,7 @@ def aktualisiereWuerfelPositionen(nachDrehung, farbenZuPosition):
     return {color: (position + nachDrehung) % 360 for color, position in farbenZuPosition.items()}
 
 def berechneMagazinDrehungZuRelais(farbenZuPosition, zielFarbe, aktuelleMagazinPosition, zielRelais):
-    relaisZuGrad = {1: 0, 2: 90, 3: 180, 4: 270}
+    relaisZuGrad = {1: 0, 2: 270, 3: 180, 4: 90}
     zielPosition = farbenZuPosition[zielFarbe]
     relaisPosition = relaisZuGrad[zielRelais]
     drehung = (relaisPosition - zielPosition + 360) % 360
