@@ -1,6 +1,7 @@
 import requests
 import json
 from datetime import datetime
+import os
 
 def send_cube_configuration(url, team_id, auth_token, config_data):
     # Aktualisieren der Zeit im config_data vor dem Senden
@@ -32,22 +33,21 @@ def send_cube_configuration(url, team_id, auth_token, config_data):
             
     except Exception as e:
         print("Ein Fehler ist aufgetreten:", e)
+        
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+config_file_path = os.path.join(base_dir, 'config.json')
 
-# Beispielkonfiguration
-config_data = {
-    "time": "",
-    "config": {
-        "1": "red",
-        "2": "blue",
-        "3": "red",
-        "4": "yellow",
-        "5": "",
-        "6": "red",
-        "7": "red",
-        "8": "red"
-    }
-}
-
-send_cube_configuration('http://52.58.217.104:5000', 'team12', 'R5SfQQ6gKr9A', config_data)
+try:
+    with open(config_file_path, 'r') as file:
+        config_data = json.load(file)
+except FileNotFoundError:
+    print("Die Konfigurationsdatei konnte nicht gefunden werden.")
+except json.JSONDecodeError:
+    print("Die Konfigurationsdatei konnte nicht korrekt geparst werden.")
+except Exception as e:
+    print(f"Ein unerwarteter Fehler ist aufgetreten: {e}")
+else:
+    # Beispielaufruf der Funktion mit den gelesenen Konfigurationsdaten
+    send_cube_configuration('http://52.58.217.104:5000', 'team12', 'R5SfQQ6gKr9A', config_data)
 
 #send_cube_configuration('http://52.58.217.104:5000', 'team00', 'aTdpCRIrI9CLS1', config_data)
