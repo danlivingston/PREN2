@@ -5,7 +5,8 @@ import time
 from dotenv import load_dotenv
 from loguru import logger
 
-from utils import foo
+# from utils import foo
+from gui import CubePiLerGUI
 
 # Load .env file
 load_dotenv()
@@ -14,10 +15,9 @@ load_dotenv()
 # Automatically catch and log as critical if main loop encounters an unhandled exception
 @logger.catch(level="CRITICAL")
 def main():
-    logger.success("main() executing")
-    foo.bar()
-    time.sleep(2)
-    raise NotImplementedError("main() Not Implemented Yet")
+    logger.debug("main() executing")
+    gui = CubePiLerGUI()
+    logger.debug("main() exiting")
 
 
 if __name__ == "__main__":
@@ -27,6 +27,8 @@ if __name__ == "__main__":
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")  # Defaults to INFO if not set
     logger.remove(0)
     logger.add(sys.stdout, level=LOG_LEVEL)
+    # logger.info(f"LOGGING LEVEL {LOG_LEVEL},{logger.level()}")
+    # logger.level(LOG_LEVEL)
 
     # Run the main loop
     logger.info("Starting...")

@@ -1,3 +1,4 @@
+from time import sleep
 from loguru import logger
 
 
@@ -14,6 +15,8 @@ def execute_action(action):
     rotate_by, push_index = action
     rotate_shaft(rotate_by)
     push_cube(push_index)
+
+    sleep(0.5)  # TODO: remove
 
 
 def execute_actions(actions):
