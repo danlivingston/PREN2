@@ -1,11 +1,14 @@
-import cube_placement
-import testdata
 from loguru import logger
-from multiprocessing import Queue
+
+import cubepiler.cube_placement as cube_placement
+import cubepiler.testdata as testdata
 
 
-@logger.catch()
-def start(q):
+async def kill():
+    pass
+
+
+async def start():
     logger.info("starting cube rebuild")
 
     scanned_cubes = testdata.config01

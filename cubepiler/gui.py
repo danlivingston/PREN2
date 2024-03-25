@@ -1,9 +1,9 @@
+# import subprocess
+from multiprocessing import JoinableQueue, Process, Queue
+from threading import Thread
+
 import customtkinter
 from loguru import logger
-
-# import subprocess
-from multiprocessing import Process, Queue, JoinableQueue
-from threading import Thread
 
 from cubepiler.cube_placement import place_cubes
 from cubepiler.testdata import config01, config02, config03

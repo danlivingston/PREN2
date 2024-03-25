@@ -1,8 +1,9 @@
 import json
 from heapq import heappop, heappush
 
-from cubepiler import motor_control
 from loguru import logger
+
+from cubepiler import motor_control
 
 
 def get_cube_placing_actions(input):
