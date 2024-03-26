@@ -1,19 +1,19 @@
 import json
 from heapq import heappop, heappush
+import asyncio
 
 from loguru import logger
 
 from cubepiler import motor_control
 
 
-def get_cube_placing_actions(input):
+async def get_cube_placing_actions(input):
     input = json.loads(input)
     cube_color_map = {"": 0, "red": 1, "yellow": 2, "blue": 3}
     cube_plan = [0, 0, 0, 0, 0, 0, 0, 0]
     to_be_placed = [0, 1, 2, 3]  # indexes for ^
     shaft_colors = ["red", "yellow", "blue"]
 
-    # print("colors in shaft", shaft_colors)
     logger.debug(
         f"colors in shaft A:{shaft_colors[0]} B:{shaft_colors[1]} C:{shaft_colors[2]}"
     )
@@ -85,17 +85,23 @@ def get_cube_placing_actions(input):
         pos = (pos + move) % 12
 
 
-def place_cubes(input):
+async def place_cubes(input, q=asyncio.Queue()):
     logger.info("starting cube placement")
-    actions = get_cube_placing_actions(input)
+
+    await q.put((50, "calculating placement"))
+    actions = await get_cube_placing_actions(input)
+
     logger.info("calculated actions")
     logger.info("starting placement")
-    motor_control.execute_actions(actions)
+
+    await q.put((55, "placing cubes"))
+
+    await motor_control.execute_actions(actions, q)
+
     logger.success("completed cube placement")
 
 
 if __name__ == "__main__":
-
     import testdata
 
     place_cubes(testdata.config01)
