@@ -1,16 +1,12 @@
-# import subprocess
-from multiprocessing import JoinableQueue, Process, Queue
-from threading import Thread
+import asyncio
+from enum import Enum
 
 import customtkinter
 from loguru import logger
 
-from cubepiler.cube_placement import place_cubes
-from cubepiler.testdata import config01, config02, config03
+from cubepiler import runner
 
-# Modes: system (default), light, dark
 customtkinter.set_appearance_mode("dark")
-# Themes: blue (default), dark-blue, green
 customtkinter.set_default_color_theme("blue")
 
 COLORS = {
@@ -22,181 +18,212 @@ COLORS = {
     "engineering orange": "#B80600",
     "emerald": "#1EC276",
     "orange peel": "#FFA630",
+    "DIVIDER": "",
+    "black": "#000000",
+    "white": "#FFFBFE",
+    "green": "#1EC276",
+    "orange": "#FFA630",
+    "red": "#B80600",
+    "blue": "#1CA3C4",
 }
 
+STATES = Enum("STATES", ["START", "READY", "RESETTING", "RUNNING", "EXCEPTION", "STOP"])
 
-class CubePiLerGUI:
-    app = None
-    frame = None
-    start_stop_button = None
-    reset_button = None
-    build_progress_bar = None
-    reset_progress_bar = None
-    fullscreen = False
-    build_process = None
-    reset_process = None
-    q = Queue()
 
-    def _init_app(self):
-        self.app = customtkinter.CTk()
-        self.app.rowconfigure(0, weight=1)
-        self.app.columnconfigure(0, weight=1)
-        self.app.title("CubePiLer")
+class CubePiLerGUI(customtkinter.CTk):
+    def __init__(self, loop):
+        self.state = STATES.START
+        self.loop = loop
+        self.fullscreen = False
+        self.running_task = None
+        self.progress_queue = asyncio.Queue()
 
-        self.frame = customtkinter.CTkFrame(master=self.app, corner_radius=0)
+        self.root = customtkinter.CTk()
+        self.root.title("CubePiLer")
+        self.root.rowconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=1)
+        self.root.geometry("800x480+0+0")
+        self.root.protocol(
+            "WM_DELETE_WINDOW",
+            lambda: self.loop.create_task(self.exit()),
+        )
+        # self.root.after(1, lambda: self.loop.create_task(self.toggle_fullscreen())) # * for use on pi for auto fullscreen
+        self.root.bind(
+            "<F11>", lambda e=None: self.loop.create_task(self.toggle_fullscreen())
+        )
+
+        self.frame = customtkinter.CTkFrame(
+            master=self.root, corner_radius=0, fg_color=COLORS["black"]
+        )
         self.frame.grid(row=0, column=0, sticky="nsew")
-        self.frame.grid_rowconfigure((0, 1), weight=1, uniform="u")
+        self.frame.grid_rowconfigure(0, weight=3, uniform="u")
+        self.frame.grid_rowconfigure(1, weight=1, uniform="u")
+        self.frame.grid_rowconfigure(2, weight=2, uniform="u")
         self.frame.columnconfigure(0, weight=1, uniform="u")
 
-    def _init_buttons(self):
-        self.start_stop_button = customtkinter.CTkButton(
+        self.start_button = customtkinter.CTkButton(
             master=self.frame,
             text="start",
-            command=self.start,
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.start_build())
+            ),
             corner_radius=0,
             font=("monospace", 200),
-            fg_color=COLORS["mantis"],
-            hover_color=COLORS["mantis"],
-            text_color=COLORS["snow"],
+            fg_color=COLORS["green"],
+            hover_color=COLORS["green"],
+            text_color=COLORS["white"],
         )
-        self.start_stop_button.grid(sticky="nsew", column=0, row=0)
+
+        self.stop_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="stop",
+            command=lambda: self.loop.create_task(self.cancel_build()),
+            corner_radius=0,
+            font=("monospace", 200),
+            fg_color=COLORS["red"],
+            hover_color=COLORS["red"],
+            text_color=COLORS["white"],
+        )
 
         self.reset_button = customtkinter.CTkButton(
             master=self.frame,
             text="reset",
-            command=self.reset,
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.reset_build())
+            ),
             corner_radius=0,
             font=("monospace", 200),
-            fg_color=COLORS["orange peel"],
-            hover_color=COLORS["orange peel"],
-            text_color=COLORS["snow"],
+            fg_color=COLORS["orange"],
+            hover_color=COLORS["orange"],
+            text_color=COLORS["white"],
         )
-        self.reset_button.grid(sticky="nsew", column=0, row=1)
 
-    def _init_progress_bars(self):
-        self.reset_progress_bar = customtkinter.CTkProgressBar(
-            self.frame,
+        self.progress_bar = customtkinter.CTkProgressBar(
+            master=self.frame,
             orientation="horizontal",
             corner_radius=0,
-            progress_color=COLORS["pacific cyan"],
-            mode="indeterminate",
+            progress_color=COLORS["blue"],
+            fg_color=COLORS["black"],
+            mode="determinate",
         )
-        self.build_progress_bar = customtkinter.CTkProgressBar(
-            self.frame,
-            orientation="horizontal",
-            corner_radius=0,
-            progress_color=COLORS["mantis"],
-            mode="indeterminate",
+        self.progress_label = customtkinter.CTkLabel(
+            master=self.frame,
+            text="...",
+            fg_color=COLORS["black"],
+            text_color=COLORS["white"],
+            font=("monospace", 70),
         )
-        # self.reset_progress_bar.grid(sticky="nsew", column=0, row=0)
-        # self.reset_progress_bar.start()
 
-    def _start_app(self):
-        self.app.geometry("600x400+0+0")
-        self.app.bind("<F11>", self._toggle_fullscreen)
-        self.app.after(1, self._toggle_fullscreen)
-        self.app.after(1, self.app.focus)
-        self.app.mainloop()
+    async def mainloop(self):
+        logger.debug("showing GUI")
+        self.state = STATES.READY
+        self.state_switch_gui()
+        while not self.state == STATES.STOP:
+            self.root.update()
+            await asyncio.sleep(0.1)
+        logger.debug("destroying GUI")
+        self.root.destroy()
+        logger.debug("destroyed GUI")
 
-    def _toggle_fullscreen(self, x=None):
-        self.app.state("normal" if self.fullscreen else "zoomed")
-        self.app.attributes("-fullscreen", not self.fullscreen)
+    async def toggle_fullscreen(self, event=None):
+        logger.debug("toggling fullscreen")
+        self.root.state("normal" if self.fullscreen else "zoomed")
+        self.root.attributes("-fullscreen", not self.fullscreen)
         self.fullscreen = not self.fullscreen
 
-    def _configure_start_stop_button(self, new_action):
-        if new_action == "start":
-            self.start_stop_button.configure(
-                text="start",
-                command=self.start,
-                fg_color=COLORS["mantis"],
-                hover_color=COLORS["mantis"],
-            )
-            self.start_stop_button.grid(sticky="nsew", column=0, row=0)
-            self.reset_progress_bar.grid_remove()
-        elif new_action == "stop":
-            self.start_stop_button.configure(
-                text="stop",
-                command=self.stop,
-                fg_color=COLORS["engineering orange"],
-                hover_color=COLORS["engineering orange"],
-            )
-            self.start_stop_button.grid(sticky="nsew", column=0, row=0)
-            self.reset_progress_bar.grid_remove()
-        elif new_action == "loading":
-            self.reset_progress_bar.grid(sticky="nsew", column=0, row=0)
-            self.start_stop_button.grid_remove()
-            self.reset_progress_bar.start()
+    async def exit(self, event=None):
+        logger.debug("exiting")
+        await self.cancel_build()
+        self.state = STATES.STOP
 
-    def _configure_reset_button(self, new):
-        if new == "reset":
-            self.reset_button.configure(text="reset", command=self.reset)
-            self.reset_button.grid(sticky="nsew", column=0, row=1)
-            self.build_progress_bar.grid_remove()
-        elif new == "stop":
-            self.reset_button.configure(text="stop", command=self.stop)
-            self.reset_button.grid(sticky="nsew", column=0, row=1)
-            self.build_progress_bar.grid_remove()
-        elif new == "loading":
-            self.build_progress_bar.grid(sticky="nsew", column=0, row=1)
-            self.reset_button.grid_remove()
-            self.build_progress_bar.start()
+    async def start_build(self, event=None):
+        pb = None
+        try:
+            if not self.state == STATES.READY:
+                return
+            self.state = STATES.RUNNING
+            self.state_switch_gui()
+            pb = self.loop.create_task(self.run_progress_bar())
+            logger.debug("start build")
+            await runner.run(self.progress_queue)
+            logger.debug("finished build")
+            await pb
+            pb = None
+        except asyncio.CancelledError:
+            logger.debug("cancelled build")
+        finally:
+            if not pb == None:
+                pb.cancel()
+            self.state = STATES.READY
+            self.state_switch_gui()
 
-    def __init__(self):
-        logger.info("Initializing GUI")
-        self._init_app()
-        self._init_buttons()
-        self._init_progress_bars()
-        logger.info("Starting GUI")
-        self._start_app()
-        logger.info("Exiting GUI")
+    async def cancel_build(self, event=None):
+        if not self.running_task or self.running_task is None:
+            return
+        logger.debug("cancelling build task")
+        self.running_task.cancel()  # ? will only exit at first opportunity unless try catch is used in build_task
+        await self.running_task
+        self.running_task = None
+        logger.debug("cancelled build task")
 
-    @logger.catch(level="CRITICAL")
-    def start(self, x=None):
-        logger.info("Starting...")
-        self._configure_start_stop_button("stop")
-        self._configure_reset_button("loading")
-        t = Thread(target=self.start_build, name="build")
-        t.start()
-        logger.info("Started")
+    async def reset_build(self, event=None):
+        pb = None
+        try:
+            if not self.state == STATES.READY:
+                return
+            self.state = STATES.RESETTING
+            self.state_switch_gui()
+            pb = self.loop.create_task(self.run_progress_bar())
+            logger.debug("start reset")
+            await runner.reset(self.progress_queue)
+            logger.debug("finished reset")
+            await pb
+            pb = None
+        except asyncio.CancelledError:
+            logger.debug("cancelled reset")
+        finally:
+            if not pb == None:
+                pb.cancel()
+            self.state = STATES.READY
+            self.state_switch_gui()
 
-    @logger.catch(level="CRITICAL")
-    def stop(self, x=None):
-        logger.info("Stopping...")
-        if self.build_process:
-            self.build_process.kill()
-            # self.build_process.join(0)
-            self.build_process = None
-        if self.reset_process:
-            self.reset_process.kill()
-            # self.reset_process.join(0)
-            self.reset_process = None
-        self._configure_start_stop_button("start")
-        self._configure_reset_button("reset")
-        logger.info("Stopped")
+    async def run_progress_bar(self):
+        try:
+            self.progress_bar.configure(progress_color=COLORS["blue"])
+            self.progress_bar.set(0)
+            curr = 0
+            while self.state == STATES.RUNNING or self.state == STATES.RESETTING:
+                prog, label = await self.progress_queue.get()
+                self.progress_label.configure(text=label)
+                while not curr >= prog:
+                    curr += 1
+                    self.progress_bar.set(curr / 100)
+                    await asyncio.sleep(0.01)
+                if prog >= 100:
+                    self.progress_bar.configure(progress_color=COLORS["green"])
+                    await asyncio.sleep(3)
+                    break
+        except asyncio.CancelledError:
+            pass
+        finally:
+            pass
 
-    @logger.catch(level="CRITICAL")
-    def reset(self, x=None):
-        logger.info("Resetting...")
-        self._configure_start_stop_button("loading")
-        self._configure_reset_button("stop")
-        t = Thread(target=self.start_reset, name="reset")
-        t.start()
-        logger.info("Reset")
-
-    def start_build(self):
-        self.build_process = Process(target=place_cubes, args=(config01,))
-        self.build_process.start()
-        self.build_process.join()
-        # place_cubes(config01)
-        self.stop()
-
-    def start_reset(self):
-        self.reset_process = Process(target=place_cubes, args=(config01,))
-        self.reset_process.start()
-        self.reset_process.join()
-        # place_cubes(config02)
-        self.stop()
-
-
-if __name__ == "__main__":
-    gui = CubePiLerGUI()
+    def state_switch_gui(self):
+        # TODO: End/Success Screen
+        # ? TODO: Aborted Screen
+        # ? TODO: Starting Screen
+        match self.state:
+            case STATES.READY:
+                self.start_button.grid(sticky="nsew", column=0, row=0)
+                self.stop_button.grid_remove()
+                self.reset_button.grid(sticky="nsew", column=0, row=1, rowspan=2)
+                self.progress_bar.grid_remove()
+                self.progress_label.grid_remove()
+            case STATES.RUNNING | STATES.RESETTING:
+                self.start_button.grid_remove()
+                self.stop_button.grid(sticky="nsew", column=0, row=0)
+                self.reset_button.grid_remove()
+                self.progress_bar.grid(sticky="nsew", column=0, row=2)
+                self.progress_label.grid(column=0, row=1)
+            case _:
+                pass

@@ -1,6 +1,6 @@
+import asyncio
 import json
 from heapq import heappop, heappush
-import asyncio
 
 from loguru import logger
 
@@ -83,27 +83,3 @@ async def get_cube_placing_actions(input):
             to_be_placed[drop % 4] = None
 
         pos = (pos + move) % 12
-
-
-async def place_cubes(input, q=asyncio.Queue()):
-    logger.info("starting cube placement")
-
-    await q.put((50, "calculating placement"))
-    actions = await get_cube_placing_actions(input)
-
-    logger.info("calculated actions")
-    logger.info("starting placement")
-
-    await q.put((55, "placing cubes"))
-
-    await motor_control.execute_actions(actions, q)
-
-    logger.success("completed cube placement")
-
-
-if __name__ == "__main__":
-    import testdata
-
-    place_cubes(testdata.config01)
-    place_cubes(testdata.config02)
-    place_cubes(testdata.config03)

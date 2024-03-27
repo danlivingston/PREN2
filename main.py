@@ -5,7 +5,7 @@ import sys
 from dotenv import load_dotenv
 from loguru import logger
 
-from cubepiler.gui_asyncio import CubePiLerGUI
+from cubepiler.gui import CubePiLerGUI
 
 load_dotenv()
 
@@ -18,12 +18,12 @@ class Main:
 
 
 if __name__ == "__main__":
-    # LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")  # Defaults to INFO if not set
-    # logger.remove(0)
-    # logger.add(
-    #     sys.stdout,
-    #     level=LOG_LEVEL,
-    # )
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")  # Defaults to INFO if not set
+    logger.remove(0)
+    logger.add(
+        sys.stdout,
+        level=LOG_LEVEL,
+    )
     logger.add(
         "logs/trace_{time:YYYY-MM-DD}.log",
         enqueue=True,
