@@ -13,7 +13,9 @@ load_dotenv()
 class Main:
     @logger.catch(level="CRITICAL")
     async def exec(self):
-        self.gui = CubePiLerGUI(asyncio.get_event_loop())
+        autofullscreen = not os.getenv("AUTOFULLSCREEN", "TRUE") == "FALSE"
+        loop = asyncio.get_event_loop()
+        self.gui = CubePiLerGUI(loop, autofullscreen)
         await self.gui.mainloop()
 
 
