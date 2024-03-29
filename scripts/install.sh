@@ -9,4 +9,4 @@ pipx ensurepath
 source ~/.bashrc
 poetry install
 
-echo -e "\n\033[0;31m!!! Please restart your terminal to complete installation !!!\033[0m\n" 
+echo -e "\n\033[0;31m!!! Please restart your terminal to complete installation !!!\033[0m\n"
