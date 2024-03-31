@@ -14,8 +14,8 @@ second_script_path = os.path.join(base_dir, 'interface', 'transmissionsignalstar
 
 # Aufbau der Pfade relativ zum Basisverzeichnis für die nachfolgenden Skripte
 additional_script_paths = [
-    os.path.join(base_dir, 'probeansteurungsprogramm', '3ansteuerungsprogramm3.py'), 
     os.path.join(base_dir, 'bilderkennung', 'probestreamerkennung.py'),
+    os.path.join(base_dir, 'zRaspiscripts', 'probeansteurungsprogramm', '3ansteuerungsprogramm3.py'), 
 ]
 
 start_sound_path = os.path.join(base_dir, 'sound', 'startsignal.wav')
