@@ -23,6 +23,12 @@ ultralytics = "^8.1.18"
 loguru = "^0.7.2"
 python-dotenv = "^1.0.1"
 gpiozero = "^2.0.1"
+pygame = "^2.5.2"
+opencv-contrib-python = "^4.9.0.80"
+opencv-python-headless = "^4.9.0.80"
+imutils = "^0.5.4"
+pysimplegui = "^5.0.3"
+customtkinter = "^5.2.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"
