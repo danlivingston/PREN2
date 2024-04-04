@@ -5,7 +5,8 @@ def send_start_signal(url, team_id, auth_token):
     post_url = f"{url}/cubes/{team_id}/start"
     
     try:
-        response = requests.post(post_url, headers=headers)
+        # POST-Anfrage mit einem Timeout von 5 Sekunden
+        response = requests.post(post_url, headers=headers, timeout=6)
         
         # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
         if response.status_code == 200:
@@ -25,8 +26,11 @@ def send_start_signal(url, team_id, auth_token):
         else:
             print(f"Unbekannter Statuscode {response.status_code}: {response.text}")
             
+    except requests.exceptions.Timeout:
+        # Spezifische Behandlung für einen Timeout-Fehler
+        print("Die Anfrage hat zu lange gedauert. Server möglicherweise nicht erreichbar oder Antwort verzögert.")
     except Exception as e:
+        # Allgemeine Fehlerbehandlung
         print("Ein Fehler ist aufgetreten:", e)
-
 
 send_start_signal('http://52.58.217.104:5000', 'team12', 'R5SfQQ6gKr9A')

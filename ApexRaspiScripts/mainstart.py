@@ -18,8 +18,15 @@ additional_script_paths = [
     os.path.join(base_dir, 'zRaspiscripts', 'probeansteurungsprogramm', '3ansteuerungsprogramm3.py'), 
 ]
 
+reset_script_paths = [
+    os.path.join(base_dir, 'mainreset.py'),
+    #Zusätzliche Scripte
+]
+
+
 start_sound_path = os.path.join(base_dir, 'sound', 'startsignal.wav')
 stop_sound_path = os.path.join(base_dir, 'sound', 'stopsignal.wav')
+reset_sound_path = os.path.join(base_dir, 'sound', 'reset.wav')
 
 def play_sound(sound_path):
     pygame.init()
@@ -60,7 +67,17 @@ def start_files():
     
     # Setze einen Timer, um den Start-Button nach 2 Sekunden wieder zu aktivieren
     root.after(2000, lambda: start_button.config(state=tk.NORMAL))
-
+    
+def reset_files():
+    play_sound(reset_sound_path)
+    
+    # Iterieren durch alle Pfade in der reset_script_paths Liste
+    for script_path in reset_script_paths:
+        directory, script_name = os.path.split(script_path)
+        result = subprocess.run(['python', script_name], cwd=directory)
+        if result.returncode != 0:
+            print(f"Fehler beim Ausführen von {script_name}.")
+            
 def stop_files():
     play_sound(stop_sound_path)
     current_process_pid = os.getpid()  # PID des aktuellen (dieses) Prozesses
@@ -74,7 +91,6 @@ def stop_files():
         except Exception as e:
             print(f"Fehler beim Beenden des Prozesses: {e}")
             
-# Einrichten des Hauptfensters und des restlichen UI bleibt unverändert
 root = tk.Tk()
 root.title("TALIS")
 
@@ -84,16 +100,29 @@ window_width = screen_width
 window_height = screen_height
 root.geometry(f'{window_width}x{window_height}+0+0')
 
-left_frame = tk.Frame(root, bg='green')
+# Teilen des linken Frames in zwei Unter-Frames
+left_frame = tk.Frame(root)
 left_frame.pack(side=tk.LEFT, fill='both', expand=True)
+
+upper_left_frame = tk.Frame(left_frame, bg='yellow')
+upper_left_frame.pack(side=tk.TOP, fill='both', expand=True)
+
+lower_left_frame = tk.Frame(left_frame, bg='green')
+lower_left_frame.pack(side=tk.BOTTOM, fill='both', expand=True)
 
 right_frame = tk.Frame(root, bg='red')
 right_frame.pack(side=tk.RIGHT, fill='both', expand=True)
 
-start_button = tk.Button(left_frame, text="Start", command=start_files, bg="green", fg="white", font=('Arial', 20))
+# Positionieren des Reset-Buttons im oberen linken Frame
+reset_button = tk.Button(upper_left_frame, text="Reset", command=reset_files, bg="orange", fg="white", font=('Arial', 50))
+reset_button.pack(fill='both', expand=True)
+
+# Positionieren des Start-Buttons im unteren linken Frame
+start_button = tk.Button(lower_left_frame, text="Start", command=start_files, bg="green", fg="white", font=('Arial', 50))
 start_button.pack(fill='both', expand=True)
 
-stop_button = tk.Button(right_frame, text="Stop", command=stop_files, bg="red", fg="white", font=('Arial', 20))
+# Stop-Button im rechten Frame
+stop_button = tk.Button(right_frame, text="Stop", command=stop_files, bg="red", fg="white", font=('Arial', 50))
 stop_button.pack(fill='both', expand=True)
 
 root.mainloop()
