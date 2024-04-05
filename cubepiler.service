@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=user
 WorkingDirectory=/home/user/PREN2
-ExecStart=/bin/bash /home/user/PREN2/script/service.sh
+ExecStart=/bin/bash /home/user/PREN2/scripts/service.sh
 Restart=on-failure
 
 [Install]

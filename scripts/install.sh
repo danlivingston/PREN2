@@ -10,6 +10,7 @@ source ~/.bashrc
 cd "$(dirname "$0")/.."
 poetry install
 
+sudo rm /etc/systemd/system/cubepiler.service
 sudo ln -s "$(pwd)/cubepiler.service" /etc/systemd/system/cubepiler.service
 sudo systemctl daemon-reload
 sudo systemctl enable cubepiler
