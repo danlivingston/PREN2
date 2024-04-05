@@ -48,7 +48,7 @@ async def get_cube_placing_actions(input):
                 slot_index = (tbp * 3) % 12
 
                 if color_wanted == 0:
-                    logger.trace(f"no cube{" ":<6}at pos {tbp} ({slot_index});")
+                    logger.trace(f"no cube{' ':<6}at pos {tbp} ({slot_index});")
                     to_be_placed[i] = None
 
                 else:

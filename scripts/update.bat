@@ -1,2 +1,2 @@
 git pull
-poetry update
+poetry install
