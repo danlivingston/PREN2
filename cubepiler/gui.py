@@ -1,4 +1,5 @@
 import asyncio
+import platform
 from enum import Enum
 
 import customtkinter
@@ -179,7 +180,8 @@ class CubePiLerGUI(customtkinter.CTk):
 
     async def toggle_fullscreen(self, event=None):
         logger.debug("toggling fullscreen")
-        self.root.state("normal" if self.fullscreen else "zoomed")
+        if platform.system() == "Windows":
+            self.root.state("normal" if self.fullscreen else "zoomed")
         self.root.attributes("-fullscreen", not self.fullscreen)
         self.fullscreen = not self.fullscreen
 
