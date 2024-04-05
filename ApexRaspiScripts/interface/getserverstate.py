@@ -5,7 +5,7 @@ def test_server_reachability(url):
     
     try:
         # Anfrage mit einem Timeout von 5 Sekunden
-        response = requests.get(get_url, timeout=6)
+        response = requests.get(get_url, timeout=3)
         if response.status_code == 200:
             print("Server ist erreichbar. Antwort:", response.text)
         else:

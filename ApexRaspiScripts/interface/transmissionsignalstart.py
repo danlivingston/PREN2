@@ -6,7 +6,7 @@ def send_start_signal(url, team_id, auth_token):
     
     try:
         # POST-Anfrage mit einem Timeout von 5 Sekunden
-        response = requests.post(post_url, headers=headers, timeout=6)
+        response = requests.post(post_url, headers=headers, timeout=3)
         
         # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
         if response.status_code == 200:

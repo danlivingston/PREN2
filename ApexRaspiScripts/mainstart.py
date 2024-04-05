@@ -11,18 +11,19 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 # Pfad für das zuerst auszuführende Skript und das zweite wichtige Skript
 first_script_path = os.path.join(base_dir, 'interface', 'getserverstate.py')
 second_script_path = os.path.join(base_dir, 'interface', 'transmissionsignalstart.py')
-
+third_script_path = os.path.join(base_dir, 'bilderkennung', 'mainbildhidden.py')
+fourth_script_path = os.path.join(base_dir, 'ansteuerungsprogrammprobe.py')
 # Aufbau der Pfade relativ zum Basisverzeichnis für die nachfolgenden Skripte
 additional_script_paths = [
-    os.path.join(base_dir, 'bilderkennung', 'probestreamerkennung.py'),
-    os.path.join(base_dir, 'zRaspiscripts', 'probeansteurungsprogramm', '3ansteuerungsprogramm3.py'), 
+    os.path.join(base_dir, 'mainvisualtisch.py'), 
+    #os.path.join(base_dir, 'bilderkennung', 'probestreamerkennung.py'),
+    #os.path.join(base_dir, 'bilderkennung', 'mainbildhidden.py'),
 ]
 
 reset_script_paths = [
     os.path.join(base_dir, 'mainreset.py'),
     #Zusätzliche Scripte
 ]
-
 
 start_sound_path = os.path.join(base_dir, 'sound', 'startsignal.wav')
 stop_sound_path = os.path.join(base_dir, 'sound', 'stopsignal.wav')
@@ -58,6 +59,17 @@ def start_files():
     result_second = subprocess.run(['python', second_script_name], cwd=second_directory)
     if result_second.returncode != 0:
         print(f"Fehler beim Ausführen von {second_script_name}.")
+        
+    third_directory, third_script_name = os.path.split(third_script_path)
+    result_second = subprocess.run(['python', third_script_name], cwd=third_directory)
+    if result_second.returncode != 0:
+        print(f"Fehler beim Ausführen von {third_script_name}.")
+        
+            
+    fourth_directory, fourth_script_name = os.path.split(fourth_script_path)
+    result_second = subprocess.run(['python', fourth_script_name], cwd=fourth_directory)
+    if result_second.returncode != 0:
+        print(f"Fehler beim Ausführen von {fourth_script_name}.")
     
     # Führe die restlichen Skripte asynchron aus, unabhängig vom Erfolg der ersten beiden
     print("Starte weitere Skripte.")
