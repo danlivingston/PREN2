@@ -127,7 +127,7 @@ class CubePiLerGUI(customtkinter.CTk):
 
         self.success_button = customtkinter.CTkButton(
             master=self.frame,
-            text="SUCESS",
+            text="SUCCESS",
             command=lambda: setattr(
                 self, "running_task", self.loop.create_task(self.dismiss_button())
             ),
