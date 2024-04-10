@@ -5,7 +5,7 @@ def send_end_signal(url, team_id, auth_token):
     post_url = f"{url}/cubes/{team_id}/end"
     
     try:
-        response = requests.post(post_url, headers=headers)
+        response = requests.post(post_url, headers=headers, timeout=8)
         
         # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
         if response.status_code == 200:
@@ -29,4 +29,4 @@ def send_end_signal(url, team_id, auth_token):
         print("Ein Fehler ist aufgetreten:", e)
         
         
-send_end_signal('http://52.58.217.104:5000', 'team12', 'R5SfQQ6gKr9A')
+send_end_signal('https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com', 'team12', 'R5SfQQ6gKr9A')

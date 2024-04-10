@@ -6,7 +6,7 @@ def send_start_signal(url, team_id, auth_token):
     
     try:
         # POST-Anfrage mit einem Timeout von 5 Sekunden
-        response = requests.post(post_url, headers=headers, timeout=3)
+        response = requests.post(post_url, headers=headers, timeout=8)
         
         # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
         if response.status_code == 200:
@@ -33,4 +33,4 @@ def send_start_signal(url, team_id, auth_token):
         # Allgemeine Fehlerbehandlung
         print("Ein Fehler ist aufgetreten:", e)
 
-send_start_signal('http://52.58.217.104:5000', 'team12', 'R5SfQQ6gKr9A')
+send_start_signal('https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com', 'team12', 'R5SfQQ6gKr9A')

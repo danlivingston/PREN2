@@ -4,7 +4,7 @@ def get_current_entries(url, team_id):
     get_url = f"{url}/cubes/{team_id}"
     
     try:
-        response = requests.get(get_url)
+        response = requests.get(get_url, timeout=8)
         if response.status_code == 200:
             print("Aktuelle Einträge erfolgreich abgerufen:")
             print(response.json()) 
@@ -14,4 +14,4 @@ def get_current_entries(url, team_id):
         print(f"Ein Fehler ist aufgetreten: {e}")
 
 
-get_current_entries('http://52.58.217.104:5000', 'team12')
+get_current_entries('https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com', 'team12')

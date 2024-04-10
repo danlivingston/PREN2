@@ -5,7 +5,7 @@ def test_server_reachability(url):
     
     try:
         # Anfrage mit einem Timeout von 5 Sekunden
-        response = requests.get(get_url, timeout=3)
+        response = requests.get(get_url, timeout=8)
         if response.status_code == 200:
             print("Server ist erreichbar. Antwort:", response.text)
         else:
@@ -17,4 +17,4 @@ def test_server_reachability(url):
         # Allgemeine Fehlerbehandlung
         print(f"Ein Fehler ist aufgetreten: {e}")
 
-test_server_reachability('http://52.58.217.104:5000')
+test_server_reachability('https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com')

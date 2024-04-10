@@ -12,7 +12,9 @@ def send_cube_configuration(url, team_id, auth_token, config_data):
     post_url = f"{url}/cubes/{team_id}/config"
     
     try:
-        response = requests.post(post_url, data=json.dumps(config_data), headers=headers)
+        # Senden des POST-Requests mit einem Timeout von 5 Sekunden
+        response = requests.post(post_url, data=json.dumps(config_data), headers=headers, timeout=8)
+        
         # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
         if response.status_code == 200:
             print("200 OK: Request wurde akzeptiert. Informationen im Body HTTP Meldung vorhanden.")
@@ -31,9 +33,11 @@ def send_cube_configuration(url, team_id, auth_token, config_data):
         else:
             print(f"Unbekannter Statuscode {response.status_code}: {response.text}")
             
+    except requests.exceptions.Timeout:
+        print("Die Anfrage hat zu lange gedauert. Server möglicherweise nicht erreichbar oder Antwort verzögert.")
     except Exception as e:
         print("Ein Fehler ist aufgetreten:", e)
-        
+
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 config_file_path = os.path.join(base_dir, 'config.json')
 
@@ -48,6 +52,4 @@ except Exception as e:
     print(f"Ein unerwarteter Fehler ist aufgetreten: {e}")
 else:
     # Beispielaufruf der Funktion mit den gelesenen Konfigurationsdaten
-    send_cube_configuration('http://52.58.217.104:5000', 'team12', 'R5SfQQ6gKr9A', config_data)
-
-#send_cube_configuration('http://52.58.217.104:5000', 'team00', 'aTdpCRIrI9CLS1', config_data)
+    send_cube_configuration('https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com', 'team12', 'R5SfQQ6gKr9A', config_data)
