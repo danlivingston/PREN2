@@ -12,7 +12,12 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 first_script_path = os.path.join(base_dir, 'interface', 'getserverstate.py')
 second_script_path = os.path.join(base_dir, 'interface', 'transmissionsignalstart.py')
 third_script_path = os.path.join(base_dir, 'bilderkennung', 'mainbildhidden.py')
-fourth_script_path = os.path.join(base_dir, 'ansteuerungsprogrammprobe.py')
+fourth_script_path = os.path.join(base_dir, 'interface', 'transscubeconfig.py')
+
+five_script_path = os.path.join(base_dir, 'ansteuerungsprogrammprobe.py')
+
+six_script_path = os.path.join(base_dir, 'interface', 'transmissionsignalstop.py')
+
 # Aufbau der Pfade relativ zum Basisverzeichnis für die nachfolgenden Skripte
 additional_script_paths = [
     os.path.join(base_dir, 'mainvisualtisch.py'), 
@@ -70,6 +75,16 @@ def start_files():
     result_second = subprocess.run(['python', fourth_script_name], cwd=fourth_directory)
     if result_second.returncode != 0:
         print(f"Fehler beim Ausführen von {fourth_script_name}.")
+        
+    five_directory, five_script_name = os.path.split(five_script_path)
+    result_second = subprocess.run(['python', five_script_name], cwd=five_directory)
+    if result_second.returncode != 0:
+        print(f"Fehler beim Ausführen von {five_script_name}.")
+        
+    six_directory, six_script_name = os.path.split(six_script_path)
+    result_six = subprocess.run(['python', six_script_name], cwd=six_directory)
+    if result_six.returncode != 0:
+        print(f"Fehler beim Ausführen von {six_script_name}.")
     
     # Führe die restlichen Skripte asynchron aus, unabhängig vom Erfolg der ersten beiden
     print("Starte weitere Skripte.")
@@ -78,7 +93,7 @@ def start_files():
         subprocess.Popen(['python', script_name], cwd=directory)
     
     # Setze einen Timer, um den Start-Button nach 2 Sekunden wieder zu aktivieren
-    root.after(2000, lambda: start_button.config(state=tk.NORMAL))
+    root.after(1000, lambda: start_button.config(state=tk.NORMAL))
     
 def reset_files():
     play_sound(reset_sound_path)
