@@ -17,7 +17,7 @@ repository = "https://github.com/danlivingston/PREN2"
 documentation = "https://www.overleaf.com/project/65d8516955a5ecf8a48d2893"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 opencv-python = "^4.9.0.80"
 ultralytics = "^8.1.18"
 loguru = "^0.7.2"
