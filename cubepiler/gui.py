@@ -1,4 +1,5 @@
 import asyncio
+import platform
 from enum import Enum
 
 import customtkinter
@@ -8,15 +9,15 @@ from cubepiler import runner
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
-# TODO: reduce to used only
-customtkinter.FontManager.load_font("fonts/SourceCodePro-Black.ttf")
-customtkinter.FontManager.load_font("fonts/SourceCodePro-ExtraBold.ttf")
-customtkinter.FontManager.load_font("fonts/SourceCodePro-Bold.ttf")
+# TODO: reduce to used fonts only
+# customtkinter.FontManager.load_font("fonts/SourceCodePro-Black.ttf")
+# customtkinter.FontManager.load_font("fonts/SourceCodePro-ExtraBold.ttf")
+# customtkinter.FontManager.load_font("fonts/SourceCodePro-Bold.ttf")
 customtkinter.FontManager.load_font("fonts/SourceCodePro-SemiBold.ttf")
 customtkinter.FontManager.load_font("fonts/SourceCodePro-Regular.ttf")
-customtkinter.FontManager.load_font("fonts/SourceCodePro-Medium.ttf")
-customtkinter.FontManager.load_font("fonts/SourceCodePro-Light.ttf")
-customtkinter.FontManager.load_font("fonts/SourceCodePro-ExtraLight.ttf")
+# customtkinter.FontManager.load_font("fonts/SourceCodePro-Medium.ttf")
+# customtkinter.FontManager.load_font("fonts/SourceCodePro-Light.ttf")
+# customtkinter.FontManager.load_font("fonts/SourceCodePro-ExtraLight.ttf")
 
 COLORS = {
     "dim gray": "#706677",
@@ -85,6 +86,7 @@ class CubePiLerGUI(customtkinter.CTk):
         self.frame.columnconfigure(0, weight=1, uniform="u")
 
         button_font = customtkinter.CTkFont(family="Source Code Pro SemiBold", size=200)
+        progress_bar_font = customtkinter.CTkFont(family="Source Code Pro", size=75)
 
         self.start_button = customtkinter.CTkButton(
             master=self.frame,
@@ -125,7 +127,7 @@ class CubePiLerGUI(customtkinter.CTk):
 
         self.success_button = customtkinter.CTkButton(
             master=self.frame,
-            text="SUCESS",
+            text="SUCCESS",
             command=lambda: setattr(
                 self, "running_task", self.loop.create_task(self.dismiss_button())
             ),
@@ -162,7 +164,7 @@ class CubePiLerGUI(customtkinter.CTk):
             text="...",
             fg_color=COLORS["black"],
             text_color=COLORS["white"],
-            font=("monospace", 70),
+            font=progress_bar_font,
         )
 
     async def mainloop(self):
@@ -178,7 +180,8 @@ class CubePiLerGUI(customtkinter.CTk):
 
     async def toggle_fullscreen(self, event=None):
         logger.debug("toggling fullscreen")
-        self.root.state("normal" if self.fullscreen else "zoomed")
+        if platform.system() == "Windows":
+            self.root.state("normal" if self.fullscreen else "zoomed")
         self.root.attributes("-fullscreen", not self.fullscreen)
         self.fullscreen = not self.fullscreen
 

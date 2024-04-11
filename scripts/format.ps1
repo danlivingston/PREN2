@@ -1,3 +1,4 @@
+Set-Location -Path "$PSScriptRoot\.."
 echo "running isort..."
 poetry run isort .
 echo "running black..."
