@@ -29,6 +29,7 @@ opencv-python-headless = "^4.9.0.80"
 imutils = "^0.5.4"
 pysimplegui = "^5.0.3"
 customtkinter = "^5.2.2"
+rpi-gpio = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"

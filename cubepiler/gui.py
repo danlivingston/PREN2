@@ -53,7 +53,6 @@ STATES = Enum(
 
 class CubePiLerGUI(customtkinter.CTk):
     def __init__(self, loop, autofullscreen=True):
-
         self.state = STATES.START
         self.loop = loop
         self.fullscreen = False
@@ -85,8 +84,8 @@ class CubePiLerGUI(customtkinter.CTk):
         self.frame.grid_rowconfigure(2, weight=2, uniform="u")
         self.frame.columnconfigure(0, weight=1, uniform="u")
 
-        button_font = customtkinter.CTkFont(family="Source Code Pro SemiBold", size=200)
-        progress_bar_font = customtkinter.CTkFont(family="Source Code Pro", size=75)
+        button_font = customtkinter.CTkFont(family="Source Code Pro SemiBold", size=180)
+        progress_bar_font = customtkinter.CTkFont(family="Source Code Pro", size=65)
 
         self.start_button = customtkinter.CTkButton(
             master=self.frame,

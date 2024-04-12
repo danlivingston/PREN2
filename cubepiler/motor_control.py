@@ -1,6 +1,22 @@
 import asyncio
+import os
 
+import RPi.GPIO as GPIO
 from loguru import logger
+
+from cubepiler.DRV8825 import DRV8825
+
+GPIO.setmode(GPIO.BCM)
+
+ShaftMotor = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))
+ShaftMotor.SetMicroStep("hardward", "1/4step")
+ShaftMotorSpeed = os.getenv("SHAFTMOTOR_SPEED", 0.00005)
+
+PlatformMotor = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
+PlatformMotor.SetMicroStep("hardward", "1/4step")
+PlatformMotorSpeed = os.getenv("PLATFORMMOTOR_SPEED", 0.00005)
+PlatformTopPin = 8
+GPIO.setup(PlatformTopPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
 def rotate_shaft(unit):
@@ -21,3 +37,11 @@ async def execute_action(action):
     push_cube(push_index)
 
     await asyncio.sleep(0.5)  # TODO: remove fake delay
+
+
+def reset_platform_position():
+    done = False
+
+    while not done:
+        PlatformMotor.TurnStep(Dir="forward", steps=1, stepdelay=PlatformMotorSpeed)
+        done = GPIO.input(PlatformTopPin)
