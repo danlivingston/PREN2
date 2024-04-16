@@ -3,124 +3,91 @@ import subprocess
 import os
 import pygame
 import time
-import psutil  # Für das Verwalten von Prozessen
+import psutil
 
 # Ermitteln des Basisverzeichnisses relativ zum aktuellen Skript
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Pfad für das zuerst auszuführende Skript und das zweite wichtige Skript
-first_script_path = os.path.join(base_dir, 'interface', 'getserverstate.py')
-second_script_path = os.path.join(base_dir, 'interface', 'transmissionsignalstart.py')
-third_script_path = os.path.join(base_dir, 'bilderkennung', 'mainbildhidden.py')
-fourth_script_path = os.path.join(base_dir, 'interface', 'transscubeconfig.py')
-five_script_path = os.path.join(base_dir, 'ansteuerungsprogrammprobe.py')
-six_script_path = os.path.join(base_dir, 'mainvisualtisch.py')
-seven_script_path = os.path.join(base_dir, 'interface', 'transmissionsignalstop.py')
-
-# Aufbau der Pfade relativ zum Basisverzeichnis für die nachfolgenden Skripte
+#gleichzeitig
+preparation_scripts = [
+    os.path.join(base_dir, 'energiemessung', 'messung2.py'),
+    os.path.join(base_dir, 'sound', 'startwavton.py'),
+    # Weitere Skripte hier einfügen
+]
+ #seriell
+core_script_paths = [
+    os.path.join(base_dir, 'interface', 'getserverstate.py'),
+    os.path.join(base_dir, 'interface', 'transmissionsignalstart.py'),
+    os.path.join(base_dir, 'bilderkennung', 'mainbildhidden.py'),
+    os.path.join(base_dir, 'interface', 'transscubeconfig.py'),
+    os.path.join(base_dir, 'ansteuerungsprogrammprobe.py'),
+    os.path.join(base_dir, 'mainvisualtisch.py'),
+    os.path.join(base_dir, 'interface', 'transmissionsignalstop.py')
+    # Weitere Skripte hier einfügen oder dazwischen
+]
+#gleichzeitig
 additional_script_paths = [
+    os.path.join(base_dir, 'energiemessung', 'messungstopsignal.py'),
+    os.path.join(base_dir, 'sound', 'endwavton.py'),
     os.path.join(base_dir, 'interface', 'getentries.py'),
-    #os.path.join(base_dir, 'bilderkennung', 'mainbildhidden.py'),
+    # Weitere zusätzliche Skripte hier einfügen
 ]
 
 reset_script_paths = [
     os.path.join(base_dir, 'mainreset.py'),
-    #Zusätzliche Scripte
+    os.path.join(base_dir, 'sound', 'resetwavton.py'),
+    # Weitere Reset-Skripte hier einfügen
 ]
 
-start_sound_path = os.path.join(base_dir, 'sound', 'startsignal.wav')
-stop_sound_path = os.path.join(base_dir, 'sound', 'stopsignal.wav')
-reset_sound_path = os.path.join(base_dir, 'sound', 'reset.wav')
-
-def play_sound(sound_path):
-    pygame.init()
-    pygame.mixer.init()
-    try:
-        sound = pygame.mixer.Sound(sound_path)
-        sound.play()
-        while pygame.mixer.get_busy():
-            time.sleep(0.1)
-    except pygame.error as e:
-        print(f"Es gab einen Fehler beim Abspielen des Tons: {e}")
-    finally:
-        pygame.quit()
-
 def start_files():
-    # Deaktiviere nur den Start-Button sofort nach dem Klicken
-    start_button.config(state=tk.DISABLED)
+    # Startet Vorbereitungsskripte asynchron
+    for prep_script in preparation_scripts:
+        prep_directory, prep_script_name = os.path.split(prep_script)
+        subprocess.Popen(['python', prep_script_name], cwd=prep_directory)
     
-    play_sound(start_sound_path)
-    
-    # Führe das erste Skript synchron aus und prüfe auf Erfolg
-    first_directory, first_script_name = os.path.split(first_script_path)
-    result_first = subprocess.run(['python', first_script_name], cwd=first_directory)
-    if result_first.returncode != 0:
-        print(f"Fehler beim Ausführen von {first_script_name}.")
-    
-    # Führe das zweite Skript synchron aus und prüfe auf Erfolg
-    second_directory, second_script_name = os.path.split(second_script_path)
-    result_second = subprocess.run(['python', second_script_name], cwd=second_directory)
-    if result_second.returncode != 0:
-        print(f"Fehler beim Ausführen von {second_script_name}.")
-        
-    third_directory, third_script_name = os.path.split(third_script_path)
-    result_third = subprocess.run(['python', third_script_name], cwd=third_directory)
-    if result_third.returncode != 0:
-        print(f"Fehler beim Ausführen von {third_script_name}.")
-        
-            
-    fourth_directory, fourth_script_name = os.path.split(fourth_script_path)
-    result_fourth = subprocess.run(['python', fourth_script_name], cwd=fourth_directory)
-    if result_fourth.returncode != 0:
-        print(f"Fehler beim Ausführen von {fourth_script_name}.")
-        
-    five_directory, five_script_name = os.path.split(five_script_path)
-    result_five = subprocess.run(['python', five_script_name], cwd=five_directory)
-    if result_five.returncode != 0:
-        print(f"Fehler beim Ausführen von {five_script_name}.")
-        
-    six_directory, six_script_name = os.path.split(six_script_path)
-    result_six = subprocess.run(['python', six_script_name], cwd=six_directory)
-    if result_six.returncode != 0:
-        print(f"Fehler beim Ausführen von {six_script_name}.")
-        
-    seven_directory, seven_script_name = os.path.split(seven_script_path)
-    result_seven = subprocess.run(['python', seven_script_name], cwd=seven_directory)
-    if result_seven.returncode != 0:
-        print(f"Fehler beim Ausführen von {seven_script_name}.")
-    
-    # Führe die restlichen Skripte asynchron aus, unabhängig vom Erfolg der ersten beiden
-    print("Starte weitere Skripte.")
-    for file_path in additional_script_paths:
-        directory, script_name = os.path.split(file_path)
-        subprocess.Popen(['python', script_name], cwd=directory)
-    
-    # Setze einen Timer, um den Start-Button nach 2 Sekunden wieder zu aktivieren
-    root.after(2000, lambda: start_button.config(state=tk.NORMAL))
-    
-def reset_files():
-    play_sound(reset_sound_path)
-    
-    # Iterieren durch alle Pfade in der reset_script_paths Liste
-    for script_path in reset_script_paths:
-        directory, script_name = os.path.split(script_path)
+    # Startet Hauptskripte synchron und prüft auf Erfolg
+    for script in core_script_paths:
+        directory, script_name = os.path.split(script)
         result = subprocess.run(['python', script_name], cwd=directory)
         if result.returncode != 0:
             print(f"Fehler beim Ausführen von {script_name}.")
-            
-def stop_files():
-    play_sound(stop_sound_path)
-    current_process_pid = os.getpid()  # PID des aktuellen (dieses) Prozesses
 
+    # Startet weitere Skripte asynchron
+    for file_path in additional_script_paths:
+        directory, script_name = os.path.split(file_path)
+        subprocess.Popen(['python', script_name], cwd=directory)
+
+def reset_files():
+    # Startet Reset-Skripte asynchron
+    for file_path in reset_script_paths:
+        directory, script_name = os.path.split(file_path)
+        subprocess.Popen(['python', script_name], cwd=directory)
+
+def stop_files():
+    # Spielt den Stop-Ton ab
+    sound_script_path = os.path.join(base_dir, 'sound', 'stopwavton.py')
+    subprocess.Popen(['python', sound_script_path])
+
+    current_process_pid = os.getpid()
+    script_names_to_stop = [os.path.basename(script) for script in
+                            core_script_paths + additional_script_paths + reset_script_paths + preparation_scripts]
+
+    # Erweitert die Suche auf alle Python-Prozesse, die nicht das Haupt-GUI sind
     for process in psutil.process_iter(attrs=['pid', 'cmdline']):
-        try:
-            if process.info['cmdline'] and "python" in process.info['cmdline'][0] and process.info['pid'] != current_process_pid:
-                script_path = process.info['cmdline'][1] if len(process.info['cmdline']) > 1 else ""
-                if any(script_path.endswith(os.path.basename(script)) for script in additional_script_paths + [first_script_path, second_script_path]):
-                    psutil.Process(process.info['pid']).terminate()
-        except Exception as e:
-            print(f"Fehler beim Beenden des Prozesses: {e}")
-            
+        if process.info['pid'] != current_process_pid and 'python' in process.info['cmdline'][0]:
+            process_cmdline = ' '.join(process.info['cmdline'])
+            if any(script_name in process_cmdline for script_name in script_names_to_stop):
+                try:
+                    process.terminate()  # Versucht, den Prozess zu beenden
+                    process.wait(3)  # Wartet 3 Sekunden
+                except psutil.NoSuchProcess:
+                    continue
+                except psutil.TimeoutExpired:
+                    process.kill()  # Tötet den Prozess, falls terminate nicht funktioniert
+                print(f"Beendet: Prozess mit PID {process.info['pid']} ({process_cmdline})")
+
+
+
 root = tk.Tk()
 root.title("TALIS")
 

@@ -13,3 +13,5 @@ if __name__ == "__main__":
     set_stop_signal()
     print("Stop-Signal gesetzt.")
     
+    
+    

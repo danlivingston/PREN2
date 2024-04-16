@@ -3,6 +3,7 @@ import tkinter as tk
 from threading import Thread
 import time
 import os
+import random
 from datetime import datetime
 
 # Pfadkonfiguration
@@ -33,16 +34,37 @@ T_clock = 1024
 class MockSMBus:
     def write_byte(self, addr, value):
         print(f"Mock write_byte to addr {addr} with value {value}")
+
     def write_byte_data(self, addr, reg, value):
         print(f"Mock write_byte_data to addr {addr}, reg {reg} with value {value}")
-    def read_i2c_block_data(self, addr, reg, length):
-        import random
-        return [random.randint(0, 255) for _ in range(length)]
 
-try:
-    bus = smbus2.SMBus(1)
-except FileNotFoundError:
-    bus = MockSMBus()
+    def read_i2c_block_data(self, addr, reg, length):
+        if reg == REG_VOLTAGE:  # Beispielspannungsberechnung für 5V bis 12V
+            # Realistischer Spannungswert in 16-bit Umrechnung
+            voltage = random.uniform(5, 12)  # Spannung zwischen 5V und 12V
+            voltage_count = int((voltage / FSV) * DENOMINATOR)
+            return [(voltage_count >> 8) & 0xFF, voltage_count & 0xFF]
+
+        elif reg == REG_CURRENT:  # Beispielstromberechnung für 0A bis 3A
+            # Realistischer Stromwert in 16-bit Umrechnung
+            current = random.uniform(0, 3)  # Strom zwischen 0A und 3A
+            current_count = int((current / FSC) * DENOMINATOR)
+            return [(current_count >> 8) & 0xFF, current_count & 0xFF]
+
+        elif reg == REG_POWER:  # Beispiel für die Leistungsberechnung für 5W bis 40W
+            # Realistischer Leistungswert in 32-bit Umrechnung
+            power = random.uniform(5, 40)  # Leistung zwischen 5W und 40W
+            power_count = int((power / POWER_FSR) * 268435455)
+            return [(power_count >> 24) & 0xFF, (power_count >> 16) & 0xFF, (power_count >> 8) & 0xFF, power_count & 0xFF]
+
+        else:
+            # Rückgabe zufälliger Werte für andere Register
+            return [random.randint(0, 255) for _ in range(length)]
+        
+#try:
+#   bus = smbus2.SMBus(1)
+#except FileNotFoundError:
+bus = MockSMBus()
 
 start_time = datetime.now()
 accumulated_energy = 0
@@ -71,7 +93,7 @@ def read_power():
 
 def read_energy():
     raw_energy = bus.read_i2c_block_data(I2C_ADDR, REG_POWER_ACC, 6)
-    energy = (int.from_bytes(raw_energy, byteorder='big') / 268435455) * POWER_FSR * T_clock / 3600000  # Convert to Wh
+    energy = (int.from_bytes(raw_energy, byteorder='big') / 268435455) * POWER_FSR / 36000000  # Convert to Wh # Convert to Wh
     return round(energy, 3)
 
 def check_signal():
