@@ -4,13 +4,6 @@ import os
 import pygame
 import time
 import psutil
-import smbus2
-from DRV8825 import DRV8825
-import threading
-from datetime import datetime
-from multiprocessing import Process
-from enum import Enum
-
 
 # Ermitteln des Basisverzeichnisses relativ zum aktuellen Skript
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -19,7 +12,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 preparation_scripts = [
     os.path.join(base_dir, 'energiemessung', 'messung2.py'),
     os.path.join(base_dir, 'sound', 'startwavton.py'),
-    os.path.join(base_dir, 'maintischup.py'),
+    os.path.join(base_dir, 'visual', 'tischupvisual2.py'),
     # Weitere Skripte hier einfügen
 ]
  #seriell
@@ -28,8 +21,8 @@ core_script_paths = [
     os.path.join(base_dir, 'interface', 'transmissionsignalstart.py'),
     os.path.join(base_dir, 'bilderkennung', 'mainbildhidden.py'),
     os.path.join(base_dir, 'interface', 'transscubeconfig.py'),
-    os.path.join(base_dir, 'mainansteuerungsprogramm.py'),
-    os.path.join(base_dir, 'maintischdown.py'),
+    os.path.join(base_dir, 'ansteuerungsprogramm2.py'),
+    os.path.join(base_dir, 'visual', 'tischdownvisual2.py'),
     os.path.join(base_dir, 'interface', 'transmissionsignalstop.py')
     # Weitere Skripte hier einfügen oder dazwischen
 ]
@@ -42,7 +35,7 @@ additional_script_paths = [
 ]
 
 reset_script_paths = [
-    os.path.join(base_dir, 'mainresethubdown.py'),
+    os.path.join(base_dir, 'visual', 'resetvisual2.py'),
     os.path.join(base_dir, 'sound', 'resetwavton.py'),
     # Weitere Reset-Skripte hier einfügen
 ]

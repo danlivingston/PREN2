@@ -21,19 +21,18 @@ def create_gui():
     # Einstellen der Fenstergröße und -position
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
-    window_width = int(screen_width * 0.52)  # 52% der Bildschirmbreite
+    window_width = int(screen_width * 0.52)  # 52der Bildschirmbreite
     window_height = screen_height
     x_position = 0
     y_position = 0
     root.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
     # Erstellen eines Labels für die Nachricht
-    label = tk.Label(root, text="Reset Vorbereitung", font=("Arial", 40), fg="orange")
+    label = tk.Label(root, text="Auswurfmechanismus in Bearbeitung", font=("Arial", 40), fg="green")
 
     start_blinking_message()  # Startet das Blinken der Nachricht
-
-    root.after(6000, root.destroy)  # Schließt das Fenster nach 6 Sekunden
 
     root.mainloop()
 
 create_gui()
+

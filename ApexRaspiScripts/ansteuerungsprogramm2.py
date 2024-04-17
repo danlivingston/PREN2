@@ -7,7 +7,7 @@ import subprocess
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Pfad für das zu startende Skript
-first_script_path = os.path.join(base_dir, 'ansteuerungsvisual.py')
+first_script_path = os.path.join(base_dir, 'visual', 'ansteuerungsvisual2.py')
 
 
 def schrittmotorDrehen(grad):

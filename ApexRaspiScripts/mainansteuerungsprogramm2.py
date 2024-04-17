@@ -1,99 +1,11 @@
-import smbus2
-import tkinter as tk
-import threading 
-import time
-import os
-from datetime import datetime
 import RPi.GPIO as GPIO
-import measurelib
+import PiRelay6
+import time
 from DRV8825 import DRV8825
-from multiprocessing import Process
-from enum import Enum
 
 # Initialisierung des Schrittmotors
-Motor1 = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))
-Motor1.SetMicroStep('hardward' ,'1/4step')
-Motor1.Stop()
-
-
-endschalter=8
-GPIO.setup(endschalter,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
-channelX=10
-GPIO.setup(channelX,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
-
-sole1=14
-sole2=23
-sole3=5
-sole4=6
-
-GPIO.setup(sole1,GPIO.OUT)
-GPIO.setup(sole2,GPIO.OUT)
-GPIO.setup(sole3,GPIO.OUT)
-GPIO.setup(sole4,GPIO.OUT)
-
-masterposition = 0
-
-class Magpositions(Enum):
-	magA = 0
-	magB = 1066
-	magC = 2133
-	
-class Platepositions(Enum):
-	plate1 = 0
-	plate2 = 800
-	plate3 = 1600
-	plate4 = 2400
-
-#magazin motor
-def zero_mag():
-	global masterposition
-	while(GPIO.input(channelX)==0):
-		Motor1.TurnStep(Dir='forward', steps=1, stepdelay=0.00005)
-	Motor1.TurnStep(Dir='forward', steps=250, stepdelay=0.00005)
-	time.sleep(0.2)
-	Motor1.Stop()
-	masterposition=0
-	return()
-	
-def place_cube(mag, pos):
-	global masterposition
-	
-	actualpos = masterposition + mag
-	if actualpos >= 3200:
-		actualpos -= 3200
-
-	
-	schritte= pos - actualpos
-	if schritte < 0 :
-		schritte = 3200 - abs(schritte)
-	
-
-	Motor1.TurnStep(Dir='forward', steps=schritte, stepdelay=0.00005)
-	
-	
-	if pos == 0:
-		GPIO.output(sole1,1)
-		time.sleep(0.1)
-		GPIO.output(sole1,0)
-	elif pos == 800:
-		GPIO.output(sole2,1)
-		time.sleep(0.1)
-		GPIO.output(sole2,0)
-	elif pos == 1600:
-		GPIO.output(sole3,1)
-		time.sleep(0.1)
-		GPIO.output(sole3,0)
-	elif pos == 2400:
-		GPIO.output(sole4,1)
-		time.sleep(0.1)
-		GPIO.output(sole4,0)
-	
-	time.sleep(0.1)
-	masterposition += schritte
-	if masterposition >= 3200:
-		masterposition -= 3200
-	return()
-	
+Motor2 = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
+Motor2.SetMicroStep('hardware', '1/4step')
 
 # Initialisierung der Stössel
 r1 = PiRelay6.Relay("RELAY1")
@@ -102,20 +14,24 @@ r3 = PiRelay6.Relay("RELAY3")
 r2 = PiRelay6.Relay("RELAY4")
 
 def schrittmotorDrehen(grad):
+    # Überprüfung, ob grad gleich 0 oder 360 ist
     if grad == 0 or grad == 360:
         print("\tKeine Drehung erforderlich. Schrittmotor bleibt in Position.")
         return  # Frühe Rückkehr, um die Funktion zu beenden
     
     modifizierterGrad = 360 - grad
+
     schritteProUmdrehung = 800  
     modifizierterGrad = modifizierterGrad % 360  
-    schritte = int((modifizierterGrad / 360.0) * schritteProUmdrehung)  # Schritte berechnen
+    schritte = int((modifizierterGrad / 360.0) * schritteProUmdrehung)  # Berechnet die erforderlichen Schritte basierend auf dem gewünschten Drehwinkel
 
     if grad != 0:
         print(f"\tSchrittmotor beginnt zu drehen um {modifizierterGrad} Grad vorwärts...")
-        Motor1.TurnStep(Dir='forward', steps=schritte, stepdelay=0.0005)
-        Motor1.Stop()
-        time.sleep(0.1)  # Kurze Pause nach der Drehung
+        # Führt die Drehung aus, indem die berechnete Anzahl von Schritten an den Motor gesendet wird
+        Motor2.TurnStep(Dir='forward', steps=schritte, stepdelay=0.0005)
+        Motor2.Stop()
+        # Kurze Pause, um die Drehung abzuschließen, könnte je nach Anwendung angepasst werden
+        time.sleep(0.1)
         print(f"\tSchrittmotor hat die Drehung abgeschlossen. ({schritte} Schritte)")
     else:
         print("\tKeine Drehung erforderlich. Schrittmotor bleibt in Position.")
@@ -132,15 +48,17 @@ def berechneMagazinDrehungZuRelais(farbenZuPosition, zielFarbe, aktuelleMagazinP
     return drehung, neueFarbenZuPosition
 
 def relaisAktivieren(zielRelais):
-    delay_hinten = 0.1
-    delay_vorne = 0.2
+     # Definiere Verzögerungen
+    verzogerung = 0.0005  # Verzögerung zwischen den Steps, aktuell nicht verwendet in dieser Funktion
+    delay_hinten = 0.1  # Verzögerung nach dem Einschalten des Relais
+    delay_vorne = 0.2  # Verzögerung nach dem Ausschalten des Relais
 
     print(f"\tRelais {zielRelais} wird aktiviert, um den Würfel auszustoßen...")
     if zielRelais == 1:
         r1.on()
-        time.sleep(delay_hinten)
+        time.sleep(delay_hinten)  # Wartezeit direkt nach dem Einschalten
         r1.off()
-        time.sleep(delay_vorne)
+        time.sleep(delay_vorne)  # Wartezeit direkt nach dem Ausschalten
     elif zielRelais == 2:
         r2.on()
         time.sleep(delay_hinten)
@@ -181,7 +99,7 @@ def sortiereWuerfel(konfiguration):
         print(f"Ein Fehler ist aufgetreten: {e}")
     finally:
         GPIO.cleanup()
-        Motor1.Stop()
+        Motor2.Stop()
         print("Aufräumarbeiten abgeschlossen.")
 
 # Testkonfiguration
@@ -197,3 +115,5 @@ konfiguration = {
 }
 
 sortiereWuerfel(konfiguration)
+
+
