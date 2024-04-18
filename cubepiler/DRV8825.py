@@ -1,8 +1,9 @@
 import time
 
+from cubepiler.utils import is_raspberrypi
+
 # import RPi.GPIO as GPIO
 
-from cubepiler.utils import is_raspberrypi
 
 GPIO = None
 if is_raspberrypi():

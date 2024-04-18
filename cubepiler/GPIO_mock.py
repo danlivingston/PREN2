@@ -1,3 +1,11 @@
+# used when not running on raspberry pi
+
+BCM = None
+OUT = None
+IN = None
+PUD_DOWN = None
+
+
 def setmode(null=None):
     return
 
@@ -16,9 +24,3 @@ def output(null=None, null2=None):
 
 def input(null=None, null2=None):
     return 1
-
-
-BCM = None
-OUT = None
-IN = None
-PUD_DOWN = None

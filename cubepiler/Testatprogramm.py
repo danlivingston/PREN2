@@ -1,16 +1,9 @@
-# import smbus2
-import tkinter as tk
-
-# import threading
 import time
-import os
 from datetime import datetime
-import RPi.GPIO as GPIO
-import measurelib
-from DRV8825 import DRV8825
-from multiprocessing import Process
 from enum import Enum
 
+import RPi.GPIO as GPIO
+from DRV8825 import DRV8825
 
 ########################################### INITS ############################################
 
@@ -51,22 +44,6 @@ class Platepositions(Enum):
     plate2 = 800
     plate3 = 1600
     plate4 = 2400
-
-
-def messungen_thread():
-    while 1:
-        measurelib.send_refresh_v_command()
-        time.sleep(0.005)
-
-        voltage = measurelib.read_voltage()
-
-        current = measurelib.read_current()
-
-        power = measurelib.read_power()
-
-        os.system("clear")
-        print(f"Spannung: {voltage} V, Strom: {current} A, Leistung: {power} W")
-        time.sleep(0.5)
 
 
 def zero_bed():
@@ -144,9 +121,6 @@ startTime = datetime.now()
 
 if __name__ == "__main__":
 
-    messen = Process(target=messungen_thread)
-    messen.start()
-
     place_cube(Magpositions.magA.value, Platepositions.plate2.value)
     place_cube(Magpositions.magA.value, Platepositions.plate1.value)
     place_cube(Magpositions.magC.value, Platepositions.plate1.value)
@@ -160,7 +134,6 @@ if __name__ == "__main__":
     show_bed()
 
     ######################################### SCHLUSS ###########################################
-    messen.terminate()
     energy = measurelib.read_energy()
 
     print(f"Energie: {energy} Ws : {energy/3600} Wh")
