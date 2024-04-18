@@ -12,7 +12,6 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 preparation_scripts = [
     os.path.join(base_dir, 'energiemessung', 'messung2.py'),
     os.path.join(base_dir, 'sound', 'startwavton.py'),
-    os.path.join(base_dir, 'visual', 'tischupvisual2.py'),
     # Weitere Skripte hier einfügen
 ]
  #seriell

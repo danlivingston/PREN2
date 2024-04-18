@@ -28,7 +28,7 @@ def create_gui():
     root.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
     # Erstellen eines Labels für die Nachricht
-    label = tk.Label(root, text="Reset! Tisch fährt runter", font=("Arial", 40), fg="orange")
+    label = tk.Label(root, text="Reset! Tisch fährt hoch", font=("Arial", 40), fg="orange")
 
     start_blinking_message()  # Startet das Blinken der Nachricht
 

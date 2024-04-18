@@ -2,6 +2,8 @@ import os
 import subprocess
 import RPi.GPIO as GPIO
 from DRV8825 import DRV8825
+import measurelib
+import time
 
 # Initialize Motor2
 Motor2 = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
@@ -23,18 +25,19 @@ GPIO.setup(sole2,GPIO.OUT)
 GPIO.setup(sole3,GPIO.OUT)
 GPIO.setup(sole4,GPIO.OUT)
 
-# Function to zero the bed using Motor2
-def show_bed():
-    Motor2.TurnStep(Dir='forward', steps=9000, stepdelay=0.00005)
+# Function to move the bed up until the end switch is triggered
+def zero_bed():
+    while GPIO.input(endschalter) == 0:
+        Motor2.TurnStep(Dir='backward', steps=1, stepdelay=0.00005)
     Motor2.Stop()
 
 if __name__ == '__main__':
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    first_script_path = os.path.join(base_dir, 'visual', 'resetvisual.py')
+    first_script_path = os.path.join(base_dir, 'visual', 'resetivual.py')
     first_script_process = subprocess.Popen(['python', first_script_path])
 
     try:
-        show_bed()  # Zero the bed on start using Motor2
+        zero_bed()  # Move the bed up on start using Motor2
 
     except KeyboardInterrupt:
         print("Process manually interrupted.")
@@ -47,3 +50,4 @@ if __name__ == '__main__':
             first_script_process.kill()
         GPIO.cleanup()
         print("Cleanup complete and program terminated.")
+        
