@@ -47,8 +47,9 @@ async def execute_action(action):
 
 
 def reset_platform_position():
-    done = False
+    pass
+    # done = False
 
-    while not done:
-        PlatformMotor.TurnStep(Dir="forward", steps=1, stepdelay=PlatformMotorSpeed)
-        done = GPIO.input(PlatformTopPin)
+    # while not done:
+    #     PlatformMotor.TurnStep(Dir="forward", steps=1, stepdelay=PlatformMotorSpeed)
+    #     done = GPIO.input(PlatformTopPin)
