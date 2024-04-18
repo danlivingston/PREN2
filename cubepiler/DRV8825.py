@@ -94,7 +94,7 @@ class DRV8825:
             return
 
         print("Turns infinite")
-        while true:
+        while True:
             self.digital_write(self.step_pin, True)
             time.sleep(stepdelay)
             self.digital_write(self.step_pin, False)
