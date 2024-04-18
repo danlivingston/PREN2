@@ -113,10 +113,10 @@ zero_bed()
 
 zero_mag()
 
-measurelib.send_ctrlreg_command()
-measurelib.send_chdis_command()
-measurelib.send_negpwr_command()
-measurelib.send_refresh_command()
+# measurelib.send_ctrlreg_command()
+# measurelib.send_chdis_command()
+# measurelib.send_negpwr_command()
+# measurelib.send_refresh_command()
 startTime = datetime.now()
 
 if __name__ == "__main__":
