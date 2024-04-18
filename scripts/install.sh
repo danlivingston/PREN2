@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# bullseye alternate?
+# download python, install tk-dev, build python, install pipx with python -m pip
+
 sudo apt update
 sudo apt upgrade -y
 sudo apt install -y python3 python3-pip pipx python-is-python3
