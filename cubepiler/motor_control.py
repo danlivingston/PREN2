@@ -1,8 +1,15 @@
 import asyncio
 import os
 
-import RPi.GPIO as GPIO
 from loguru import logger
+
+from cubepiler.utils import is_raspberrypi
+
+GPIO = None
+if is_raspberrypi():
+    import RPi.GPIO as GPIO
+else:
+    from cubepiler import GPIO_mock as GPIO
 
 from cubepiler.DRV8825 import DRV8825
 

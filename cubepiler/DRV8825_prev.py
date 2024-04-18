@@ -1,15 +1,6 @@
 import time
 
-# import RPi.GPIO as GPIO
-
-from cubepiler.utils import is_raspberrypi
-
-GPIO = None
-if is_raspberrypi():
-    import RPi.GPIO as GPIO
-else:
-    from cubepiler import GPIO_mock as GPIO
-
+import RPi.GPIO as GPIO
 
 MotorDir = [
     "forward",

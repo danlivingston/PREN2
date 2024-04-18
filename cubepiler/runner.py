@@ -22,7 +22,7 @@ async def run(q=asyncio.Queue()):
     await q.put((PERCENTAGES["start"], "starting"))
     # TODO: send start api call
     # TODO: ensure reset was done before or do now; add checking function (maybe at start of reset function for simplicity)
-    await reset()
+    # await reset()
 
     ### ! Cube Scan
     logger.info("Scanning cubes")
@@ -76,8 +76,11 @@ async def run(q=asyncio.Queue()):
 async def reset(q=asyncio.Queue()):
     logger.info("Resetting positions")
     await q.put((0, "resetting"))
-    # await asyncio.sleep(2)
+    await asyncio.sleep(2)
     motor_control.reset_platform_position()
+
+    raise Exception("Demo")
+
     await q.put((100, "ready"))
 
     ### ! Move platform up (async)
