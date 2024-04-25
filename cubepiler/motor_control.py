@@ -145,7 +145,6 @@ def push_cube(index):
 
 
 def testFunctions():
-    GPIO_setup()
     zero_bed()
     zero_mag()
     place_cube(Magpositions.magA.value, Platepositions.plate2.value)
@@ -158,7 +157,7 @@ def testFunctions():
     place_cube(Magpositions.magA.value, Platepositions.plate3.value)
     Motor1.Stop()
     show_bed()
-    GPIO.cleanup()
+    # GPIO.cleanup()
 
 
 # action format (rotation_by, push_index)
