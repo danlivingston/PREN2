@@ -57,18 +57,18 @@ async def get_cube_placing_actions(input):
                     shaft_index = (color_shaft_pos * 4 + pos) % 12
                     distance = (slot_index - shaft_index) % 12
 
-                    heappush(queue, (distance, tbp))
+                    heappush(queue, (distance, tbp, color_wanted))
 
                     logger.trace(
-                        f"color {reverse_map_color(color_wanted):^6} at pos {tbp} ({slot_index}); shaft currently at {shaft_index}; distance between: {distance}"
+                        f"color {reverse_map_color(color_wanted):^6} (${color_wanted}) at pos {tbp} ({slot_index}); shaft currently at {shaft_index}; distance between: {distance}"
                     )
 
         if len(queue) == 0:
             return actions
 
         next = heappop(queue)
-        move, drop = next
-        actions.append((move, drop % 4))
+        move, drop, color = next
+        actions.append((color, drop % 4))
 
         logger.trace(
             f"best move chosen as rotate by {move} ({int(move/12*360):>3}°); drop shaft {(drop%4)+1}"

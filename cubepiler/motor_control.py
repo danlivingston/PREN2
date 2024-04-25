@@ -145,15 +145,17 @@ def place_cube(mag, pos):
 # GPIO.setup(PlatformTopPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
-def rotate_shaft(unit):
-    deg = unit * 30  # 30° per unit / index
-    logger.debug(f"rotating shaft by {deg} degrees")
-    # TODO: implement
+# def rotate_shaft(unit):
+#     deg = unit * 30  # 30° per unit / index
+#     logger.debug(f"rotating shaft by {deg} degrees")
+#     # TODO: implement
 
 
-def push_cube(index):
-    logger.debug(f"pushing cube at position {index + 1}")
-    # TODO: implement
+# def push_cube(index):
+#     logger.debug(f"pushing cube at position {index + 1}")
+#     # place_cube(Magpositions.magA.value, Platepositions.plate1.value)
+#     # place_cube(Magpositions.magC.value, Platepositions.plate1.value)
+#     # TODO: implement
 
 
 def testFunctions():
@@ -175,11 +177,24 @@ def testFunctions():
 
 # action format (rotation_by, push_index)
 async def execute_action(action):
-    rotate_by, push_index = action
-    rotate_shaft(rotate_by)
-    push_cube(push_index)
+    color_index, push_index = action
+    # [(2, 2), (2, 0), (3, 1), (2, 3), (1, 2), (2, 0), (3, 1), (2, 3)]
+    # rotate_shaft(rotate_by)
+    # push_cube(push_index)
 
-    await asyncio.sleep(0.5)  # TODO: remove fake delay
+    mag = [Magpositions.magA.value, Magpositions.magB.value, Magpositions.magC.value][
+        color_index - 1
+    ]
+    plate = [
+        Platepositions.plate1.value,
+        Platepositions.plate2.value,
+        Platepositions.plate3.value,
+        Platepositions.plate4.value,
+    ][push_index]
+
+    place_cube(mag, plate)
+
+    # await asyncio.sleep(0.5)  # TODO: remove fake delay
 
 
 # def reset_platform_position():

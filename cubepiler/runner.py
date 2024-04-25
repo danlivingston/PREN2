@@ -29,7 +29,7 @@ async def run(q=asyncio.Queue()):
     await q.put((PERCENTAGES["cube scan"], "scanning cubes"))
     # TODO: replace with real image scan
     scanned_cubes = testdata.config03
-    await asyncio.sleep(5)
+    # await asyncio.sleep(5)
 
     ### ! Cube Verification
     logger.info("Verifying cubes")
