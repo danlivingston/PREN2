@@ -46,6 +46,18 @@ def GPIO_setup():
 GPIO_setup()
 
 
+def GPIO_cleanup():
+    GPIO.output(sole1, 0)
+    GPIO.output(sole2, 0)
+    GPIO.output(sole3, 0)
+    GPIO.output(sole4, 0)
+
+    GPIO.output(18, 0)
+    GPIO.output(19, 0)
+    GPIO.output(12, 0)
+    GPIO.output(4, 0)
+
+
 class Magpositions(Enum):
     magA = 0
     magB = 1066
@@ -157,6 +169,7 @@ def testFunctions():
     place_cube(Magpositions.magA.value, Platepositions.plate3.value)
     Motor1.Stop()
     show_bed()
+    GPIO_cleanup()
     # GPIO.cleanup()
 
 
