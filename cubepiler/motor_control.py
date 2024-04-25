@@ -175,6 +175,10 @@ def testFunctions():
     # GPIO.cleanup()
 
 
+def motor_stop():
+    Motor1.Stop()
+
+
 # action format (rotation_by, push_index)
 async def execute_action(action):
     color_index, push_index = action

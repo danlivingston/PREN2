@@ -49,6 +49,8 @@ async def run(q=asyncio.Queue()):
     step = (PERCENTAGES["move platform"] - PERCENTAGES["cube placement"]) / len(actions)
     curr = 0
     # TODO
+    motor_control.zero_bed()
+    motor_control.zero_mag()
     for action in actions:
         curr += 1
         logger.info(f"Placed {curr}/{len(actions)} cubes")
@@ -59,6 +61,8 @@ async def run(q=asyncio.Queue()):
             )
         )
         await motor_control.execute_action(action)
+    motor_control.motor_stop()
+    motor_control.show_bed()
 
     ### ! Move Platform Down
     logger.info("Moving platform down")
