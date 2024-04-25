@@ -29,8 +29,8 @@ GPIO.setup(channelX, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 sole1 = 14
 sole2 = 23
-sole3 = 5
-sole4 = 6
+sole3 = 25
+sole4 = 9
 
 GPIO.setup(sole1, GPIO.OUT)
 GPIO.setup(sole2, GPIO.OUT)
