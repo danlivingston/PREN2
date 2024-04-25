@@ -23,21 +23,27 @@ Motor1.Stop()
 Motor2.Stop()
 
 endschalter = 8
-GPIO.setup(endschalter, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 channelX = 10
-GPIO.setup(channelX, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 sole1 = 14
 sole2 = 23
 sole3 = 25
 sole4 = 9
 
-GPIO.setup(sole1, GPIO.OUT)
-GPIO.setup(sole2, GPIO.OUT)
-GPIO.setup(sole3, GPIO.OUT)
-GPIO.setup(sole4, GPIO.OUT)
 
 masterposition = 0
+
+
+def GPIO_setup():
+    GPIO.setup(endschalter, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(channelX, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(sole1, GPIO.OUT)
+    GPIO.setup(sole2, GPIO.OUT)
+    GPIO.setup(sole3, GPIO.OUT)
+    GPIO.setup(sole4, GPIO.OUT)
+
+
+GPIO_setup()
 
 
 class Magpositions(Enum):
@@ -114,17 +120,17 @@ def place_cube(mag, pos):
     return ()
 
 
-GPIO.setmode(GPIO.BCM)
+# GPIO.setmode(GPIO.BCM)
 
-ShaftMotor = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))
-ShaftMotor.SetMicroStep("hardward", "1/4step")
-ShaftMotorSpeed = os.getenv("SHAFTMOTOR_SPEED", 0.00005)
+# ShaftMotor = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))
+# ShaftMotor.SetMicroStep("hardward", "1/4step")
+# ShaftMotorSpeed = os.getenv("SHAFTMOTOR_SPEED", 0.00005)
 
-PlatformMotor = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
-PlatformMotor.SetMicroStep("hardward", "1/4step")
-PlatformMotorSpeed = os.getenv("PLATFORMMOTOR_SPEED", 0.00005)
-PlatformTopPin = 8
-GPIO.setup(PlatformTopPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+# PlatformMotor = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
+# PlatformMotor.SetMicroStep("hardward", "1/4step")
+# PlatformMotorSpeed = os.getenv("PLATFORMMOTOR_SPEED", 0.00005)
+# PlatformTopPin = 8
+# GPIO.setup(PlatformTopPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
 def rotate_shaft(unit):
@@ -139,6 +145,7 @@ def push_cube(index):
 
 
 def testFunctions():
+    GPIO_setup()
     zero_bed()
     zero_mag()
     place_cube(Magpositions.magA.value, Platepositions.plate2.value)
