@@ -76,10 +76,11 @@ async def run(q=asyncio.Queue()):
 async def reset(q=asyncio.Queue()):
     logger.info("Resetting positions")
     await q.put((0, "resetting"))
-    await asyncio.sleep(2)
-    motor_control.reset_platform_position()
+    # await asyncio.sleep(2)
+    motor_control.testFunctions()
+    # motor_control.reset_platform_position()
 
-    raise Exception("Demo")
+    # raise Exception("Demo")
 
     await q.put((100, "ready"))
 

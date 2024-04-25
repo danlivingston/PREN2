@@ -1,4 +1,10 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+GPIO = None
+try:
+    import RPi.GPIO as GPIO
+except:
+    from cubepiler import GPIO_mock as GPIO
+
 import time
 
 MotorDir = [
