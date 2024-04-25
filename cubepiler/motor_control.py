@@ -149,6 +149,9 @@ def testFunctions():
     place_cube(Magpositions.magB.value, Platepositions.plate4.value)
     place_cube(Magpositions.magA.value, Platepositions.plate2.value)
     place_cube(Magpositions.magA.value, Platepositions.plate3.value)
+    Motor1.Stop()
+    show_bed()
+    GPIO.cleanup()
 
 
 # action format (rotation_by, push_index)
