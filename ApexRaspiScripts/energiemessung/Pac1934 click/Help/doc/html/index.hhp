@@ -1,0 +1,77 @@
+[OPTIONS]
+Compatibility=1.1
+Full-text search=Yes
+Contents file=index.hhc
+Default Window=main
+Default topic=index.html
+Index file=index.hhk
+Language=0x409 English (United States)
+Title=pac1934
+
+[WINDOWS]
+main="pac1934","index.hhc","index.hhk","index.html","index.html",,,,,0x23520,,0x10387e,,,,,,,,0
+
+[FILES]
+_r_e_a_d_m_e_8md.html
+annotated.html
+classes.html
+dir_0420d997c66a6146be4b0ab6cdd268ff.html
+dir_5e4e05d3cd6375bd0c171409d2c3b347.html
+dir_7b6e569df792677d09a4508b3d8d397e.html
+dir_a5bdbfbbaa7895161d62825676df7980.html
+dir_bb2d350117878fe076434ab534303b42.html
+files.html
+functions.html
+functions_vars.html
+globals.html
+globals_defs.html
+globals_func.html
+group__accumulated__power__registers.html
+group__accumulator__count.html
+group__actual__state__of__channel__dis__register.html
+group__actual__state__of__ctrl__register.html
+group__actual__state__of__neg__pwr__register.html
+group__average__vbus__sample.html
+group__average__vsense__sample.html
+group__bidirectional__measurements__settings.html
+group__channel__disable__and__other__settings.html
+group__control__register.html
+group__error__code.html
+group__i2c__slave__address.html
+group__latched__state__of__channel__dis__register.html
+group__latched__state__of__ctrl__register.html
+group__latched__state__of__neg__pwr__register.html
+group__macros.html
+group__manufacturer__id__register.html
+group__map__mikrobus.html
+group__most__recent__vbus__sample.html
+group__most__recent__vsense__sample.html
+group__pac1934.html
+group__product__id__register.html
+group__public__function.html
+group__refresh__command.html
+group__refresh__g__command.html
+group__refresh__v__command.html
+group__revision__id__register.html
+group__slow__pin__state__and__settings.html
+group__type.html
+group__vbus__and__vsense__product__1.html
+index.html
+main_8c.html
+modules.html
+pac1934_8h.html
+pac1934_8h_source.html
+structpac1934__cfg__t.html
+structpac1934__t.html
+bc_s.png
+bdwn.png
+closed.png
+nav_f.png
+nav_h.png
+open.png
+sync_off.png
+sync_on.png
+tab_a.png
+tab_b.png
+tab_h.png
+tab_s.png
