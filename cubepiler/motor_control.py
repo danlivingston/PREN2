@@ -73,14 +73,43 @@ class Platepositions(Enum):
 
 def zero_bed():
     while GPIO.input(endschalter) == 0:
-        Motor2.TurnStep(Dir="backward", steps=1, stepdelay=0.00005)
+        Motor2.TurnStep(Dir="backward", steps=1, stepdelay=0.0005)
     Motor2.Stop()
     return ()
 
 
-def show_bed():
-    Motor2.TurnStep(Dir="forward", steps=9000, stepdelay=0.00005)
+# def show_bed():
+#     Motor2.TurnStep(Dir="forward", steps=9000, stepdelay=0.00005)
+#     Motor2.Stop()
+#     return ()
+
+
+def show_bed(minrpm, maxrpm, steps):
+    maxsteps = steps
+    actualsteps = 0
+    acceltime = 0.2
+
+    linkoeff = (maxrpm - minrpm) / acceltime
+    timestamp = 0
+    targetrpm = minrpm
+
+    while (targetrpm < maxrpm) & (actualsteps < maxsteps):
+        delay = 60 / (2 * 200 * targetrpm)
+        Motor2.TurnStep(Dir="forward", steps=1, stepdelay=delay)
+        actualsteps += 1
+
+        targetrpm += linkoeff * (2 * delay)
+
+    print("Endgeschwindigkeit erreicht")
+
+    delayfix = 60 / (2 * 200 * maxrpm)
+    stepsfix = int(1 / (2 * delayfix))
+    while actualsteps < maxsteps:
+        Motor2.TurnStep(Dir="forward", steps=1, stepdelay=delayfix)
+        actualsteps += 1
+
     Motor2.Stop()
+
     return ()
 
 

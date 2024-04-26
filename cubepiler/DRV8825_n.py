@@ -1,6 +1,5 @@
 import time
 
-
 GPIO = None
 try:
     from cubepiler.utils import is_raspberrypi

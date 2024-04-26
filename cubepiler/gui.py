@@ -253,6 +253,7 @@ class CubePiLerGUI(customtkinter.CTk):
             self.progress_bar.configure(progress_color=COLORS["blue"])
             self.progress_bar.set(0)
             curr = 0
+            # should it be animated and have delay or not?
             while self.state == STATES.RUNNING or self.state == STATES.RESETTING:
                 prog, label = await self.progress_queue.get()
                 self.progress_label.configure(text=label)

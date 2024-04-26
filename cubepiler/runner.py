@@ -1,8 +1,9 @@
 import asyncio
+import datetime
 
 from loguru import logger
 
-from cubepiler import cube_placement, motor_control, testdata
+from cubepiler import cube_placement, measurelib, motor_control, testdata
 
 PERCENTAGES = {
     "start": 0,
@@ -16,7 +17,8 @@ PERCENTAGES = {
 
 
 async def run(q=asyncio.Queue()):
-
+    measurelib.send_refresh_command()
+    startTime = datetime.now()
     ### ! Start
     logger.info("Starting build")
     await q.put((PERCENTAGES["start"], "starting"))
@@ -36,7 +38,7 @@ async def run(q=asyncio.Queue()):
     await q.put((PERCENTAGES["cube verification"], "verifying cubes"))
     # TODO: replace with cube verification api call
     verified_cubes = scanned_cubes
-    await asyncio.sleep(1)
+    # await asyncio.sleep(1)
 
     ### ! Cube Placement Calculation
     logger.info("Calculating cube placement")
@@ -48,9 +50,6 @@ async def run(q=asyncio.Queue()):
     await q.put((PERCENTAGES["cube placement"], "placing cubes"))
     step = (PERCENTAGES["move platform"] - PERCENTAGES["cube placement"]) / len(actions)
     curr = 0
-    # TODO
-    motor_control.zero_bed()
-    motor_control.zero_mag()
     for action in actions:
         curr += 1
         logger.info(f"Placed {curr}/{len(actions)} cubes")
@@ -62,13 +61,11 @@ async def run(q=asyncio.Queue()):
         )
         await motor_control.execute_action(action)
     motor_control.motor_stop()
-    motor_control.show_bed()
 
     ### ! Move Platform Down
     logger.info("Moving platform down")
     await q.put((PERCENTAGES["move platform"], "moving platform"))
-    await asyncio.sleep(5)
-    # TODO
+    motor_control.show_bed(30, 600, 2400)
 
     ### ! Done
     logger.info("Done with build")
@@ -76,12 +73,18 @@ async def run(q=asyncio.Queue()):
     # TODO: send stop api call
     logger.success("Completed build")
 
+    endTime = datetime.now()
+    energy = measurelib.read_energy()
+    logger.info(f"time: {endTime-startTime}")
+    logger.info(f"energy used: {energy}")
+
 
 async def reset(q=asyncio.Queue()):
     logger.info("Resetting positions")
     await q.put((0, "resetting"))
     # await asyncio.sleep(2)
-    motor_control.testFunctions()
+    # motor_control.testFunctions()
+
     # motor_control.reset_platform_position()
 
     # raise Exception("Demo")
@@ -90,5 +93,11 @@ async def reset(q=asyncio.Queue()):
 
     ### ! Move platform up (async)
     ### ! Rotate shaft to starting position (async)
-    ### ! await above
-    # TODO
+    ### ! await above: possibly not enough power
+    motor_control.zero_bed()
+    motor_control.zero_mag()
+
+    measurelib.send_ctrlreg_command()
+    measurelib.send_chdis_command()
+    measurelib.send_negpwr_command()
+    measurelib.send_refresh_command()
