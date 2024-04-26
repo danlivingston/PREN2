@@ -39,3 +39,17 @@ config03 = """{
     "8": "yellow"
   }
 }"""
+
+config04 = """{
+  "time": "2023-11-15 21:09:05",
+  "config": {
+    "1": "blue",
+    "2": "yellow",
+    "3": "red",
+    "4": "blue",
+    "5": "yellow",
+    "6": "red",
+    "7": "blue",
+    "8": "yellow"
+  }
+}"""
