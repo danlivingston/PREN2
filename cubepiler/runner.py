@@ -101,5 +101,5 @@ async def reset(q=asyncio.Queue()):
     measurelib.send_chdis_command()
     measurelib.send_negpwr_command()
     measurelib.send_refresh_command()
-    asyncio.sleep(0.5)
+    await asyncio.sleep(0.5)
     measurelib.read_energy()
