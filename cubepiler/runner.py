@@ -77,7 +77,7 @@ async def run(q=asyncio.Queue()):
     endTime = datetime.now()
     energy = measurelib.read_energy()
     sound.sound_stop(600)
-    sound.sound_cleanup()
+    # sound.sound_cleanup()
     logger.info(f"time: {endTime-startTime}")
     logger.info(f"energy used: {energy} W*s")
 
