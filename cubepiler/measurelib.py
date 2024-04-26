@@ -22,7 +22,7 @@ CHDIS_REGISTER_ADDR = 0x1C  # Registeradresse für Kanal Ein Ausschalten
 NEGPWR_REGISTER_ADDR = 0x1D  # Registeradresse um Messung Bidirektional zu machen
 CONFIG_BYTE = 0x00  # Konfigurations Byte für Controlregister
 # Konstanten für Konfiguration
-SAMPLE_RATE = 0b11  # 0b00 1024, 0b01 256, 0b10 64, 0b11 8 samples/s
+SAMPLE_RATE = 0b00  # 0b00 1024, 0b01 256, 0b10 64, 0b11 8 samples/s
 
 # Konstanten für Berechnung
 FSV = 32.0  # Vollskalenspannung (32V)
