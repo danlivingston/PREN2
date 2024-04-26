@@ -8,35 +8,73 @@ buzzer = 11
 GPIO.setup(buzzer, GPIO.OUT)
 
 
+# # Frequencies for the notes
+# C4 = 261.63
+# D4 = 293.66
+# E4 = 329.63
+# G4 = 392.00
+# A4 = 440.00
+# C5 = 523.25
+
+# # Duration of each note (in seconds)
+# quarter_note = 0.5
+# eighth_note = 0.25
+
+# # Melody and note durations
+# melody = [C4, D4, E4, C4, E4, D4, C4, D4, E4, G4, A4, G4, E4, C5, C4]
+# durations = [
+#     quarter_note,
+#     eighth_note,
+#     eighth_note,
+#     quarter_note,
+#     eighth_note,
+#     eighth_note,
+#     quarter_note,
+#     eighth_note,
+#     eighth_note,
+#     quarter_note,
+#     eighth_note,
+#     eighth_note,
+#     quarter_note,
+#     quarter_note,
+#     quarter_note,
+# ]
+
 # Frequencies for the notes
-C4 = 261.63
 D4 = 293.66
-E4 = 329.63
-G4 = 392.00
+D5 = 587.33
 A4 = 440.00
+A5 = 880.00
+G4 = 392.00
+G5 = 784.00
+F4 = 349.23
+F5 = 698.46
+E4 = 329.63
+E5 = 659.25
 C5 = 523.25
 
 # Duration of each note (in seconds)
 quarter_note = 0.5
 eighth_note = 0.25
+sixteenth_note = 0.125
 
-# Melody and note durations
-melody = [C4, D4, E4, C4, E4, D4, C4, D4, E4, G4, A4, G4, E4, C5, C4]
+# Melody and note durations for Megalovania
+melody = [D4, D4, D5, A4, A5, G4, G5, F4, F5, E4, E5, D4, D5, C5, D4]
 durations = [
-    quarter_note,
-    eighth_note,
-    eighth_note,
-    quarter_note,
-    eighth_note,
-    eighth_note,
-    quarter_note,
-    eighth_note,
-    eighth_note,
-    quarter_note,
-    eighth_note,
-    eighth_note,
-    quarter_note,
-    quarter_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
+    sixteenth_note,
     quarter_note,
 ]
 
