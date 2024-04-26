@@ -17,7 +17,7 @@ PERCENTAGES = {
 
 
 async def run(q=asyncio.Queue()):
-    sound.sound_start()
+    sound.sound_start(600)
     measurelib.send_refresh_command()
     startTime = datetime.now()
     ### ! Start
@@ -76,7 +76,7 @@ async def run(q=asyncio.Queue()):
 
     endTime = datetime.now()
     energy = measurelib.read_energy()
-    sound.sound_stop()
+    sound.sound_stop(600)
     sound.sound_cleanup()
     logger.info(f"time: {endTime-startTime}")
     logger.info(f"energy used: {energy} W*s")
