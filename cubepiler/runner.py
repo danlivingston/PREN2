@@ -1,5 +1,5 @@
 import asyncio
-import datetime
+from datetime import datetime
 
 from loguru import logger
 
