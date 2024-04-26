@@ -263,7 +263,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 #     self.progress_bar.set(1)
                 #     await asyncio.sleep(5)
                 #     break
-
+                curr = prog - 1  # ! debug
                 while not curr >= prog:
                     curr += 1
                     self.progress_bar.set(curr / 100)
