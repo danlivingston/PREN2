@@ -103,3 +103,5 @@ async def reset(q=asyncio.Queue()):
     measurelib.send_ctrlreg_command()
     measurelib.send_chdis_command()
     measurelib.send_negpwr_command()
+
+    sound.play_melody()

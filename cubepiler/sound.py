@@ -8,6 +8,55 @@ buzzer = 11
 GPIO.setup(buzzer, GPIO.OUT)
 
 
+# Frequencies for the notes
+C4 = 261.63
+D4 = 293.66
+E4 = 329.63
+G4 = 392.00
+A4 = 440.00
+C5 = 523.25
+
+# Duration of each note (in seconds)
+quarter_note = 0.5
+eighth_note = 0.25
+
+# Melody and note durations
+melody = [C4, D4, E4, C4, E4, D4, C4, D4, E4, G4, A4, G4, E4, C5, C4]
+durations = [
+    quarter_note,
+    eighth_note,
+    eighth_note,
+    quarter_note,
+    eighth_note,
+    eighth_note,
+    quarter_note,
+    eighth_note,
+    eighth_note,
+    quarter_note,
+    eighth_note,
+    eighth_note,
+    quarter_note,
+    quarter_note,
+    quarter_note,
+]
+
+
+def play_note(freq, duration):
+    delay = 1.0 / freq
+    num_cycles = int(freq * duration)
+
+    for _ in range(num_cycles):
+        GPIO.output(buzzer, True)
+        time.sleep(delay)
+        GPIO.output(buzzer, False)
+        time.sleep(delay)
+
+
+def play_melody():
+    for freq, duration in zip(melody, durations):
+        play_note(freq, duration)
+
+
 def sound_start(freq):
     i = 0
     delay = 0.5 / freq
