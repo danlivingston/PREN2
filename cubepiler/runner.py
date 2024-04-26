@@ -76,7 +76,7 @@ async def run(q=asyncio.Queue()):
     endTime = datetime.now()
     energy = measurelib.read_energy()
     logger.info(f"time: {endTime-startTime}")
-    logger.info(f"energy used: {energy}W/s")
+    logger.info(f"energy used: {energy} W*s")
 
 
 async def reset(q=asyncio.Queue()):
@@ -101,4 +101,5 @@ async def reset(q=asyncio.Queue()):
     measurelib.send_chdis_command()
     measurelib.send_negpwr_command()
     measurelib.send_refresh_command()
+    asyncio.sleep(0.5)
     measurelib.read_energy()
