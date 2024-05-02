@@ -1,6 +1,6 @@
 from ultralytics import YOLO
 from .cube import Cube
-from referenceQuarter import ReferenceQuarter
+from .referenceQuarter import ReferenceQuarter
 import time
 import json
 from datetime import datetime
