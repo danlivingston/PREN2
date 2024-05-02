@@ -1,5 +1,7 @@
-import requests
+import json
+from datetime import datetime
 
+import requests
 from loguru import logger
 
 
@@ -98,11 +100,6 @@ def send_end_signal(url, team_id, auth_token):
 
     except Exception as e:
         logger.debug("Ein Fehler ist aufgetreten:", e)
-
-
-import json
-from datetime import datetime
-import os
 
 
 def send_cube_configuration(url, team_id, auth_token, config_data):

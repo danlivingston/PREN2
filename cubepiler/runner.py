@@ -3,9 +3,9 @@ from datetime import datetime
 
 from loguru import logger
 
-from cubepiler import cube_placement, measurelib, motor_control, testdata, sound, api
-from ApexRaspiScripts.bilderkennung.CubeReconstruction import CubeReconstruction
 from ApexRaspiScripts.bilderkennung import getTwoSidesStream as gen_images
+from ApexRaspiScripts.bilderkennung.CubeReconstruction import CubeReconstruction
+from cubepiler import api, cube_placement, measurelib, motor_control, sound, testdata
 
 cube_reconstruction = CubeReconstruction()
 
