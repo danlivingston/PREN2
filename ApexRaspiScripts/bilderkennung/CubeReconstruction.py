@@ -8,8 +8,12 @@ from datetime import datetime
 
 class CubeReconstruction:
     def __init__(self):
-        self.colorModel = YOLO("models/cube_segmentation_1.pt")
-        self.quarterModel = YOLO("models/reference_segmentation_2.pt")
+        self.colorModel = YOLO(
+            "ApexRaspiScripts/bilderkennung/models/cube_segmentation_1.pt"
+        )
+        self.quarterModel = YOLO(
+            "ApexRaspiScripts/bilderkennung/models/reference_segmentation_2.pt"
+        )
         self.imgFrontPath = "front_frame.jpg"
         self.imgBackPath = "back_frame.jpg"
 
