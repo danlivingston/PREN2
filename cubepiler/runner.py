@@ -5,6 +5,7 @@ from loguru import logger
 
 from cubepiler import cube_placement, measurelib, motor_control, testdata, sound, api
 from ApexRaspiScripts.bilderkennung.CubeReconstruction import CubeReconstruction
+from ApexRaspiScripts.bilderkennung import getTwoSidesStream as gen_images
 
 cube_reconstruction = CubeReconstruction()
 
@@ -40,6 +41,9 @@ async def run(q=asyncio.Queue()):
     await q.put((PERCENTAGES["cube scan"], "scanning cubes"))
     # # TODO: replace with real image scan
     # scanned_cubes = testdata.config03
+    gen_images.open_camera_profile(
+        "147.88.48.131", "pren", "463997", "pren_profile_med"
+    )
     scanned_cubes = cube_reconstruction.run_detection()
     logger.debug(scanned_cubes)
     # await asyncio.sleep(5)
