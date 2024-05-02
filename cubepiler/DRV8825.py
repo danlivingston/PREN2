@@ -29,7 +29,7 @@ class DRV8825:
         GPIO.setwarnings(False)
         GPIO.setup(self.dir_pin, GPIO.OUT)
         GPIO.setup(self.step_pin, GPIO.OUT)
-        GPIO.setup(self.enable_pin, GPIO.OUT)
+        GPIO.setup(self.enable_pin, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.mode_pins, GPIO.OUT)
 
     def digital_write(self, pin, value):

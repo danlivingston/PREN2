@@ -4,10 +4,16 @@ from datetime import datetime
 import requests
 from loguru import logger
 
+import os
 
-def send_start_signal(url, team_id, auth_token):
-    headers = {"Content-Type": "application/json", "Auth": auth_token}
-    post_url = f"{url}/cubes/{team_id}/start"
+URL = os.getenv("URL", "")
+TEAM_ID = os.getenv("TEAM_ID", "")
+AUTH_TOKEN = os.getenv("AUTH_TOKEN", "")
+
+
+def send_start_signal():
+    headers = {"Content-Type": "application/json", "Auth": AUTH_TOKEN}
+    post_url = f"{URL}/cubes/{TEAM_ID}/start"
 
     try:
         # POST-Anfrage mit einem Timeout von 5 Sekunden
@@ -57,9 +63,9 @@ def send_start_signal(url, team_id, auth_token):
         logger.debug("Ein Fehler ist aufgetreten:", e)
 
 
-def send_end_signal(url, team_id, auth_token):
-    headers = {"Content-Type": "application/json", "Auth": auth_token}
-    post_url = f"{url}/cubes/{team_id}/end"
+def send_end_signal():
+    headers = {"Content-Type": "application/json", "Auth": AUTH_TOKEN}
+    post_url = f"{URL}/cubes/{TEAM_ID}/end"
 
     try:
         response = requests.post(post_url, headers=headers, timeout=8)
@@ -102,13 +108,13 @@ def send_end_signal(url, team_id, auth_token):
         logger.debug("Ein Fehler ist aufgetreten:", e)
 
 
-def send_cube_configuration(url, team_id, auth_token, config_data):
+def send_cube_configuration(config_data):
     # Aktualisieren der Zeit im config_data vor dem Senden
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     config_data["time"] = current_time
 
-    headers = {"Content-Type": "application/json", "Auth": auth_token}
-    post_url = f"{url}/cubes/{team_id}/config"
+    headers = {"Content-Type": "application/json", "Auth": AUTH_TOKEN}
+    post_url = f"{URL}/cubes/{TEAM_ID}/config"
 
     try:
         # Senden des POST-Requests mit einem Timeout von 5 Sekunden
@@ -180,8 +186,8 @@ def send_cube_configuration(url, team_id, auth_token, config_data):
 #     )
 
 
-def test_server_reachability(url):
-    get_url = f"{url}/cubes"
+def test_server_reachability():
+    get_url = f"{URL}/cubes"
 
     try:
         # Anfrage mit einem Timeout von 5 Sekunden
@@ -205,8 +211,8 @@ def test_server_reachability(url):
 # test_server_reachability("https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com")
 
 
-def get_current_entries(url, team_id):
-    get_url = f"{url}/cubes/{team_id}"
+def get_current_entries():
+    get_url = f"{URL}/cubes/{TEAM_ID}"
 
     try:
         response = requests.get(get_url, timeout=8)

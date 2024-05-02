@@ -1,11 +1,20 @@
 import asyncio
+
 from datetime import datetime
 
 from loguru import logger
 
 from ApexRaspiScripts.bilderkennung import getTwoSidesStream as gen_images
 from ApexRaspiScripts.bilderkennung.CubeReconstruction import CubeReconstruction
-from cubepiler import api, cube_placement, measurelib, motor_control, sound, testdata
+from cubepiler import (
+    api,
+    cube_placement,
+    measurelib,
+    motor_control,
+    sound,
+    testdata,
+    configure_logger,
+)
 
 cube_reconstruction = CubeReconstruction()
 
@@ -23,24 +32,19 @@ PERCENTAGES = {
 
 
 async def run(q=asyncio.Queue()):
+    ### ! Reset
     global is_reset
     if not is_reset:
         await reset()
     is_reset = False
+
+    ### ! Start
     # sound.sound_start(600)
     measurelib.send_refresh_command()
     startTime = datetime.now()
-    ### ! Start
     logger.info("Starting build")
     await q.put((PERCENTAGES["start"], "starting"))
-    # TODO: send start api call
-    api.send_start_signal(
-        "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com",
-        "team12",
-        "R5SfQQ6gKr9A",
-    )
-    # TODO: ensure reset was done before or do now; add checking function (maybe at start of reset function for simplicity)
-    # await reset()
+    api.send_start_signal()
 
     ### ! Cube Scan
     logger.info("Scanning cubes")
@@ -51,21 +55,15 @@ async def run(q=asyncio.Queue()):
         "147.88.48.131", "pren", "463997", "pren_profile_med"
     )
     scanned_cubes = cube_reconstruction.run_detection()
-    logger.debug(scanned_cubes)
-    # await asyncio.sleep(5)
+    logger.trace(scanned_cubes)
 
     ### ! Cube Verification
     logger.info("Verifying cubes")
     await q.put((PERCENTAGES["cube verification"], "verifying cubes"))
-    # TODO: replace with cube verification api call
-    verified_cubes = scanned_cubes
-    api.send_cube_configuration(
-        "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com",
-        "team12",
-        "R5SfQQ6gKr9A",
-        verified_cubes,
+    verified_cubes = (
+        scanned_cubes  # ? posssibly use scanned cubes if no verification happens
     )
-    # await asyncio.sleep(1)
+    api.send_cube_configuration(verified_cubes)
 
     ### ! Cube Placement Calculation
     logger.info("Calculating cube placement")
