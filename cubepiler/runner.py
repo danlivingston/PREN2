@@ -9,6 +9,8 @@ from ApexRaspiScripts.bilderkennung import getTwoSidesStream as gen_images
 
 cube_reconstruction = CubeReconstruction()
 
+is_reset = False
+
 PERCENTAGES = {
     "start": 0,
     "cube scan": 10,
@@ -21,6 +23,9 @@ PERCENTAGES = {
 
 
 async def run(q=asyncio.Queue()):
+    if not is_reset:
+        await reset()
+    is_reset = False
     # sound.sound_start(600)
     measurelib.send_refresh_command()
     startTime = datetime.now()
@@ -136,4 +141,5 @@ async def reset(q=asyncio.Queue()):
         "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com"
     )
 
+    is_reset = True
     await q.put((100, "ready"))
