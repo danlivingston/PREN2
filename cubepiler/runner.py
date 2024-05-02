@@ -92,16 +92,20 @@ async def reset(q=asyncio.Queue()):
 
     # raise Exception("Demo")
 
-    await q.put((100, "ready"))
-
     ### ! Move platform up (async)
     ### ! Rotate shaft to starting position (async)
     ### ! await above: possibly not enough power
+
+    q.put((30, "zeroing bed"))
     motor_control.zero_bed()
+    q.put((70, "zeroing mag"))
     motor_control.zero_mag()
 
+    q.put((70, "setting pin outputs"))
     measurelib.send_ctrlreg_command()
     measurelib.send_chdis_command()
     measurelib.send_negpwr_command()
 
     sound.play_melody()
+
+    await q.put((100, "ready"))
