@@ -23,6 +23,7 @@ PERCENTAGES = {
 
 
 async def run(q=asyncio.Queue()):
+    global is_reset
     if not is_reset:
         await reset()
     is_reset = False
@@ -113,6 +114,7 @@ async def run(q=asyncio.Queue()):
 
 
 async def reset(q=asyncio.Queue()):
+    global is_reset
     logger.info("Resetting positions")
     await q.put((0, "resetting"))
     # await asyncio.sleep(2)
