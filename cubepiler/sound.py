@@ -87,7 +87,7 @@ NOTE_D5 = 587.33
 NOTE_E5 = 659.25
 NOTE_F5 = 698.46
 NOTE_G5 = 784.00
-REST = 0
+REST = 1.0
 
 # Duration of each note (in seconds)
 whole_note = 1.0
