@@ -3,7 +3,10 @@ from datetime import datetime
 
 from loguru import logger
 
-from cubepiler import cube_placement, measurelib, motor_control, testdata, sound
+from cubepiler import cube_placement, measurelib, motor_control, testdata, sound, api
+from ApexRaspiScripts.bilderkennung.CubeReconstruction import CubeReconstruction
+
+cube_reconstruction = CubeReconstruction()
 
 PERCENTAGES = {
     "start": 0,
@@ -24,14 +27,21 @@ async def run(q=asyncio.Queue()):
     logger.info("Starting build")
     await q.put((PERCENTAGES["start"], "starting"))
     # TODO: send start api call
+    api.send_start_signal(
+        "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com",
+        "team12",
+        "R5SfQQ6gKr9A",
+    )
     # TODO: ensure reset was done before or do now; add checking function (maybe at start of reset function for simplicity)
     # await reset()
 
     ### ! Cube Scan
     logger.info("Scanning cubes")
     await q.put((PERCENTAGES["cube scan"], "scanning cubes"))
-    # TODO: replace with real image scan
-    scanned_cubes = testdata.config03
+    # # TODO: replace with real image scan
+    # scanned_cubes = testdata.config03
+    scanned_cubes = cube_reconstruction.run_detection()
+    logger.debug(scanned_cubes)
     # await asyncio.sleep(5)
 
     ### ! Cube Verification
@@ -39,6 +49,12 @@ async def run(q=asyncio.Queue()):
     await q.put((PERCENTAGES["cube verification"], "verifying cubes"))
     # TODO: replace with cube verification api call
     verified_cubes = scanned_cubes
+    api.send_cube_configuration(
+        "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com",
+        "team12",
+        "R5SfQQ6gKr9A",
+        verified_cubes,
+    )
     # await asyncio.sleep(1)
 
     ### ! Cube Placement Calculation
@@ -72,6 +88,11 @@ async def run(q=asyncio.Queue()):
     logger.info("Done with build")
     await q.put((PERCENTAGES["done"], "done"))
     # TODO: send stop api call
+    api.send_end_signal(
+        "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com",
+        "team12",
+        "R5SfQQ6gKr9A",
+    )
     logger.success("Completed build")
 
     endTime = datetime.now()
@@ -107,5 +128,8 @@ async def reset(q=asyncio.Queue()):
     measurelib.send_negpwr_command()
 
     # sound.play_melody()
+    api.test_server_reachability(
+        "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com"
+    )
 
     await q.put((100, "ready"))
