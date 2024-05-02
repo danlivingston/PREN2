@@ -17,11 +17,13 @@ A4 = 440.00
 C5 = 523.25
 
 # Duration of each note (in seconds)
-quarter_note = 0.5
-eighth_note = 0.25
+whole_note = 1.0
+half_note = 0.5
+quarter_note = 0.25
+eighth_note = 0.125
 
 # Melody and note durations
-melody = [C4, D4, E4, C4, E4, D4, C4, D4, E4, G4, A4, G4, E4, C5, C4]
+melody = [C4, D4, E4]
 durations = [
     quarter_note,
     eighth_note,
