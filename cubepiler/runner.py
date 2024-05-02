@@ -17,7 +17,7 @@ PERCENTAGES = {
 
 
 async def run(q=asyncio.Queue()):
-    sound.sound_start(600)
+    # sound.sound_start(600)
     measurelib.send_refresh_command()
     startTime = datetime.now()
     ### ! Start
@@ -76,7 +76,7 @@ async def run(q=asyncio.Queue()):
 
     endTime = datetime.now()
     energy = measurelib.read_energy()
-    sound.sound_stop(600)
+    # sound.sound_stop(600)
     # sound.sound_cleanup()
     logger.info(f"time: {endTime-startTime}")
     logger.info(f"energy used: {energy} W*s")
@@ -96,16 +96,16 @@ async def reset(q=asyncio.Queue()):
     ### ! Rotate shaft to starting position (async)
     ### ! await above: possibly not enough power
 
-    q.put((30, "zeroing bed"))
+    await q.put((30, "zeroing bed"))
     motor_control.zero_bed()
-    q.put((70, "zeroing mag"))
+    await q.put((70, "zeroing mag"))
     motor_control.zero_mag()
 
-    q.put((70, "setting pin outputs"))
+    await q.put((70, "setting pin outputs"))
     measurelib.send_ctrlreg_command()
     measurelib.send_chdis_command()
     measurelib.send_negpwr_command()
 
-    sound.play_melody()
+    # sound.play_melody()
 
     await q.put((100, "ready"))
