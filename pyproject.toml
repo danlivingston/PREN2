@@ -27,4 +27,4 @@ gpiozero = "^2.0.1"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"
 isort = "^5.13.2"
-black = { extras = ["jupyter"], version = "^24.2.0" }
+black = { extras = ["jupyter"], version = "^24.3.0" }
