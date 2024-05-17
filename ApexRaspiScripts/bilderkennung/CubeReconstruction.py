@@ -9,7 +9,7 @@ from datetime import datetime
 class CubeReconstruction:
     def __init__(self):
         self.colorModel = YOLO(
-            "ApexRaspiScripts/bilderkennung/models/cube_segmentation_1.pt"
+            "ApexRaspiScripts/bilderkennung/models/cube_segmentation_2.pt"
         )
         self.quarterModel = YOLO(
             "ApexRaspiScripts/bilderkennung/models/reference_segmentation_2.pt"
@@ -30,12 +30,12 @@ class CubeReconstruction:
         self.noCube = Cube(None, None, None, None, None, None, None, None, None)
 
         self.classes = {
-            0: {"color": "blue", "sideNumber": 1},
-            1: {"color": "blue", "sideNumber": 2},
-            2: {"color": "yellow", "sideNumber": 1},
-            3: {"color": "yellow", "sideNumber": 2},
-            4: {"color": "red", "sideNumber": 2},
-            5: {"color": "red", "sideNumber": 1},
+            0: {"color": "red", "sideNumber": 1},
+            1: {"color": "yellow", "sideNumber": 1},
+            2: {"color": "yellow", "sideNumber": 2},
+            3: {"color": "blue", "sideNumber": 2},
+            4: {"color": "blue", "sideNumber": 1},
+            5: {"color": "red", "sideNumber": 2},
         }
 
     def run_detection(self):

@@ -33,16 +33,16 @@ def open_camera_profile(ip_address, username, password, profile):
                     print(r.boxes.xyxyn)
                     if (
                         not saved_front
-                        and r.boxes.xyxyn[0][0] > 0.48
-                        and r.boxes.xyxyn[0][1] > 0.362
+                        and r.boxes.xyxyn[0][0] > 0.35
+                        and r.boxes.xyxyn[0][1] > 0.35
                     ):
                         cv2.imwrite("front_frame.jpg", frame)
                         saved_front = True
 
                     if (
                         not saved_back
-                        and r.boxes.xyxyn[0][0] < 0.27
-                        and r.boxes.xyxyn[0][3] < 0.38
+                        and r.boxes.xyxyn[0][2] < 0.65
+                        and r.boxes.xyxyn[0][3] < 0.43
                     ):
                         cv2.imwrite("back_frame.jpg", frame)
                         saved_back = True
