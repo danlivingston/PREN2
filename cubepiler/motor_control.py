@@ -117,7 +117,7 @@ def zero_mag():
     global masterposition
     while GPIO.input(channelX) == 0:
         Motor1.TurnStep(Dir="forward", steps=1, stepdelay=0.00005)
-    Motor1.TurnStep(Dir="forward", steps=210, stepdelay=0.00005)
+    Motor1.TurnStep(Dir="forward", steps=90, stepdelay=0.00005)
     time.sleep(0.2)
     Motor1.Stop()
     masterposition = 0
