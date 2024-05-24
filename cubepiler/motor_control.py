@@ -135,7 +135,7 @@ def place_cube(mag, pos):
     if schritte < 0:
         schritte = 3200 - abs(schritte)
 
-    Motor1.TurnStep(Dir="forward", steps=schritte, stepdelay=0.00005)
+    Motor1.TurnStep(Dir="forward", steps=schritte, stepdelay=0.0005)
 
     if pos == 0:
         GPIO.output(sole1, 1)
