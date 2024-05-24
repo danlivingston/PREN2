@@ -64,15 +64,15 @@ async def run(q=asyncio.Queue()):
     ### ! Cube Verification
     logger.info("Verifying cubes")
     await q.put((PERCENTAGES["cube verification"], "verifying cubes"))
-    verified_cubes = (
-        scanned_cubes  # ? posssibly use scanned cubes if no verification happens
-    )
-    api.send_cube_configuration(verified_cubes)
+    # verified_cubes = (
+    #     scanned_cubes  # ? posssibly use scanned cubes if no verification happens
+    # )
+    api.send_cube_configuration(scanned_cubes)
 
     ### ! Cube Placement Calculation
     logger.info("Calculating cube placement")
     await q.put((PERCENTAGES["cube placement calculation"], "calculating placement"))
-    actions = await cube_placement.get_cube_placing_actions(verified_cubes)
+    actions = await cube_placement.get_cube_placing_actions(scanned_cubes)
 
     ### ! Cube Placement
     logger.info("Placing cubes")
