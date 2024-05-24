@@ -1,5 +1,5 @@
 class ReferenceQuarter:
-    def __init__(self,id ,x_coordinate, y_coordinate, width, height, view, conf):
+    def __init__(self, id, x_coordinate, y_coordinate, width, height, view, conf):
         self.id = id
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate

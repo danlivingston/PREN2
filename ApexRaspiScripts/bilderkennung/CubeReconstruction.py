@@ -1,6 +1,6 @@
 from ultralytics import YOLO
-from cube import Cube
-from referenceQuarter import ReferenceQuarter
+from ApexRaspiScripts.bilderkennung.cube import Cube
+from ApexRaspiScripts.bilderkennung.referenceQuarter import ReferenceQuarter
 import time
 from datetime import datetime
 import json
