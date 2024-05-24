@@ -137,9 +137,9 @@ async def reset(q=asyncio.Queue()):
     measurelib.send_negpwr_command()
 
     # sound.play_melody()
-    api.test_server_reachability(
-        "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com"
-    )
+    # api.test_server_reachability(
+    #     "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com"
+    # )
 
     is_reset = True
     await q.put((100, "ready"))
