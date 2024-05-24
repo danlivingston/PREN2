@@ -53,9 +53,7 @@ async def run(q=asyncio.Queue()):
     await q.put((PERCENTAGES["cube scan"], "scanning cubes"))
     # # TODO: replace with real image scan
     # scanned_cubes = testdata.config03
-    gen_images.open_camera_profile(
-        "147.88.48.131", "pren", "463997", "pren_profile_med"
-    )
+    gen_images.start_detection()
     scanned_cubes = cube_reconstruction.run_detection()
     logger.trace(scanned_cubes)
 
