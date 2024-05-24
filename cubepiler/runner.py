@@ -101,11 +101,7 @@ async def run(q=asyncio.Queue()):
     logger.info("Done with build")
     await q.put((PERCENTAGES["done"], "done"))
     # TODO: send stop api call
-    api.send_end_signal(
-        "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com",
-        "team12",
-        "R5SfQQ6gKr9A",
-    )
+    api.send_end_signal()
     logger.success("Completed build")
 
     endTime = datetime.now()
