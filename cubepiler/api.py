@@ -110,6 +110,7 @@ def send_end_signal():
 
 def send_cube_configuration(config_data):
     # Aktualisieren der Zeit im config_data vor dem Senden
+    config_data = json.loads(config_data)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     config_data["time"] = current_time
 
