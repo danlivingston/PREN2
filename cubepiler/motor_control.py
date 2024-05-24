@@ -74,6 +74,9 @@ class Platepositions(Enum):
 def zero_bed():
     while GPIO.input(endschalter) == 0:
         Motor2.TurnStep(Dir="backward", steps=1, stepdelay=0.0005)
+    asyncio.sleep(0.1)
+    Motor2.TurnStep(Dir="forward", steps=150, stepdelay=0.0005)
+
     Motor2.Stop()
     return ()
 
@@ -136,7 +139,7 @@ def place_cube(mag, pos):
         schritte = 3200 - abs(schritte)
 
     logger.debug(f"schritte berechnet: {schritte}")
-    Motor1.TurnStep(Dir="forward", steps=schritte, stepdelay=0.0005)
+    Motor1.TurnStep(Dir="forward", steps=schritte, stepdelay=0.00005)
 
     if pos == 0:
         GPIO.output(sole1, 1)

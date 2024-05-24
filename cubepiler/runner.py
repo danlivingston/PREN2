@@ -95,7 +95,7 @@ async def run(q=asyncio.Queue()):
     ### ! Move Platform Down
     logger.info("Moving platform down")
     await q.put((PERCENTAGES["move platform"], "moving platform"))
-    motor_control.show_bed(30, 600, 4200)
+    motor_control.show_bed(30, 600, 4050)
 
     ### ! Done
     logger.info("Done with build")
