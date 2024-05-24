@@ -6,6 +6,8 @@ from loguru import logger
 
 from ApexRaspiScripts.bilderkennung.getTwoSidesStream import CubeFaceDetector
 
+gen_images = CubeFaceDetector()
+gen_images.warmupModels()
 
 from ApexRaspiScripts.bilderkennung.CubeReconstruction import CubeReconstruction
 from cubepiler import (
@@ -55,7 +57,6 @@ async def run(q=asyncio.Queue()):
     await q.put((PERCENTAGES["cube scan"], "scanning cubes"))
     # # TODO: replace with real image scan
     # scanned_cubes = testdata.config05
-    gen_images = CubeFaceDetector()
     logger.debug("gen images initialized")
     gen_images.start_detection()
     logger.debug("images generated")

@@ -13,7 +13,7 @@ class CubeFaceDetector:
         profile="pren_profile_med",
     ):
         self.model = YOLO(model_path)
-        self.imgWarmup = "warmup.jpg"
+        self.imgWarmup = "ApexRaspiScripts/bilderkennung/warmup.jpg"
         self.ip_address = ip_address
         self.username = username
         self.password = password
