@@ -19,6 +19,7 @@ from cubepiler import (
 )
 
 cube_reconstruction = CubeReconstruction()
+cube_reconstruction.warmupModels()
 
 is_reset = False
 
