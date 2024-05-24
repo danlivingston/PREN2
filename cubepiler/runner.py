@@ -4,9 +4,10 @@ from datetime import datetime
 
 from loguru import logger
 
-from ApexRaspiScripts.bilderkennung.getTwoSidesStream import (
-    CubeFaceDetector as gen_images,
-)
+from ApexRaspiScripts.bilderkennung.getTwoSidesStream import CubeFaceDetector
+
+gen_images = CubeFaceDetector()
+
 from ApexRaspiScripts.bilderkennung.CubeReconstruction import CubeReconstruction
 from cubepiler import (
     api,
