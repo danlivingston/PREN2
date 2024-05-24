@@ -117,7 +117,7 @@ def zero_mag():
     global masterposition
     while GPIO.input(channelX) == 0:
         Motor1.TurnStep(Dir="forward", steps=1, stepdelay=0.00005)
-    Motor1.TurnStep(Dir="forward", steps=90, stepdelay=0.00005)
+    Motor1.TurnStep(Dir="forward", steps=210, stepdelay=0.00005)
     time.sleep(0.2)
     Motor1.Stop()
     masterposition = 0
@@ -135,6 +135,7 @@ def place_cube(mag, pos):
     if schritte < 0:
         schritte = 3200 - abs(schritte)
 
+    logger.log(f"schritte berechnet: {schritte}")
     Motor1.TurnStep(Dir="forward", steps=schritte, stepdelay=0.0005)
 
     if pos == 0:
