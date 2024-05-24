@@ -1,63 +1,78 @@
 import cv2
 from ultralytics import YOLO
+from quarter import Quarter
+from circle import Circle
 import os
 
 
-def open_camera_profile(ip_address, username, password, profile):
-    model = YOLO("ApexRaspiScripts/bilderkennung/models/reference_segmentation_2.pt")
+class CubeFaceDetector:
+    def __init__(self, model_path='ApexRaspiScripts/bilderkennung/models/reference_segmentation_2.pt', ip_address="147.88.48.131", username="pren", password="463997", profile="pren_profile_med"):
+        self.model = YOLO(model_path)
+        self.imgWarmup = 'warmup.jpg'
+        self.ip_address = ip_address
+        self.username = username
+        self.password = password
+        self.profile = profile
 
-    cap = cv2.VideoCapture(
-        f"rtsp://{username}:{password}@{ip_address}/axis-media/media.amp?streamprofile={profile}"
-    )
+    def warmupModels(self):
+        warmupresultCube = self.model(self.imgWarmup)
+    def delete_existing_files(self):
+        files_to_delete = ['back_frame.jpg', 'front_frame.jpg']
+        for file in files_to_delete:
+            if os.path.exists(file):
+                os.remove(file)
 
-    if not cap.isOpened():
-        print("Fehler: Der Video-Stream konnte nicht geöffnet werden.")
-        return
+    def open_camera_profile(self):
+        self.delete_existing_files()
 
-    frame_counter = 0
-    saved_front = False
-    saved_back = False
+        cap = cv2.VideoCapture(
+            f"rtsp://{self.username}:{self.password}@{self.ip_address}/axis-media/media.amp?streamprofile={self.profile}"
+        )
 
-    while True:
-        ret, frame = cap.read()
-        frame_counter += 1
+        if not cap.isOpened():
+            print("Fehler: Der Video-Stream konnte nicht geöffnet werden.")
+            return
 
-        if not ret:
-            print("Fehler: Es konnte kein Frame gelesen werden.")
-            break
+        frame_counter = 0
+        saved_front = False
+        saved_back = False
 
-        if frame_counter % 11 == 0:
-            results = model(frame)
-            for r in results:
-                if r.boxes.xyxyn.shape[0] > 0:
-                    print(r.boxes.xyxyn)
-                    if (
-                        not saved_front
-                        and r.boxes.xyxyn[0][0] > 0.35
-                        and r.boxes.xyxyn[0][1] > 0.35
-                    ):
-                        cv2.imwrite("front_frame.jpg", frame)
-                        saved_front = True
+        while True:
+            ret, frame = cap.read()
+            frame_counter += 1
 
-                    if (
-                        not saved_back
-                        and r.boxes.xyxyn[0][2] < 0.65
-                        and r.boxes.xyxyn[0][3] < 0.43
-                    ):
-                        cv2.imwrite("back_frame.jpg", frame)
-                        saved_back = True
+            if not ret:
+                print("Fehler: Es konnte kein Frame gelesen werden.")
+                break
 
-                    if saved_front and saved_back:
-                        print("Beide Bilder wurden gespeichert. Beenden der Schleife.")
-                        cap.release()
-                        cv2.destroyAllWindows()
-                        return
+            if frame_counter % 8 == 0:
+                results = self.model(frame)
+                for r in results:
+                    if r.boxes.xyxyn.shape[0] > 0:
+                        print(r.boxes.xyxyn)
+                        if not saved_front and r.boxes.xyxyn[0][0] > 0.35 and r.boxes.xyxyn[0][1] > 0.35:
+                            cv2.imwrite('front_frame.jpg', frame)
+                            saved_front = True
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+                        if not saved_back and r.boxes.xyxyn[0][2] < 0.65 and r.boxes.xyxyn[0][3] < 0.41:
+                            cv2.imwrite('back_frame.jpg', frame)
+                            saved_back = True
 
-    cap.release()
-    cv2.destroyAllWindows()
+                        if saved_front and saved_back:
+                            cap.release()
+                            cv2.destroyAllWindows()
+                            return
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
+    def start_detection(self):
+        self.open_camera_profile()
 
 
-# open_camera_profile("147.88.48.131", "pren", "463997", "pren_profile_med")
+#detector = CubeFaceDetector()
+#detector.warmupModels()
+#detector.start_detection()
