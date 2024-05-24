@@ -16,7 +16,7 @@ class CubeReconstruction:
         )
         self.imgFrontPath = "front_frame.jpg"
         self.imgBackPath = "back_frame.jpg"
-        self.imgWarmup = "warmup.jpg"
+        self.imgWarmup = "ApexRaspiScripts/bilderkennung/warmup.jpg"
         self.puffer = 0.03
 
         self.classes = {
