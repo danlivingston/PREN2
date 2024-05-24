@@ -53,14 +53,14 @@ async def run(q=asyncio.Queue()):
     logger.info("Scanning cubes")
     await q.put((PERCENTAGES["cube scan"], "scanning cubes"))
     # # TODO: replace with real image scan
-    scanned_cubes = testdata.config05
-    # gen_images = CubeFaceDetector()
-    # logger.debug("gen images initialized")
-    # gen_images.start_detection()
-    # logger.debug("images generated")
-    # scanned_cubes = cube_reconstruction.run_detection()
-    # logger.debug("cubes scanned")
-    # logger.trace(scanned_cubes)
+    # scanned_cubes = testdata.config05
+    gen_images = CubeFaceDetector()
+    logger.debug("gen images initialized")
+    gen_images.start_detection()
+    logger.debug("images generated")
+    scanned_cubes = cube_reconstruction.run_detection()
+    logger.debug("cubes scanned")
+    logger.trace(scanned_cubes)
 
     ### ! Cube Verification
     logger.info("Verifying cubes")
@@ -95,7 +95,7 @@ async def run(q=asyncio.Queue()):
     ### ! Move Platform Down
     logger.info("Moving platform down")
     await q.put((PERCENTAGES["move platform"], "moving platform"))
-    motor_control.show_bed(30, 600, 2400)
+    motor_control.show_bed(30, 600, 4200)
 
     ### ! Done
     logger.info("Done with build")
