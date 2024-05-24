@@ -135,7 +135,7 @@ def place_cube(mag, pos):
     if schritte < 0:
         schritte = 3200 - abs(schritte)
 
-    logger.log(f"schritte berechnet: {schritte}")
+    logger.debug(f"schritte berechnet: {schritte}")
     Motor1.TurnStep(Dir="forward", steps=schritte, stepdelay=0.0005)
 
     if pos == 0:
