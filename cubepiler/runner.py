@@ -53,14 +53,14 @@ async def run(q=asyncio.Queue()):
     logger.info("Scanning cubes")
     await q.put((PERCENTAGES["cube scan"], "scanning cubes"))
     # # TODO: replace with real image scan
-    # scanned_cubes = testdata.config03
-    gen_images = CubeFaceDetector()
-    logger.debug("gen images initialized")
-    gen_images.start_detection()
-    logger.debug("images generated")
-    scanned_cubes = cube_reconstruction.run_detection()
-    logger.debug("cubes scanned")
-    logger.trace(scanned_cubes)
+    scanned_cubes = testdata.config03
+    # gen_images = CubeFaceDetector()
+    # logger.debug("gen images initialized")
+    # gen_images.start_detection()
+    # logger.debug("images generated")
+    # scanned_cubes = cube_reconstruction.run_detection()
+    # logger.debug("cubes scanned")
+    # logger.trace(scanned_cubes)
 
     ### ! Cube Verification
     logger.info("Verifying cubes")
