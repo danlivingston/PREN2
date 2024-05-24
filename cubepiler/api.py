@@ -17,7 +17,7 @@ def send_start_signal():
 
     try:
         # POST-Anfrage mit einem Timeout von 5 Sekunden
-        response = requests.post(post_url, headers=headers, timeout=8)
+        response = requests.post(post_url, headers=headers, timeout=15)
 
         # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
         if response.status_code == 200:
@@ -68,7 +68,7 @@ def send_end_signal():
     post_url = f"{URL}/cubes/{TEAM_ID}/end"
 
     try:
-        response = requests.post(post_url, headers=headers, timeout=8)
+        response = requests.post(post_url, headers=headers, timeout=15)
 
         # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
         if response.status_code == 200:
@@ -120,7 +120,7 @@ def send_cube_configuration(config_data):
     try:
         # Senden des POST-Requests mit einem Timeout von 5 Sekunden
         response = requests.post(
-            post_url, data=json.dumps(config_data), headers=headers, timeout=8
+            post_url, data=json.dumps(config_data), headers=headers, timeout=15
         )
 
         # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
