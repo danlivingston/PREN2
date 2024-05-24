@@ -27,8 +27,8 @@ channelX = 10
 
 sole1 = 14
 sole2 = 23
-sole3 = 25
-sole4 = 9
+sole3 = 9  # 4
+sole4 = 25  # 3
 
 
 masterposition = 0

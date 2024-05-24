@@ -11,7 +11,7 @@ TEAM_ID = os.getenv("TEAM_ID", "")
 AUTH_TOKEN = os.getenv("AUTH_TOKEN", "")
 
 
-def send_start_signal():
+async def send_start_signal():
     headers = {"Content-Type": "application/json", "Auth": AUTH_TOKEN}
     post_url = f"{URL}/cubes/{TEAM_ID}/start"
 
@@ -63,7 +63,7 @@ def send_start_signal():
         logger.debug("Ein Fehler ist aufgetreten:", e)
 
 
-def send_end_signal():
+async def send_end_signal():
     headers = {"Content-Type": "application/json", "Auth": AUTH_TOKEN}
     post_url = f"{URL}/cubes/{TEAM_ID}/end"
 
@@ -108,7 +108,7 @@ def send_end_signal():
         logger.debug("Ein Fehler ist aufgetreten:", e)
 
 
-def send_cube_configuration(config_data):
+async def send_cube_configuration(config_data):
     # Aktualisieren der Zeit im config_data vor dem Senden
     config_data = json.loads(config_data)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
