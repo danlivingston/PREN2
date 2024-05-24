@@ -33,6 +33,7 @@ PERCENTAGES = {
 }
 
 
+@logger.catch
 async def run(q=asyncio.Queue()):
     ### ! Reset
     global is_reset
