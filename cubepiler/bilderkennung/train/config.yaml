@@ -1,0 +1,6 @@
+path: /content/gdrive/My Drive/hslu/pren/yolo_prototype/trainingAllColors
+train: images/train 
+val: images/val  
+
+nc: 3
+names: ["red", "yellow", "blue"]

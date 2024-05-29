@@ -1,11 +1,12 @@
 import asyncio
 import platform
 from enum import Enum
+import multiprocessing as mp
 
 import customtkinter
 from loguru import logger
-
 from cubepiler import runner
+
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
@@ -150,6 +151,16 @@ class CubePiLerGUI(customtkinter.CTk):
             text_color=COLORS["white"],
         )
 
+        self.startup_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="INITIALIZING...",
+            corner_radius=0,
+            font=progress_bar_font,
+            fg_color=COLORS["black"],
+            hover_color=COLORS["black"],
+            text_color=COLORS["white"],
+        )
+
         self.progress_bar = customtkinter.CTkProgressBar(
             master=self.frame,
             orientation="horizontal",
@@ -167,6 +178,11 @@ class CubePiLerGUI(customtkinter.CTk):
         )
 
     async def mainloop(self):
+        logger.debug("initializing")
+        self.state_switch_gui()
+        self.root.update()
+        await runner.warmup_models()
+
         logger.debug("showing GUI")
         self.state = STATES.READY
         self.state_switch_gui()
@@ -190,29 +206,46 @@ class CubePiLerGUI(customtkinter.CTk):
         self.state = STATES.STOP
 
     async def start_build(self, event=None):
-        pb = None
+        p = None
         try:
             if not self.state == STATES.READY:
                 return
             self.state = STATES.RUNNING
             self.state_switch_gui()
-            pb = self.loop.create_task(self.run_progress_bar())
-            logger.debug("start build")
-            await runner.run(self.progress_queue)
-            logger.debug("finished build")
-            await pb
-            pb = None
+            p = mp.Process(target=runner.run_mp, name="build runner")
+            p.start()
+            # p.join()
+            while p.is_alive():
+                await asyncio.sleep(0.1)
             self.state = STATES.SUCCESS
         except asyncio.CancelledError:
+            if p is not None and p.is_alive():
+                p.kill()
+                p.join()
             logger.debug("cancelled build")
             self.state = STATES.READY
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             self.state = STATES.EXCEPTION
         finally:
-            if not pb is None:
-                pb.cancel()
             self.state_switch_gui()
+        # try:
+        #     if not self.state == STATES.READY:
+        #         return
+        #     self.state = STATES.RUNNING
+        #     self.state_switch_gui()
+        #     logger.debug("start build")
+        #     await runner.run()
+        #     logger.debug("finished build")
+        #     self.state = STATES.SUCCESS
+        # except asyncio.CancelledError:
+        #     logger.debug("cancelled build")
+        #     self.state = STATES.READY
+        # except Exception as e:
+        #     logger.error(e)
+        #     self.state = STATES.EXCEPTION
+        # finally:
+        #     self.state_switch_gui()
 
     async def cancel_build(self, event=None):
         if not self.running_task or self.running_task is None:
@@ -289,11 +322,13 @@ class CubePiLerGUI(customtkinter.CTk):
         self.exception_button.grid_remove()
         self.progress_bar.grid_remove()
         self.progress_label.grid_remove()
+        self.startup_button.grid_remove()
 
     def state_switch_gui(self):
         # ? TODO: Aborted Screen
         # ? TODO: Starting Screen
         self.remove_all_gui_elements()
+        logger.trace(f"switching gui state to {self.state}")
         match self.state:
             case STATES.READY:
                 self.start_button.grid(sticky="nsew", column=0, row=0)
@@ -306,5 +341,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self.success_button.grid(sticky="nsew", column=0, row=0, rowspan=3)
             case STATES.EXCEPTION:
                 self.exception_button.grid(sticky="nsew", column=0, row=0, rowspan=3)
+            case STATES.START:
+                self.startup_button.grid(sticky="nsew", column=0, row=0, rowspan=3)
             case _:
-                pass
+                logger.warning("unknown state")

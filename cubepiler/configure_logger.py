@@ -1,6 +1,7 @@
-from loguru import logger
 import os
 import sys
+
+from loguru import logger
 
 
 def configure(name):

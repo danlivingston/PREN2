@@ -1,148 +1,124 @@
+import os
 import asyncio
-
 from datetime import datetime
 
 from loguru import logger
 
-from ApexRaspiScripts.bilderkennung.getTwoSidesStream import CubeFaceDetector
+from cubepiler import api, cube_placement
 
-gen_images = CubeFaceDetector()
-gen_images.warmupModels()
+if os.getenv("MOCK") == "TRUE":
+    logger.warning("MOCKING ENABLED")
+    from cubepiler.mock import measurelib, motor_control, sound
+else:
+    from cubepiler import measurelib, motor_control, sound
 
-from ApexRaspiScripts.bilderkennung.CubeReconstruction import CubeReconstruction
-from cubepiler import (
-    api,
-    cube_placement,
-    measurelib,
-    motor_control,
-    sound,
-    testdata,
-    configure_logger,
-)
+if os.getenv("MOCK_CUBES") == "TRUE":
+    from cubepiler.mock import gen_images, cube_reconstruction
+else:
+    from cubepiler.bilderkennung.CubeReconstruction import CubeReconstruction
+    from cubepiler.bilderkennung.getTwoSidesStream import CubeFaceDetector
 
-cube_reconstruction = CubeReconstruction()
-cube_reconstruction.warmupModels()
+    gen_images = CubeFaceDetector()
+    cube_reconstruction = CubeReconstruction()
 
 is_reset = False
 
-PERCENTAGES = {
-    "start": 0,
-    "cube scan": 10,
-    "cube verification": 40,
-    "cube placement calculation": 45,
-    "cube placement": 50,
-    "move platform": 90,
-    "done": 100,
-}
+
+async def warmup_models():
+    await gen_images.warmupModels()
+    await cube_reconstruction.warmupModels()
 
 
-@logger.catch
-async def run(q=asyncio.Queue()):
-    ### ! Reset
-    global is_reset
-    if not is_reset:
-        await reset()
-    is_reset = False
+async def run():
+    try:
+        global is_reset
+        if not is_reset:
+            await reset()
+        is_reset = False
 
-    ### ! Start
-    # sound.sound_start(600)
-    measurelib.send_refresh_command()
-    startTime = datetime.now()
-    logger.info("Starting build")
-    await q.put((PERCENTAGES["start"], "starting"))
-    api.send_start_signal()
+        logger.info("Starting build")
+        loop = asyncio.get_event_loop()
 
-    ### ! Cube Scan
-    logger.info("Scanning cubes")
-    await q.put((PERCENTAGES["cube scan"], "scanning cubes"))
-    # # TODO: replace with real image scan
-    # scanned_cubes = testdata.config05
-    logger.debug("gen images initialized")
-    gen_images.start_detection()
-    logger.debug("images generated")
-    scanned_cubes = cube_reconstruction.run_detection()
-    logger.debug("cubes scanned")
-    logger.trace(scanned_cubes)
+        await sound.sound_start()
+        await measurelib.send_refresh_command()  # Starts energy measurement
 
-    ### ! Cube Verification
-    logger.info("Verifying cubes")
-    await q.put((PERCENTAGES["cube verification"], "verifying cubes"))
-    # verified_cubes = (
-    #     scanned_cubes  # ? posssibly use scanned cubes if no verification happens
-    # )
-    api.send_cube_configuration(scanned_cubes)
+        asyncio.run_coroutine_threadsafe(api.send_start_signal(), loop)
 
-    ### ! Cube Placement Calculation
-    logger.info("Calculating cube placement")
-    await q.put((PERCENTAGES["cube placement calculation"], "calculating placement"))
-    actions = await cube_placement.get_cube_placing_actions(scanned_cubes)
+        startTime = datetime.now()
 
-    ### ! Cube Placement
-    logger.info("Placing cubes")
-    await q.put((PERCENTAGES["cube placement"], "placing cubes"))
-    step = (PERCENTAGES["move platform"] - PERCENTAGES["cube placement"]) / len(actions)
-    curr = 0
-    for action in actions:
-        curr += 1
-        logger.info(f"Placed {curr}/{len(actions)} cubes")
-        await q.put(
-            (
-                PERCENTAGES["cube placement"] + curr * step,
-                f"placing {curr}/{len(actions)}",
-            )
+        logger.info("Scanning cubes")
+
+        await gen_images.start_detection()
+        scanned_cubes = await cube_reconstruction.run_detection()
+
+        asyncio.run_coroutine_threadsafe(
+            api.send_cube_configuration(scanned_cubes), loop
         )
-        await motor_control.execute_action(action)
-    motor_control.motor_stop()
 
-    ### ! Move Platform Down
-    logger.info("Moving platform down")
-    await q.put((PERCENTAGES["move platform"], "moving platform"))
-    motor_control.show_bed(30, 600, 4050)
+        logger.trace(scanned_cubes)
 
-    ### ! Done
-    logger.info("Done with build")
-    await q.put((PERCENTAGES["done"], "done"))
-    # TODO: send stop api call
-    api.send_end_signal()
-    logger.success("Completed build")
+        logger.info("Calculating cube placement")
 
-    endTime = datetime.now()
-    energy = measurelib.read_energy()
-    # sound.sound_stop(600)
-    # sound.sound_cleanup()
-    logger.info(f"time: {endTime-startTime}")
-    logger.info(f"energy used: {energy} W*s")
+        actions = await cube_placement.get_cube_placing_actions(scanned_cubes)
+
+        logger.info("Placing cubes")
+
+        curr = 0
+        for action in actions:
+            curr += 1
+            logger.info(f"Placed {curr}/{len(actions)} cubes")
+            await motor_control.execute_action(action)
+
+        await motor_control.motor_stop()
+
+        logger.info("Moving platform down")
+
+        await motor_control.show_bed(
+            30, 600, 4050
+        )  # TODO: remove params from function call
+
+        logger.info("Done with build")
+
+        asyncio.run_coroutine_threadsafe(api.send_end_signal(), loop)
+        energy = await measurelib.read_energy()
+        endTime = datetime.now()
+
+        await sound.sound_stop()
+
+        currententries = await api.get_current_entries()
+
+        logger.success("Completed build")
+
+        logger.trace(currententries)
+        logger.info(f"time: {endTime-startTime}")
+        logger.info(f"energy used: {energy} W*s")
+    except Exception as e:
+        logger.exception(e)
+        raise Exception("Build Failed")
 
 
-async def reset(q=asyncio.Queue()):
+def run_mp():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(run())
+    finally:
+        loop.close()
+
+
+async def reset():
     global is_reset
-    logger.info("Resetting positions")
-    await q.put((0, "resetting"))
-    # await asyncio.sleep(2)
-    # motor_control.testFunctions()
+    logger.info("Resetting")
+    await sound.sound_start()
 
-    # motor_control.reset_platform_position()
+    await motor_control.zero_bed()
+    await motor_control.zero_mag()
 
-    # raise Exception("Demo")
+    await measurelib.send_ctrlreg_command()
+    await measurelib.send_chdis_command()
+    await measurelib.send_negpwr_command()
 
-    ### ! Move platform up (async)
-    ### ! Rotate shaft to starting position (async)
-    ### ! await above: possibly not enough power
-
-    await q.put((30, "zeroing bed"))
-    motor_control.zero_bed()
-    await q.put((70, "zeroing mag"))
-    motor_control.zero_mag()
-
-    await q.put((70, "setting pin outputs"))
-    measurelib.send_ctrlreg_command()
-    measurelib.send_chdis_command()
-    measurelib.send_negpwr_command()
-
-    # sound.play_melody()
-    # api.test_server_reachability(
-    #     "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com"
-    # )
+    await api.test_server_reachability()  # TODO: remove params from function call
+    await sound.sound_stop()
 
     is_reset = True
-    await q.put((100, "ready"))

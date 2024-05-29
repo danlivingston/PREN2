@@ -1,10 +1,9 @@
 import json
+import os
 from datetime import datetime
 
 import requests
 from loguru import logger
-
-import os
 
 URL = os.getenv("URL", "")
 TEAM_ID = os.getenv("TEAM_ID", "")
@@ -187,7 +186,7 @@ async def send_cube_configuration(config_data):
 #     )
 
 
-def test_server_reachability():
+async def test_server_reachability():
     get_url = f"{URL}/cubes"
 
     try:
@@ -212,22 +211,17 @@ def test_server_reachability():
 # test_server_reachability("https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com")
 
 
-def get_current_entries():
+async def get_current_entries():
     get_url = f"{URL}/cubes/{TEAM_ID}"
 
     try:
         response = requests.get(get_url, timeout=8)
         if response.status_code == 200:
-            logger.debug("Aktuelle Einträge erfolgreich abgerufen:")
-            logger.debug(response.json())
+            return response.json()
         else:
-            logger.debug(
+            raise Exception(
                 f"Fehler beim Abrufen der aktuellen Einträge: Statuscode {response.status_code}"
             )
     except Exception as e:
-        logger.debug(f"Ein Fehler ist aufgetreten: {e}")
-
-
-# get_current_entries(
-#     "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com", "team12"
-# )
+        logger.exception(e)
+        raise e

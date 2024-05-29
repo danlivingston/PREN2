@@ -1,7 +1,8 @@
-import requests
 import json
-from datetime import datetime
 import os
+from datetime import datetime
+
+import requests
 
 
 # Test Server Status

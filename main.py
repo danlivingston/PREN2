@@ -22,20 +22,6 @@ class Main:
 
 
 if __name__ == "__main__":
-    # LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")  # Defaults to INFO if not set
-    # logger.remove(0)
-    # logger.add(
-    #     sys.stdout,
-    #     level=LOG_LEVEL,
-    # )
-    # logger.add(
-    #     "logs/trace_{time:YYYY-MM-DD}.log",
-    #     enqueue=True,
-    #     level="TRACE",
-    #     rotation="00:00",
-    #     retention="10d",
-    # )
-
     configure_logger.configure("main")
 
     logger.debug("starting main")
