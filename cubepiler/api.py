@@ -5,7 +5,7 @@ from datetime import datetime
 import requests
 from loguru import logger
 
-URL = os.getenv("URL", "")
+URL = os.getenv("API_URL", "")
 TEAM_ID = os.getenv("TEAM_ID", "")
 AUTH_TOKEN = os.getenv("AUTH_TOKEN", "")
 

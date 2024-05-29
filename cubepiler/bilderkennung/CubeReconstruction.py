@@ -2,8 +2,8 @@ import json
 import os
 import time
 from datetime import datetime
-from loguru import logger
 
+from loguru import logger
 from ultralytics import YOLO
 
 from cubepiler.bilderkennung.cube import Cube
@@ -33,7 +33,7 @@ class CubeReconstruction:
             5: {"color": "red", "sideNumber": 2},
         }
 
-    def warmupModels(self):
+    async def warmupModels(self):
         warmupresultCube = self.colorModel(self.imgWarmup)
         warmupresultReference = self.quarterModel(self.imgWarmup)
 
@@ -250,7 +250,7 @@ class CubeReconstruction:
                 config[str(index)] = ""
         return json.dumps({"time": timestamp, "config": config}, indent=2)
 
-    def run_detection(self):
+    async def run_detection(self):
         self.runModels()
         self.processDetections()
         self.reconstructRight()

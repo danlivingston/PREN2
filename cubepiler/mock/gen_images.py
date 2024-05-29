@@ -1,5 +1,6 @@
-from loguru import logger
 import asyncio
+
+from loguru import logger
 
 
 async def start_detection():

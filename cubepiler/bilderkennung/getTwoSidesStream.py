@@ -1,8 +1,8 @@
 import os
 
 import cv2
-from ultralytics import YOLO
 from loguru import logger
+from ultralytics import YOLO
 
 current_file_path = os.path.realpath(__file__)
 current_directory = os.path.dirname(current_file_path)
@@ -12,9 +12,9 @@ class CubeFaceDetector:
     def __init__(
         self,
         model_path=f"{current_directory}/models/reference_segmentation_2.pt",
-        ip_address="147.88.48.131",
-        username="pren",
-        password="463997",
+        ip_address=os.getenv("STREAM_IP"),
+        username=os.getenv("STREAM_USER"),
+        password=os.getenv("STREAM_PWD"),
         profile="pren_profile_med",
     ):
         self.model = YOLO(model_path)
@@ -24,7 +24,7 @@ class CubeFaceDetector:
         self.password = password
         self.profile = profile
 
-    def warmupModels(self):
+    async def warmupModels(self):
         warmupresultCube = self.model(self.imgWarmup)
 
     def delete_existing_files(self):
@@ -89,6 +89,5 @@ class CubeFaceDetector:
         cap.release()
         cv2.destroyAllWindows()
 
-    def start_detection(self):
+    async def start_detection(self):
         self.open_camera_profile()
-

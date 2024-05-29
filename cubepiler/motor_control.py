@@ -165,31 +165,6 @@ def place_cube(mag, pos):
     return ()
 
 
-# GPIO.setmode(GPIO.BCM)
-
-# ShaftMotor = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))
-# ShaftMotor.SetMicroStep("hardward", "1/4step")
-# ShaftMotorSpeed = os.getenv("SHAFTMOTOR_SPEED", 0.00005)
-
-# PlatformMotor = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
-# PlatformMotor.SetMicroStep("hardward", "1/4step")
-# PlatformMotorSpeed = os.getenv("PLATFORMMOTOR_SPEED", 0.00005)
-# PlatformTopPin = 8
-# GPIO.setup(PlatformTopPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-
-# def rotate_shaft(unit):
-#     deg = unit * 30  # 30° per unit / index
-#     logger.debug(f"rotating shaft by {deg} degrees")
-#     # TODO: implement
-
-
-# def push_cube(index):
-#     logger.debug(f"pushing cube at position {index + 1}")
-#     # place_cube(Magpositions.magA.value, Platepositions.plate1.value)
-#     # place_cube(Magpositions.magC.value, Platepositions.plate1.value)
-#     # TODO: implement
-
 
 def testFunctions():
     zero_bed()

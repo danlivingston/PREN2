@@ -1,12 +1,12 @@
 import asyncio
+import multiprocessing as mp
 import platform
 from enum import Enum
-import multiprocessing as mp
 
 import customtkinter
 from loguru import logger
-from cubepiler import runner
 
+from cubepiler import runner
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
@@ -214,7 +214,6 @@ class CubePiLerGUI(customtkinter.CTk):
             self.state_switch_gui()
             p = mp.Process(target=runner.run_mp, name="build runner")
             p.start()
-            # p.join()
             while p.is_alive():
                 await asyncio.sleep(0.1)
             self.state = STATES.SUCCESS
@@ -257,28 +256,27 @@ class CubePiLerGUI(customtkinter.CTk):
         logger.debug("cancelled build task")
 
     async def reset_build(self, event=None):
-        pb = None
+        p = None
         try:
             if not self.state == STATES.READY:
                 return
             self.state = STATES.RESETTING
             self.state_switch_gui()
-            pb = self.loop.create_task(self.run_progress_bar())
-            logger.debug("start reset")
-            await runner.reset(self.progress_queue)
-            logger.debug("finished reset")
-            await pb
-            pb = None
+            p = mp.Process(target=runner.reset_mp, name="reset runner")
+            p.start()
+            while p.is_alive():
+                await asyncio.sleep(0.1)
             self.state = STATES.SUCCESS
         except asyncio.CancelledError:
+            if p is not None and p.is_alive():
+                p.kill()
+                p.join()
             logger.debug("cancelled reset")
             self.state = STATES.READY
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             self.state = STATES.EXCEPTION
         finally:
-            if not pb is None:
-                pb.cancel()
             self.state_switch_gui()
 
     async def run_progress_bar(self):

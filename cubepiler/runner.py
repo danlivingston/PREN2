@@ -1,5 +1,5 @@
-import os
 import asyncio
+import os
 from datetime import datetime
 
 from loguru import logger
@@ -13,7 +13,7 @@ else:
     from cubepiler import measurelib, motor_control, sound
 
 if os.getenv("MOCK_CUBES") == "TRUE":
-    from cubepiler.mock import gen_images, cube_reconstruction
+    from cubepiler.mock import cube_reconstruction, gen_images
 else:
     from cubepiler.bilderkennung.CubeReconstruction import CubeReconstruction
     from cubepiler.bilderkennung.getTwoSidesStream import CubeFaceDetector
@@ -27,6 +27,24 @@ is_reset = False
 async def warmup_models():
     await gen_images.warmupModels()
     await cube_reconstruction.warmupModels()
+
+
+def run_mp():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(run())
+    finally:
+        loop.close()
+
+
+def reset_mp():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(reset())
+    finally:
+        loop.close()
 
 
 async def run():
@@ -95,15 +113,6 @@ async def run():
     except Exception as e:
         logger.exception(e)
         raise Exception("Build Failed")
-
-
-def run_mp():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
-        loop.run_until_complete(run())
-    finally:
-        loop.close()
 
 
 async def reset():

@@ -1,5 +1,7 @@
-from loguru import logger
 import asyncio
+
+from loguru import logger
+
 from cubepiler.testdata import config01, config02, config03, config04, config05
 
 
