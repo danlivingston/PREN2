@@ -8,7 +8,7 @@ async def zero_bed():
     await asyncio.sleep(1)
 
 
-async def show_bed(minrpm, maxrpm, steps):
+async def show_bed(minrpm=30, maxrpm=600, steps=4050):
     logger.warning("moving mocked bed")
     await asyncio.sleep(1)
 

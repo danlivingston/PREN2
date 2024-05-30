@@ -71,7 +71,7 @@ class Platepositions(Enum):
     plate4 = 2400
 
 
-def zero_bed():
+async def zero_bed():
     while GPIO.input(endschalter) == 0:
         Motor2.TurnStep(Dir="backward", steps=1, stepdelay=0.0005)
     asyncio.sleep(0.1)
@@ -81,13 +81,7 @@ def zero_bed():
     return ()
 
 
-# def show_bed():
-#     Motor2.TurnStep(Dir="forward", steps=9000, stepdelay=0.00005)
-#     Motor2.Stop()
-#     return ()
-
-
-def show_bed(minrpm, maxrpm, steps):
+async def show_bed(minrpm=30, maxrpm=600, steps=4050):
     maxsteps = steps
     actualsteps = 0
     acceltime = 0.2
@@ -116,7 +110,7 @@ def show_bed(minrpm, maxrpm, steps):
     return ()
 
 
-def zero_mag():
+async def zero_mag():
     global masterposition
     while GPIO.input(channelX) == 0:
         Motor1.TurnStep(Dir="forward", steps=1, stepdelay=0.00005)
@@ -127,7 +121,7 @@ def zero_mag():
     return ()
 
 
-def place_cube(mag, pos):
+async def place_cube(mag, pos):
     global masterposition
 
     actualpos = masterposition + mag
@@ -165,25 +159,7 @@ def place_cube(mag, pos):
     return ()
 
 
-
-def testFunctions():
-    zero_bed()
-    zero_mag()
-    place_cube(Magpositions.magA.value, Platepositions.plate2.value)
-    place_cube(Magpositions.magA.value, Platepositions.plate1.value)
-    place_cube(Magpositions.magC.value, Platepositions.plate1.value)
-    place_cube(Magpositions.magC.value, Platepositions.plate4.value)
-    place_cube(Magpositions.magB.value, Platepositions.plate3.value)
-    place_cube(Magpositions.magB.value, Platepositions.plate4.value)
-    place_cube(Magpositions.magA.value, Platepositions.plate2.value)
-    place_cube(Magpositions.magA.value, Platepositions.plate3.value)
-    Motor1.Stop()
-    show_bed()
-    GPIO_cleanup()
-    # GPIO.cleanup()
-
-
-def motor_stop():
+async def motor_stop():
     Motor1.Stop()
 
 
@@ -204,15 +180,4 @@ async def execute_action(action):
         Platepositions.plate4.value,
     ][push_index]
 
-    place_cube(mag, plate)
-
-    # await asyncio.sleep(0.5)  # TODO: remove fake delay
-
-
-# def reset_platform_position():
-#     pass
-# done = False
-
-# while not done:
-#     PlatformMotor.TurnStep(Dir="forward", steps=1, stepdelay=PlatformMotorSpeed)
-#     done = GPIO.input(PlatformTopPin)
+    await place_cube(mag, plate)

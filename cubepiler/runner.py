@@ -29,11 +29,11 @@ async def warmup_models():
     await cube_reconstruction.warmupModels()
 
 
-def run_mp():
+def run_mp(status):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(run())
+        loop.run_until_complete(run(status))
     finally:
         loop.close()
 
@@ -47,7 +47,7 @@ def reset_mp():
         loop.close()
 
 
-async def run():
+async def run(status):
     try:
         global is_reset
         if not is_reset:
@@ -65,8 +65,11 @@ async def run():
         startTime = datetime.now()
 
         logger.info("Scanning cubes")
+        status.value = b"scanning cubes"
 
         await gen_images.start_detection()
+
+        status.value = b"analyzing cubes"
         scanned_cubes = await cube_reconstruction.run_detection()
 
         asyncio.run_coroutine_threadsafe(
@@ -77,23 +80,26 @@ async def run():
 
         logger.info("Calculating cube placement")
 
+        status.value = b"calculating placement"
         actions = await cube_placement.get_cube_placing_actions(scanned_cubes)
 
         logger.info("Placing cubes")
+        status.value = b"placing cubes"
 
         curr = 0
         for action in actions:
             curr += 1
             logger.info(f"Placed {curr}/{len(actions)} cubes")
+
+            status.value = f"placed {curr}/{len(actions)} cubes".encode()
             await motor_control.execute_action(action)
 
         await motor_control.motor_stop()
 
         logger.info("Moving platform down")
+        status.value = b"showing cubes"
 
-        await motor_control.show_bed(
-            30, 600, 4050
-        )  # TODO: remove params from function call
+        await motor_control.show_bed()
 
         logger.info("Done with build")
 
@@ -106,6 +112,7 @@ async def run():
         currententries = await api.get_current_entries()
 
         logger.success("Completed build")
+        status.value = b"completed build"
 
         logger.trace(currententries)
         logger.info(f"time: {endTime-startTime}")
@@ -131,3 +138,40 @@ async def reset():
     await sound.sound_stop()
 
     is_reset = True
+
+
+def zero_bed(status):
+    status.value = b"zeroing bed"
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(motor_control.zero_bed())
+    finally:
+        loop.close()
+
+
+def zero_mag(status):
+    status.value = b"zeroing mag"
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(motor_control.zero_mag())
+    finally:
+        loop.close()
+
+
+def show_bed(status):
+    status.value = b"showing bed"
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(motor_control.show_bed())
+    finally:
+        loop.close()
+
+
+def eject_mag(status):
+    status.value = b"ejecting mag"
+    # TODO: Implement ejection of all cubes (5x each mag slot)
+    logger.error("Not Implemented Yet")
+    pass

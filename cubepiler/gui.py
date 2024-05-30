@@ -21,15 +21,6 @@ customtkinter.FontManager.load_font("fonts/SourceCodePro-Regular.ttf")
 # customtkinter.FontManager.load_font("fonts/SourceCodePro-ExtraLight.ttf")
 
 COLORS = {
-    "dim gray": "#706677",
-    "mantis": "#7BC950",
-    "snow": "#FFFBFE",
-    "gunmetal": "#13262B",
-    "pacific cyan": "#1CA3C4",
-    "engineering orange": "#B80600",
-    "emerald": "#1EC276",
-    "orange peel": "#FFA630",
-    "DIVIDER": "",
     "black": "#000000",
     "white": "#FFFBFE",
     "green": "#1EC276",
@@ -47,18 +38,21 @@ STATES = Enum(
         "RUNNING",
         "EXCEPTION",
         "SUCCESS",
+        "ABORTED",
+        "DEBUG",
         "STOP",
     ],
 )
 
 
+# TODO import stuff during init phase of gui
 class CubePiLerGUI(customtkinter.CTk):
     def __init__(self, loop, autofullscreen=True):
         self.state = STATES.START
+        self.status = mp.Array("c", 200)
         self.loop = loop
         self.fullscreen = False
         self.running_task = None
-        self.progress_queue = asyncio.Queue()
 
         self.root = customtkinter.CTk()
         self.root.title("CubePiLer")
@@ -80,13 +74,17 @@ class CubePiLerGUI(customtkinter.CTk):
             master=self.root, corner_radius=0, fg_color=COLORS["black"]
         )
         self.frame.grid(row=0, column=0, sticky="nsew")
-        self.frame.grid_rowconfigure(0, weight=3, uniform="u")
+        self.frame.grid_rowconfigure(0, weight=1, uniform="u")
         self.frame.grid_rowconfigure(1, weight=1, uniform="u")
-        self.frame.grid_rowconfigure(2, weight=2, uniform="u")
+        self.frame.grid_rowconfigure(2, weight=1, uniform="u")
+        self.frame.grid_rowconfigure(3, weight=1, uniform="u")
+        self.frame.grid_rowconfigure(4, weight=1, uniform="u")
+        self.frame.grid_rowconfigure(5, weight=1, uniform="u")
         self.frame.columnconfigure(0, weight=1, uniform="u")
+        self.frame.columnconfigure(1, weight=1, uniform="u")
 
-        button_font = customtkinter.CTkFont(family="Source Code Pro SemiBold", size=180)
-        progress_bar_font = customtkinter.CTkFont(family="Source Code Pro", size=65)
+        button_font = customtkinter.CTkFont(family="Source Code Pro SemiBold", size=40)
+        progress_bar_font = customtkinter.CTkFont(family="Source Code Pro", size=30)
 
         self.start_button = customtkinter.CTkButton(
             master=self.frame,
@@ -122,6 +120,84 @@ class CubePiLerGUI(customtkinter.CTk):
             font=button_font,
             fg_color=COLORS["orange"],
             hover_color=COLORS["orange"],
+            text_color=COLORS["white"],
+        )
+
+        self.debug_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="debug",
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.enter_debug_mode())
+            ),
+            corner_radius=0,
+            font=button_font,
+            fg_color=COLORS["red"],
+            hover_color=COLORS["red"],
+            text_color=COLORS["white"],
+        )
+
+        self.debug_show_bed_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="show bed",
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.start_show_bed())
+            ),
+            corner_radius=0,
+            font=button_font,
+            fg_color=COLORS["red"],
+            hover_color=COLORS["red"],
+            text_color=COLORS["white"],
+        )
+
+        self.debug_zero_bed_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="zero bed",
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.start_zero_bed())
+            ),
+            corner_radius=0,
+            font=button_font,
+            fg_color=COLORS["orange"],
+            hover_color=COLORS["orange"],
+            text_color=COLORS["white"],
+        )
+
+        self.debug_zero_mag_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="zero mag",
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.start_zero_mag())
+            ),
+            corner_radius=0,
+            font=button_font,
+            fg_color=COLORS["orange"],
+            hover_color=COLORS["orange"],
+            text_color=COLORS["white"],
+        )
+
+        self.debug_eject_mag_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="eject mag",
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.start_eject_mag())
+            ),
+            corner_radius=0,
+            font=button_font,
+            fg_color=COLORS["red"],
+            hover_color=COLORS["red"],
+            text_color=COLORS["white"],
+        )
+
+        self.back_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="BACK",
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.dismiss_button())
+            ),
+            corner_radius=0,
+            font=button_font,
+            fg_color=COLORS["blue"],
+            hover_color=COLORS["blue"],
             text_color=COLORS["white"],
         )
 
@@ -161,21 +237,33 @@ class CubePiLerGUI(customtkinter.CTk):
             text_color=COLORS["white"],
         )
 
+        self.status_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="LOREM",
+            corner_radius=0,
+            font=progress_bar_font,
+            fg_color=COLORS["black"],
+            hover_color=COLORS["black"],
+            text_color=COLORS["white"],
+        )
+
         self.progress_bar = customtkinter.CTkProgressBar(
             master=self.frame,
             orientation="horizontal",
             corner_radius=0,
             progress_color=COLORS["blue"],
             fg_color=COLORS["black"],
-            mode="determinate",
+            mode="indeterminate",
+            indeterminate_speed=3,
         )
-        self.progress_label = customtkinter.CTkLabel(
-            master=self.frame,
-            text="...",
-            fg_color=COLORS["black"],
-            text_color=COLORS["white"],
-            font=progress_bar_font,
-        )
+
+        # self.progress_label = customtkinter.CTkLabel(
+        #     master=self.frame,
+        #     text="...",
+        #     fg_color=COLORS["black"],
+        #     text_color=COLORS["white"],
+        #     font=progress_bar_font,
+        # )
 
     async def mainloop(self):
         logger.debug("initializing")
@@ -207,44 +295,34 @@ class CubePiLerGUI(customtkinter.CTk):
 
     async def start_build(self, event=None):
         p = None
+
+        self.status.value = b"starting"
+
         try:
             if not self.state == STATES.READY:
                 return
             self.state = STATES.RUNNING
             self.state_switch_gui()
-            p = mp.Process(target=runner.run_mp, name="build runner")
+            p = mp.Process(
+                target=runner.run_mp, args=(self.status,), name="build runner"
+            )
             p.start()
             while p.is_alive():
+                self.status_button.configure(text=self.status.value.decode())
                 await asyncio.sleep(0.1)
             self.state = STATES.SUCCESS
+            self.status_button.configure(text=self.status.value.decode())
         except asyncio.CancelledError:
             if p is not None and p.is_alive():
                 p.kill()
                 p.join()
             logger.debug("cancelled build")
-            self.state = STATES.READY
+            self.state = STATES.READY  # TODO aborted status
         except Exception as e:
             logger.exception(e)
             self.state = STATES.EXCEPTION
         finally:
             self.state_switch_gui()
-        # try:
-        #     if not self.state == STATES.READY:
-        #         return
-        #     self.state = STATES.RUNNING
-        #     self.state_switch_gui()
-        #     logger.debug("start build")
-        #     await runner.run()
-        #     logger.debug("finished build")
-        #     self.state = STATES.SUCCESS
-        # except asyncio.CancelledError:
-        #     logger.debug("cancelled build")
-        #     self.state = STATES.READY
-        # except Exception as e:
-        #     logger.error(e)
-        #     self.state = STATES.EXCEPTION
-        # finally:
-        #     self.state_switch_gui()
 
     async def cancel_build(self, event=None):
         if not self.running_task or self.running_task is None:
@@ -272,55 +350,160 @@ class CubePiLerGUI(customtkinter.CTk):
                 p.kill()
                 p.join()
             logger.debug("cancelled reset")
-            self.state = STATES.READY
+            self.state = STATES.READY  # TODO aborted status
         except Exception as e:
             logger.exception(e)
             self.state = STATES.EXCEPTION
         finally:
             self.state_switch_gui()
 
-    async def run_progress_bar(self):
-        try:
-            self.progress_bar.configure(progress_color=COLORS["blue"])
-            self.progress_bar.set(0)
-            curr = 0
-            # should it be animated and have delay or not?
-            while self.state == STATES.RUNNING or self.state == STATES.RESETTING:
-                prog, label = await self.progress_queue.get()
-                self.progress_label.configure(text=label)
+    async def start_zero_mag(self, event=None):
+        p = None
 
-                # if prog == 500:
-                #     self.progress_bar.configure(progress_color=COLORS["red"])
-                #     self.progress_bar.set(1)
-                #     await asyncio.sleep(5)
-                #     break
-                curr = prog - 1  # ! debug
-                while not curr >= prog:
-                    curr += 1
-                    self.progress_bar.set(curr / 100)
-                    await asyncio.sleep(0.01)
-                if prog >= 100:
-                    self.progress_bar.configure(progress_color=COLORS["green"])
-                    # await asyncio.sleep(3)
-                    break
+        self.status.value = b"starting"
+
+        try:
+            if not self.state == STATES.DEBUG:
+                return
+            self.state = STATES.RUNNING
+            self.state_switch_gui()
+            p = mp.Process(
+                target=runner.zero_mag, args=(self.status,), name="zero mag runner"
+            )
+            p.start()
+            while p.is_alive():
+                self.status_button.configure(text=self.status.value.decode())
+                await asyncio.sleep(0.1)
+            self.state = STATES.DEBUG
         except asyncio.CancelledError:
-            pass
+            if p is not None and p.is_alive():
+                p.kill()
+                p.join()
+            logger.debug("cancelled")
+            self.state = STATES.READY  # TODO aborted status
+        except Exception as e:
+            logger.exception(e)
+            self.state = STATES.EXCEPTION
         finally:
-            pass
+            self.state_switch_gui()
+
+    async def start_zero_bed(self, event=None):
+        p = None
+
+        self.status.value = b"starting"
+
+        try:
+            if not self.state == STATES.DEBUG:
+                return
+            self.state = STATES.RUNNING
+            self.state_switch_gui()
+            p = mp.Process(
+                target=runner.zero_bed, args=(self.status,), name="zero bed runner"
+            )
+            p.start()
+            while p.is_alive():
+                self.status_button.configure(text=self.status.value.decode())
+                await asyncio.sleep(0.1)
+            self.state = STATES.DEBUG
+        except asyncio.CancelledError:
+            if p is not None and p.is_alive():
+                p.kill()
+                p.join()
+            logger.debug("cancelled")
+            self.state = STATES.READY  # TODO aborted status
+        except Exception as e:
+            logger.exception(e)
+            self.state = STATES.EXCEPTION
+        finally:
+            self.state_switch_gui()
+
+    async def start_show_bed(self, event=None):
+        p = None
+
+        self.status.value = b"starting"
+
+        try:
+            if not self.state == STATES.DEBUG:
+                return
+            self.state = STATES.RUNNING
+            self.state_switch_gui()
+            p = mp.Process(
+                target=runner.show_bed, args=(self.status,), name="show bed runner"
+            )
+            p.start()
+            while p.is_alive():
+                self.status_button.configure(text=self.status.value.decode())
+                await asyncio.sleep(0.1)
+            self.state = STATES.DEBUG
+        except asyncio.CancelledError:
+            if p is not None and p.is_alive():
+                p.kill()
+                p.join()
+            logger.debug("cancelled")
+            self.state = STATES.READY  # TODO aborted status
+        except Exception as e:
+            logger.exception(e)
+            self.state = STATES.EXCEPTION
+        finally:
+            self.state_switch_gui()
+
+    async def start_eject_mag(self, event=None):
+        p = None
+
+        self.status.value = b"starting"
+
+        try:
+            if not self.state == STATES.DEBUG:
+                return
+            self.state = STATES.RUNNING
+            self.state_switch_gui()
+            p = mp.Process(
+                target=runner.eject_mag, args=(self.status,), name="eject mag runner"
+            )
+            p.start()
+            while p.is_alive():
+                self.status_button.configure(text=self.status.value.decode())
+                await asyncio.sleep(0.1)
+            self.state = STATES.DEBUG
+        except asyncio.CancelledError:
+            if p is not None and p.is_alive():
+                p.kill()
+                p.join()
+            logger.debug("cancelled")
+            self.state = STATES.READY  # TODO aborted status
+        except Exception as e:
+            logger.exception(e)
+            self.state = STATES.EXCEPTION
+        finally:
+            self.state_switch_gui()
 
     async def dismiss_button(self):
+        logger.debug("dismiss")
         self.state = STATES.READY
+        self.state_switch_gui()
+
+    async def enter_debug_mode(self):
+        logger.debug("debug mode")
+        self.state = STATES.DEBUG
         self.state_switch_gui()
 
     def remove_all_gui_elements(self):
         self.start_button.grid_remove()
         self.stop_button.grid_remove()
         self.reset_button.grid_remove()
+        self.debug_button.grid_remove()
+        self.back_button.grid_remove()
         self.success_button.grid_remove()
         self.exception_button.grid_remove()
-        self.progress_bar.grid_remove()
-        self.progress_label.grid_remove()
+        # self.progress_label.grid_remove()
         self.startup_button.grid_remove()
+        self.status_button.grid_remove()
+        self.progress_bar.grid_remove()
+        self.progress_bar.stop()
+        self.debug_eject_mag_button.grid_remove()
+        self.debug_show_bed_button.grid_remove()
+        self.debug_zero_bed_button.grid_remove()
+        self.debug_zero_mag_button.grid_remove()
 
     def state_switch_gui(self):
         # ? TODO: Aborted Screen
@@ -329,17 +512,71 @@ class CubePiLerGUI(customtkinter.CTk):
         logger.trace(f"switching gui state to {self.state}")
         match self.state:
             case STATES.READY:
-                self.start_button.grid(sticky="nsew", column=0, row=0)
-                self.reset_button.grid(sticky="nsew", column=0, row=1, rowspan=2)
+                self.start_button.grid(
+                    sticky="nsew", column=0, row=0, rowspan=3, columnspan=2
+                )
+                self.reset_button.grid(
+                    sticky="nsew",
+                    column=0,
+                    row=3,
+                    rowspan=3,
+                )
+                self.debug_button.grid(
+                    sticky="nsew",
+                    column=1,
+                    row=3,
+                    rowspan=3,
+                )
             case STATES.RUNNING | STATES.RESETTING:
-                self.stop_button.grid(sticky="nsew", column=0, row=0)
-                self.progress_bar.grid(sticky="nsew", column=0, row=2)
-                self.progress_label.grid(column=0, row=1)
+                self.stop_button.grid(
+                    sticky="nsew", column=0, row=0, rowspan=3, columnspan=2
+                )
+                self.status_button.grid(
+                    sticky="nsew", column=0, row=3, rowspan=2, columnspan=2
+                )
+                self.progress_bar.grid(
+                    sticky="nsew", column=0, row=5, rowspan=1, columnspan=2
+                )
+                self.progress_bar.start()
             case STATES.SUCCESS:
-                self.success_button.grid(sticky="nsew", column=0, row=0, rowspan=3)
+                self.success_button.grid(
+                    sticky="nsew", column=0, row=0, rowspan=3, columnspan=1
+                )
+                self.back_button.grid(
+                    sticky="nsew", column=1, row=0, rowspan=3, columnspan=1
+                )
+                self.status_button.grid(
+                    sticky="nsew", column=0, row=3, rowspan=3, columnspan=2
+                )
+                # self.progress_label.grid(
+                #     sticky="nsew", column=0, row=3, rowspan=3, columnspan=2
+                # )
             case STATES.EXCEPTION:
-                self.exception_button.grid(sticky="nsew", column=0, row=0, rowspan=3)
+                self.exception_button.grid(
+                    sticky="nsew", column=0, row=0, rowspan=2, columnspan=2
+                )
             case STATES.START:
-                self.startup_button.grid(sticky="nsew", column=0, row=0, rowspan=3)
+                self.startup_button.grid(
+                    sticky="nsew", column=0, row=0, rowspan=6, columnspan=2
+                )
+            case STATES.DEBUG:
+                self.back_button.grid(
+                    sticky="nsew", column=0, row=0, rowspan=2, columnspan=2
+                )
+                # self.startup_button.grid(sticky="nsew", column=1, row=0, rowspan=2)
+                self.debug_zero_mag_button.grid(
+                    sticky="nsew", column=0, row=2, rowspan=2
+                )
+                self.debug_eject_mag_button.grid(
+                    sticky="nsew", column=1, row=2, rowspan=2
+                )
+                self.debug_zero_bed_button.grid(
+                    sticky="nsew", column=0, row=4, rowspan=2
+                )
+                self.debug_show_bed_button.grid(
+                    sticky="nsew", column=1, row=4, rowspan=2
+                )
             case _:
                 logger.warning("unknown state")
+                self.state = STATES.EXCEPTION
+                self.state_switch_gui()
