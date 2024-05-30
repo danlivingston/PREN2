@@ -7,14 +7,18 @@ from ultralytics import YOLO
 current_file_path = os.path.realpath(__file__)
 current_directory = os.path.dirname(current_file_path)
 
+ip = os.getenv("STREAM_IP")
+user = os.getenv("STREAM_USER")
+pwd = os.getenv("STREAM_PWD")
+
 
 class CubeFaceDetector:
     def __init__(
         self,
         model_path=f"{current_directory}/models/reference_segmentation_2.pt",
-        ip_address=os.getenv("STREAM_IP"),
-        username=os.getenv("STREAM_USER"),
-        password=os.getenv("STREAM_PWD"),
+        ip_address=ip,
+        username=user,
+        password=pwd,
         profile="pren_profile_med",
     ):
         self.model = YOLO(model_path)
@@ -25,7 +29,7 @@ class CubeFaceDetector:
         self.profile = profile
 
     async def warmupModels(self):
-        warmupresultCube = self.model(self.imgWarmup)
+        warmupresultCube = self.model(self.imgWarmup)  # noqa: F841
 
     def delete_existing_files(self):
         files_to_delete = [

@@ -42,7 +42,7 @@ async def get_cube_placing_actions(input):
 
         for i in range(4):
             tbp = to_be_placed[i]
-            if not tbp == None:
+            if tbp is not None:
                 color_wanted = cube_plan[tbp]
 
                 slot_index = (tbp * 3) % 12

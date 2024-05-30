@@ -2,7 +2,7 @@ import asyncio
 
 from loguru import logger
 
-from cubepiler.testdata import config01, config02, config03, config04, config05
+from cubepiler.testdata import config01, config02, config03, config04, config05  # noqa: F401 # fmt: skip # isort:skip
 
 
 async def run_detection():

@@ -103,7 +103,7 @@ class CubePiLerGUI(customtkinter.CTk):
         self.stop_button = customtkinter.CTkButton(
             master=self.frame,
             text="cancel",
-            command=lambda: self.loop.create_task(self.cancel_build()),
+            command=lambda: self.loop.create_task(self.cancel_process()),
             corner_radius=0,
             font=button_font,
             fg_color=COLORS["red"],
@@ -297,22 +297,23 @@ class CubePiLerGUI(customtkinter.CTk):
 
     async def exit(self, event=None):
         logger.debug("exiting")
-        await self.cancel_build()
+        await self.cancel_process()
         self.state = STATES.STOP
 
-    async def start_build(self, event=None):
+    async def run_process(
+        self, target, args, name, startstate=STATES.READY, endstate=STATES.SUCCESS
+    ):
+        logger.info(f"start process {name}, {target}({args}), {endstate}")
         p = None
 
-        self.status.value = b"starting"
+        self.status.value = f"starting {name}".encode()
 
         try:
-            if not self.state == STATES.READY:
+            if not self.state == startstate:
                 return
             self.state = STATES.RUNNING
             self.state_switch_gui()
-            p = mp.Process(
-                target=runner.run_mp, args=(self.status,), name="build runner"
-            )
+            p = mp.Process(target=target, args=args, name=f"{name} runner")
             p.start()
             while p.is_alive():
                 self.status_button.configure(text=self.status.value.decode())
@@ -321,14 +322,14 @@ class CubePiLerGUI(customtkinter.CTk):
                 self.state = STATES.EXCEPTION
                 self.status.value = f"{self.status.value.decode()[9:]}".encode()
             else:
-                self.state = STATES.SUCCESS
+                self.state = endstate
         except asyncio.CancelledError:
             if p is not None and p.is_alive():
                 p.kill()
                 p.join()
             logger.debug("cancelled build")
             self.status.value = b"aborted manually"
-            self.state = STATES.EXCEPTION  # TODO aborted status
+            self.state = STATES.EXCEPTION
         except Exception as e:
             logger.exception(e)
             self.status.value = f"{e}".encode()
@@ -337,158 +338,42 @@ class CubePiLerGUI(customtkinter.CTk):
             self.status_button.configure(text=self.status.value.decode())
             self.state_switch_gui()
 
-    async def cancel_build(self, event=None):
+    async def cancel_process(self, event=None):
         if not self.running_task or self.running_task is None:
             return
-        logger.debug("cancelling build task")
+        logger.debug("cancelling task")
         self.running_task.cancel()  # ? will only exit at first opportunity unless try catch is used in build_task
         await self.running_task
         self.running_task = None
-        logger.debug("cancelled build task")
+        logger.debug("cancelled task")
+
+    async def start_build(self, event=None):
+        await self.run_process(runner.run_mp, (self.status,), "build")
 
     async def reset_build(self, event=None):
-        p = None
-        try:
-            if not self.state == STATES.READY:
-                return
-            self.state = STATES.RESETTING
-            self.state_switch_gui()
-            p = mp.Process(target=runner.reset_mp, name="reset runner")
-            p.start()
-            while p.is_alive():
-                await asyncio.sleep(0.1)
-            self.state = STATES.SUCCESS
-        except asyncio.CancelledError:
-            if p is not None and p.is_alive():
-                p.kill()
-                p.join()
-            logger.debug("cancelled reset")
-            self.state = STATES.READY  # TODO aborted status
-        except Exception as e:
-            logger.exception(e)
-            self.state = STATES.EXCEPTION
-        finally:
-            self.state_switch_gui()
+        await self.run_process(
+            runner.reset_mp, (self.status,), "reset", STATES.READY, STATES.READY
+        )
 
     async def start_zero_mag(self, event=None):
-        p = None
-
-        self.status.value = b"starting"
-
-        try:
-            if not self.state == STATES.DEBUG:
-                return
-            self.state = STATES.RUNNING
-            self.state_switch_gui()
-            p = mp.Process(
-                target=runner.zero_mag, args=(self.status,), name="zero mag runner"
-            )
-            p.start()
-            while p.is_alive():
-                self.status_button.configure(text=self.status.value.decode())
-                await asyncio.sleep(0.1)
-            self.state = STATES.DEBUG
-        except asyncio.CancelledError:
-            if p is not None and p.is_alive():
-                p.kill()
-                p.join()
-            logger.debug("cancelled")
-            self.state = STATES.READY  # TODO aborted status
-        except Exception as e:
-            logger.exception(e)
-            self.state = STATES.EXCEPTION
-        finally:
-            self.state_switch_gui()
+        await self.run_process(
+            runner.zero_mag, (self.status,), "zero mag", STATES.DEBUG, STATES.DEBUG
+        )
 
     async def start_zero_bed(self, event=None):
-        p = None
-
-        self.status.value = b"starting"
-
-        try:
-            if not self.state == STATES.DEBUG:
-                return
-            self.state = STATES.RUNNING
-            self.state_switch_gui()
-            p = mp.Process(
-                target=runner.zero_bed, args=(self.status,), name="zero bed runner"
-            )
-            p.start()
-            while p.is_alive():
-                self.status_button.configure(text=self.status.value.decode())
-                await asyncio.sleep(0.1)
-            self.state = STATES.DEBUG
-        except asyncio.CancelledError:
-            if p is not None and p.is_alive():
-                p.kill()
-                p.join()
-            logger.debug("cancelled")
-            self.state = STATES.READY  # TODO aborted status
-        except Exception as e:
-            logger.exception(e)
-            self.state = STATES.EXCEPTION
-        finally:
-            self.state_switch_gui()
+        await self.run_process(
+            runner.zero_bed, (self.status,), "zero bed", STATES.DEBUG, STATES.DEBUG
+        )
 
     async def start_show_bed(self, event=None):
-        p = None
-
-        self.status.value = b"starting"
-
-        try:
-            if not self.state == STATES.DEBUG:
-                return
-            self.state = STATES.RUNNING
-            self.state_switch_gui()
-            p = mp.Process(
-                target=runner.show_bed, args=(self.status,), name="show bed runner"
-            )
-            p.start()
-            while p.is_alive():
-                self.status_button.configure(text=self.status.value.decode())
-                await asyncio.sleep(0.1)
-            self.state = STATES.DEBUG
-        except asyncio.CancelledError:
-            if p is not None and p.is_alive():
-                p.kill()
-                p.join()
-            logger.debug("cancelled")
-            self.state = STATES.READY  # TODO aborted status
-        except Exception as e:
-            logger.exception(e)
-            self.state = STATES.EXCEPTION
-        finally:
-            self.state_switch_gui()
+        await self.run_process(
+            runner.show_bed, (self.status,), "show bed", STATES.DEBUG, STATES.DEBUG
+        )
 
     async def start_eject_mag(self, event=None):
-        p = None
-
-        self.status.value = b"starting"
-
-        try:
-            if not self.state == STATES.DEBUG:
-                return
-            self.state = STATES.RUNNING
-            self.state_switch_gui()
-            p = mp.Process(
-                target=runner.eject_mag, args=(self.status,), name="eject mag runner"
-            )
-            p.start()
-            while p.is_alive():
-                self.status_button.configure(text=self.status.value.decode())
-                await asyncio.sleep(0.1)
-            self.state = STATES.DEBUG
-        except asyncio.CancelledError:
-            if p is not None and p.is_alive():
-                p.kill()
-                p.join()
-            logger.debug("cancelled")
-            self.state = STATES.READY  # TODO aborted status
-        except Exception as e:
-            logger.exception(e)
-            self.state = STATES.EXCEPTION
-        finally:
-            self.state_switch_gui()
+        await self.run_process(
+            runner.eject_mag, (self.status,), "eject mag", STATES.DEBUG, STATES.DEBUG
+        )
 
     async def dismiss_button(self):
         logger.debug("dismiss")
@@ -553,11 +438,11 @@ class CubePiLerGUI(customtkinter.CTk):
                 self.progress_bar.start()
             case STATES.SUCCESS:
                 self.success_button.grid(
-                    sticky="nsew", column=0, row=0, rowspan=3, columnspan=1
+                    sticky="nsew", column=0, row=0, rowspan=3, columnspan=2
                 )
-                self.back_button.grid(
-                    sticky="nsew", column=1, row=0, rowspan=3, columnspan=1
-                )
+                # self.back_button.grid(
+                #     sticky="nsew", column=1, row=0, rowspan=3, columnspan=1
+                # )
                 self.status_button.grid(
                     sticky="nsew", column=0, row=3, rowspan=3, columnspan=2
                 )

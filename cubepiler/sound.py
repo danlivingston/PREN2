@@ -524,6 +524,9 @@ def play_melody():
         play_note(freq, duration)
 
 
+# TODO: CLEANUP
+
+
 def sound_start(freq):
     i = 0
     delay = 0.5 / freq

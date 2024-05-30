@@ -1,3 +1,4 @@
+# flake8: noqa
 import time
 from datetime import datetime
 from enum import Enum

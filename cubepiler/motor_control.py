@@ -1,17 +1,9 @@
 import asyncio
-import os
 import time
-from datetime import datetime
 from enum import Enum
 
+import RPi.GPIO as GPIO
 from loguru import logger
-
-GPIO = None
-try:
-    import RPi.GPIO as GPIO
-except:
-    from cubepiler import GPIO_mock as GPIO
-
 
 from cubepiler.DRV8825 import DRV8825
 
@@ -87,7 +79,7 @@ async def show_bed(minrpm=30, maxrpm=600, steps=4050):
     acceltime = 0.2
 
     linkoeff = (maxrpm - minrpm) / acceltime
-    timestamp = 0
+    # timestamp = 0
     targetrpm = minrpm
 
     while (targetrpm < maxrpm) & (actualsteps < maxsteps):
@@ -100,7 +92,7 @@ async def show_bed(minrpm=30, maxrpm=600, steps=4050):
     print("Endgeschwindigkeit erreicht")
 
     delayfix = 60 / (2 * 200 * maxrpm)
-    stepsfix = int(1 / (2 * delayfix))
+    # stepsfix = int(1 / (2 * delayfix))
     while actualsteps < maxsteps:
         Motor2.TurnStep(Dir="forward", steps=1, stepdelay=delayfix)
         actualsteps += 1

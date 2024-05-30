@@ -3,7 +3,6 @@ import os
 import time
 from datetime import datetime
 
-from loguru import logger
 from ultralytics import YOLO
 
 from cubepiler.bilderkennung.cube import Cube
@@ -34,8 +33,8 @@ class CubeReconstruction:
         }
 
     async def warmupModels(self):
-        warmupresultCube = self.colorModel(self.imgWarmup)
-        warmupresultReference = self.quarterModel(self.imgWarmup)
+        warmupresultCube = self.colorModel(self.imgWarmup)  # noqa: F841
+        warmupresultReference = self.quarterModel(self.imgWarmup)  # noqa: F841
 
     def runModels(self):
         self.cubeDetectionResultsFront = self.colorModel(self.imgFrontPath)
@@ -68,7 +67,7 @@ class CubeReconstruction:
     def saveHighestScoredQuarter(self, references):
         max_conf = -1
         best_reference = None
-        for reference_id, referenceQuarter in references.items():
+        for _reference_id, referenceQuarter in references.items():
             if referenceQuarter.conf > max_conf:
                 max_conf = referenceQuarter.conf
                 best_reference = referenceQuarter
@@ -137,7 +136,7 @@ class CubeReconstruction:
 
     def reconstructRight(self):
         noCube = Cube(1000, -1, -1, -1, -1, False, "front", "none", "-100")
-        for cube_id, cube in self.cubes.items():
+        for _cube_id, cube in self.cubes.items():
             if cube.x2 > (
                 self.referenceQuarterFront.x_coordinate + self.puffer
             ) and cube.y2 > (self.referenceQuarterFront.y_coordinate + self.puffer):
@@ -148,7 +147,7 @@ class CubeReconstruction:
                     self.absolute_cubes[4] = noCube
                 else:
                     self.tempCubes.clear()
-                    for inner_cube_id, inner_cube in self.cubes.items():
+                    for _inner_cube_id, inner_cube in self.cubes.items():
                         if (
                             abs(inner_cube.x1 - self.absolute_cubes[0].x1) <= 0.05
                             and abs(inner_cube.x2 - self.absolute_cubes[0].x2) <= 0.05
@@ -167,7 +166,7 @@ class CubeReconstruction:
 
     def reconstructLeft(self):
         noCube = Cube(1000, -1, -1, -1, -1, False, "front", "none", "-100")
-        for cube_id, cube in self.cubes.items():
+        for _cube_id, cube in self.cubes.items():
             if cube.x2 < (
                 self.referenceQuarterFront.x_coordinate + self.puffer
             ) and cube.y2 > (self.referenceQuarterFront.y_coordinate + self.puffer):
@@ -178,7 +177,7 @@ class CubeReconstruction:
                     self.absolute_cubes[7] = noCube
                 else:
                     self.tempCubes.clear()
-                    for inner_cube_id, inner_cube in self.cubes.items():
+                    for _inner_cube_id, inner_cube in self.cubes.items():
                         if (
                             abs(inner_cube.x1 - self.absolute_cubes[3].x1) <= 0.05
                             and abs(inner_cube.x2 - self.absolute_cubes[3].x2) <= 0.05
@@ -192,7 +191,7 @@ class CubeReconstruction:
 
     def reconstructRightBack(self):
         noCube = Cube(1000, -1, -1, -1, -1, False, "back", "none", "-100")
-        for cube_id, cube in self.cubesBack.items():
+        for _cube_id, cube in self.cubesBack.items():
             if cube.x2 > (
                 self.referenceQuarterFront.x_coordinate + self.puffer
             ) and cube.y2 > (self.referenceQuarterBack.height + self.puffer):
@@ -203,7 +202,7 @@ class CubeReconstruction:
                     self.absolute_cubes[6] = noCube
                 else:
                     self.tempCubes.clear()
-                    for inner_cube_id, inner_cube in self.cubesBack.items():
+                    for _inner_cube_id, inner_cube in self.cubesBack.items():
                         if (
                             abs(inner_cube.x1 - self.absolute_cubes[2].x1) <= 0.05
                             and abs(inner_cube.x2 - self.absolute_cubes[2].x2) <= 0.05
@@ -217,7 +216,7 @@ class CubeReconstruction:
 
     def reconstructLeftBack(self):
         noCube = Cube(1000, -1, -1, -1, -1, False, "back", "none", "-100")
-        for cube_id, cube in self.cubesBack.items():
+        for _cube_id, cube in self.cubesBack.items():
             if cube.x2 < (
                 self.referenceQuarterFront.x_coordinate + self.puffer
             ) and cube.y2 > (self.referenceQuarterBack.height + self.puffer):
@@ -228,7 +227,7 @@ class CubeReconstruction:
                     self.absolute_cubes[5] = noCube
                 else:
                     self.tempCubes.clear()
-                    for inner_cube_id, inner_cube in self.cubesBack.items():
+                    for _inner_cube_id, inner_cube in self.cubesBack.items():
                         if (
                             abs(inner_cube.x1 - self.absolute_cubes[1].x1) <= 0.05
                             and abs(inner_cube.x2 - self.absolute_cubes[1].x2) <= 0.05

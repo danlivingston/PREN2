@@ -1,6 +1,6 @@
-import cv2
-
 import os
+
+import cv2
 from dotenv import load_dotenv
 
 load_dotenv()

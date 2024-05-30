@@ -1,11 +1,6 @@
-# import RPi.GPIO as GPIO
-GPIO = None
-try:
-    import RPi.GPIO as GPIO
-except:
-    from cubepiler import GPIO_mock as GPIO
-
 import time
+
+import RPi.GPIO as GPIO
 
 MotorDir = [
     "forward",
@@ -79,7 +74,7 @@ class DRV8825:
             return
 
         # print("turn step:",steps)
-        for i in range(steps):
+        for _i in range(steps):
             self.digital_write(self.step_pin, True)
             time.sleep(stepdelay)
             self.digital_write(self.step_pin, False)

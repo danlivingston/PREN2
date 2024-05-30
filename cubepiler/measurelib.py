@@ -1,9 +1,3 @@
-import os
-import time
-import tkinter as tk
-from datetime import datetime
-from threading import Thread
-
 import smbus2
 
 # Konstanten für den PAC1934
@@ -103,10 +97,10 @@ def read_power():
 def read_energy():
 
     raw_energy = bus.read_i2c_block_data(I2C_ADDR, REG_POWER_ACC, 6)
-    acc_count = bus.read_i2c_block_data(I2C_ADDR, REG_ACC_COUNT, 3)
+    # acc_count = bus.read_i2c_block_data(I2C_ADDR, REG_ACC_COUNT, 3)
 
     int_energy = int.from_bytes(raw_energy, byteorder="big")
-    int_count = int.from_bytes(acc_count, byteorder="big")
+    # int_count = int.from_bytes(acc_count, byteorder="big")
 
     energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 1.25
     return round(energy, 8)
