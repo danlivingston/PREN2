@@ -6,7 +6,8 @@ from enum import Enum
 import customtkinter
 from loguru import logger
 
-from cubepiler import runner
+# from cubepiler import runner
+global runner
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
@@ -266,9 +267,15 @@ class CubePiLerGUI(customtkinter.CTk):
         # )
 
     async def mainloop(self):
+        # shows gui as early as possbile
         logger.debug("initializing")
         self.state_switch_gui()
         self.root.update()
+
+        # not very nice but this saves time importing the module after gui has started, might break in future
+        global runner
+        from cubepiler import runner
+
         await runner.warmup_models()
 
         logger.debug("showing GUI")

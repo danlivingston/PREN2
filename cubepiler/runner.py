@@ -25,8 +25,7 @@ is_reset = False
 
 
 async def warmup_models():
-    await gen_images.warmupModels()
-    await cube_reconstruction.warmupModels()
+    await asyncio.gather(gen_images.warmupModels(), cube_reconstruction.warmupModels())
 
 
 def run_mp(status):
