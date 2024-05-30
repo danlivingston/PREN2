@@ -103,20 +103,23 @@ async def run(status):
 
         logger.info("Done with build")
 
-        asyncio.run_coroutine_threadsafe(api.send_end_signal(), loop)
         energy = await measurelib.read_energy()
         endTime = datetime.now()
-
+        # asyncio.run_coroutine_threadsafe(api.send_end_signal(), loop)
+        await api.send_end_signal()
         await sound.sound_stop()
 
         currententries = await api.get_current_entries()
 
         logger.success("Completed build")
-        status.value = b"completed build"
 
         logger.trace(currententries)
         logger.info(f"time: {endTime-startTime}")
         logger.info(f"energy used: {energy} W*s")
+
+        status.value = (
+            f"time: {currententries['start_to_end']}s\nenergy: {energy} W*s".encode()
+        )
     except Exception as e:
         logger.exception(e)
         try:

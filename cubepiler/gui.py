@@ -6,20 +6,14 @@ from enum import Enum
 import customtkinter
 from loguru import logger
 
-# from cubepiler import runner
+# imported later in CubePiLerGUI.mainloop() for faster initial GUI loading
 global runner
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
-# TODO: reduce to used fonts only
-# customtkinter.FontManager.load_font("fonts/SourceCodePro-Black.ttf")
-# customtkinter.FontManager.load_font("fonts/SourceCodePro-ExtraBold.ttf")
-# customtkinter.FontManager.load_font("fonts/SourceCodePro-Bold.ttf")
+
 customtkinter.FontManager.load_font("fonts/SourceCodePro-SemiBold.ttf")
 customtkinter.FontManager.load_font("fonts/SourceCodePro-Regular.ttf")
-# customtkinter.FontManager.load_font("fonts/SourceCodePro-Medium.ttf")
-# customtkinter.FontManager.load_font("fonts/SourceCodePro-Light.ttf")
-# customtkinter.FontManager.load_font("fonts/SourceCodePro-ExtraLight.ttf")
 
 COLORS = {
     "black": "#000000",
@@ -35,18 +29,15 @@ STATES = Enum(
     [
         "START",
         "READY",
-        "RESETTING",
         "RUNNING",
         "EXCEPTION",
         "SUCCESS",
-        "ABORTED",
         "DEBUG",
         "STOP",
     ],
 )
 
 
-# TODO import stuff during init phase of gui
 class CubePiLerGUI(customtkinter.CTk):
     def __init__(self, loop, autofullscreen=True):
         self.state = STATES.START
@@ -84,8 +75,18 @@ class CubePiLerGUI(customtkinter.CTk):
         self.frame.columnconfigure(0, weight=1, uniform="u")
         self.frame.columnconfigure(1, weight=1, uniform="u")
 
-        button_font = customtkinter.CTkFont(family="Source Code Pro SemiBold", size=40)
-        progress_bar_font = customtkinter.CTkFont(family="Source Code Pro", size=30)
+        self.semi_bold_font = customtkinter.CTkFont(
+            family="Source Code Pro SemiBold",
+            size=75,
+        )
+        self.regular_font = customtkinter.CTkFont(
+            family="Source Code Pro",
+            size=60,
+        )
+        self.regular_font_s = customtkinter.CTkFont(
+            family="Source Code Pro",
+            size=40,
+        )
 
         self.start_button = customtkinter.CTkButton(
             master=self.frame,
@@ -94,7 +95,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.start_build())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.semi_bold_font,
             fg_color=COLORS["green"],
             hover_color=COLORS["green"],
             text_color=COLORS["white"],
@@ -105,7 +106,7 @@ class CubePiLerGUI(customtkinter.CTk):
             text="cancel",
             command=lambda: self.loop.create_task(self.cancel_process()),
             corner_radius=0,
-            font=button_font,
+            font=self.semi_bold_font,
             fg_color=COLORS["red"],
             hover_color=COLORS["red"],
             text_color=COLORS["white"],
@@ -118,7 +119,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.reset_build())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.semi_bold_font,
             fg_color=COLORS["orange"],
             hover_color=COLORS["orange"],
             text_color=COLORS["white"],
@@ -131,7 +132,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.enter_debug_mode())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.semi_bold_font,
             fg_color=COLORS["red"],
             hover_color=COLORS["red"],
             text_color=COLORS["white"],
@@ -144,7 +145,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.start_show_bed())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.regular_font,
             fg_color=COLORS["red"],
             hover_color=COLORS["red"],
             text_color=COLORS["white"],
@@ -157,7 +158,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.start_zero_bed())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.regular_font,
             fg_color=COLORS["orange"],
             hover_color=COLORS["orange"],
             text_color=COLORS["white"],
@@ -170,7 +171,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.start_zero_mag())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.regular_font,
             fg_color=COLORS["orange"],
             hover_color=COLORS["orange"],
             text_color=COLORS["white"],
@@ -183,7 +184,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.start_eject_mag())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.regular_font,
             fg_color=COLORS["red"],
             hover_color=COLORS["red"],
             text_color=COLORS["white"],
@@ -196,7 +197,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.dismiss_button())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.semi_bold_font,
             fg_color=COLORS["blue"],
             hover_color=COLORS["blue"],
             text_color=COLORS["white"],
@@ -209,7 +210,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.dismiss_button())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.semi_bold_font,
             fg_color=COLORS["green"],
             hover_color=COLORS["green"],
             text_color=COLORS["white"],
@@ -222,7 +223,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self, "running_task", self.loop.create_task(self.dismiss_button())
             ),
             corner_radius=0,
-            font=button_font,
+            font=self.semi_bold_font,
             fg_color=COLORS["red"],
             hover_color=COLORS["red"],
             text_color=COLORS["white"],
@@ -232,7 +233,7 @@ class CubePiLerGUI(customtkinter.CTk):
             master=self.frame,
             text="INITIALIZING...",
             corner_radius=0,
-            font=progress_bar_font,
+            font=self.semi_bold_font,
             fg_color=COLORS["black"],
             hover_color=COLORS["black"],
             text_color=COLORS["white"],
@@ -242,7 +243,7 @@ class CubePiLerGUI(customtkinter.CTk):
             master=self.frame,
             text="LOREM",
             corner_radius=0,
-            font=progress_bar_font,
+            font=self.regular_font,
             fg_color=COLORS["black"],
             hover_color=COLORS["black"],
             text_color=COLORS["white"],
@@ -257,14 +258,6 @@ class CubePiLerGUI(customtkinter.CTk):
             mode="indeterminate",
             indeterminate_speed=3,
         )
-
-        # self.progress_label = customtkinter.CTkLabel(
-        #     master=self.frame,
-        #     text="...",
-        #     fg_color=COLORS["black"],
-        #     text_color=COLORS["white"],
-        #     font=progress_bar_font,
-        # )
 
     async def mainloop(self):
         # shows gui as early as possbile
@@ -303,7 +296,9 @@ class CubePiLerGUI(customtkinter.CTk):
     async def run_process(
         self, target, args, name, startstate=STATES.READY, endstate=STATES.SUCCESS
     ):
-        logger.info(f"start process {name}, {target}({args}), {endstate}")
+        logger.trace(
+            f"start process {name}, {target}({args}), {startstate} -> {endstate}"
+        )
         p = None
 
         self.status.value = f"starting {name}".encode()
@@ -393,7 +388,6 @@ class CubePiLerGUI(customtkinter.CTk):
         self.back_button.grid_remove()
         self.success_button.grid_remove()
         self.exception_button.grid_remove()
-        # self.progress_label.grid_remove()
         self.startup_button.grid_remove()
         self.status_button.grid_remove()
         self.progress_bar.grid_remove()
@@ -404,8 +398,6 @@ class CubePiLerGUI(customtkinter.CTk):
         self.debug_zero_mag_button.grid_remove()
 
     def state_switch_gui(self):
-        # ? TODO: Aborted Screen
-        # ? TODO: Starting Screen
         self.remove_all_gui_elements()
         logger.trace(f"switching gui state to {self.state}")
         match self.state:
@@ -425,10 +417,12 @@ class CubePiLerGUI(customtkinter.CTk):
                     row=3,
                     rowspan=3,
                 )
-            case STATES.RUNNING | STATES.RESETTING:
+
+            case STATES.RUNNING:
                 self.stop_button.grid(
                     sticky="nsew", column=0, row=0, rowspan=3, columnspan=2
                 )
+                self.status_button.configure(font=self.regular_font)
                 self.status_button.grid(
                     sticky="nsew", column=0, row=3, rowspan=2, columnspan=2
                 )
@@ -436,35 +430,34 @@ class CubePiLerGUI(customtkinter.CTk):
                     sticky="nsew", column=0, row=5, rowspan=1, columnspan=2
                 )
                 self.progress_bar.start()
+
             case STATES.SUCCESS:
                 self.success_button.grid(
                     sticky="nsew", column=0, row=0, rowspan=3, columnspan=2
                 )
-                # self.back_button.grid(
-                #     sticky="nsew", column=1, row=0, rowspan=3, columnspan=1
-                # )
+                self.status_button.configure(font=self.regular_font_s)
                 self.status_button.grid(
                     sticky="nsew", column=0, row=3, rowspan=3, columnspan=2
                 )
-                # self.progress_label.grid(
-                #     sticky="nsew", column=0, row=3, rowspan=3, columnspan=2
-                # )
+
             case STATES.EXCEPTION:
                 self.exception_button.grid(
                     sticky="nsew", column=0, row=0, rowspan=3, columnspan=2
                 )
+                # self.status_button.configure(font=self.regular_font_s)
                 self.status_button.grid(
                     sticky="nsew", column=0, row=3, rowspan=3, columnspan=2
                 )
+
             case STATES.START:
                 self.startup_button.grid(
                     sticky="nsew", column=0, row=0, rowspan=6, columnspan=2
                 )
+
             case STATES.DEBUG:
                 self.back_button.grid(
                     sticky="nsew", column=0, row=0, rowspan=2, columnspan=2
                 )
-                # self.startup_button.grid(sticky="nsew", column=1, row=0, rowspan=2)
                 self.debug_zero_mag_button.grid(
                     sticky="nsew", column=0, row=2, rowspan=2
                 )
@@ -477,7 +470,10 @@ class CubePiLerGUI(customtkinter.CTk):
                 self.debug_show_bed_button.grid(
                     sticky="nsew", column=1, row=4, rowspan=2
                 )
-            case _:
+
+            case _ as state:
                 logger.warning("unknown state")
                 self.state = STATES.EXCEPTION
+                self.status.value = f"GUI state {state} unknown".encode()
+                self.status_button.configure(text=self.status.value.decode())
                 self.state_switch_gui()
