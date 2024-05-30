@@ -317,18 +317,24 @@ class CubePiLerGUI(customtkinter.CTk):
             while p.is_alive():
                 self.status_button.configure(text=self.status.value.decode())
                 await asyncio.sleep(0.1)
-            self.state = STATES.SUCCESS
-            self.status_button.configure(text=self.status.value.decode())
+            if self.status.value.decode().startswith("!!!ERR!!!"):
+                self.state = STATES.EXCEPTION
+                self.status.value = f"{self.status.value.decode()[9:]}".encode()
+            else:
+                self.state = STATES.SUCCESS
         except asyncio.CancelledError:
             if p is not None and p.is_alive():
                 p.kill()
                 p.join()
             logger.debug("cancelled build")
-            self.state = STATES.READY  # TODO aborted status
+            self.status.value = b"aborted manually"
+            self.state = STATES.EXCEPTION  # TODO aborted status
         except Exception as e:
             logger.exception(e)
+            self.status.value = f"{e}".encode()
             self.state = STATES.EXCEPTION
         finally:
+            self.status_button.configure(text=self.status.value.decode())
             self.state_switch_gui()
 
     async def cancel_build(self, event=None):
@@ -560,7 +566,10 @@ class CubePiLerGUI(customtkinter.CTk):
                 # )
             case STATES.EXCEPTION:
                 self.exception_button.grid(
-                    sticky="nsew", column=0, row=0, rowspan=2, columnspan=2
+                    sticky="nsew", column=0, row=0, rowspan=3, columnspan=2
+                )
+                self.status_button.grid(
+                    sticky="nsew", column=0, row=3, rowspan=3, columnspan=2
                 )
             case STATES.START:
                 self.startup_button.grid(

@@ -48,6 +48,7 @@ def reset_mp():
 
 async def run(status):
     try:
+        # raise Exception("REMOVE ME")
         global is_reset
         if not is_reset:
             await reset()
@@ -118,7 +119,11 @@ async def run(status):
         logger.info(f"energy used: {energy} W*s")
     except Exception as e:
         logger.exception(e)
-        raise Exception("Build Failed")
+        try:
+            status.value = f"!!!ERR!!!{e}".encode()
+        finally:
+            pass
+        # raise Exception("Build Failed")
 
 
 async def reset():
