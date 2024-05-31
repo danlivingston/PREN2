@@ -30,35 +30,35 @@ T_clock = 1024  # 100kHz
 bus = smbus2.SMBus(1)
 
 
-def send_refresh_command():
+async def send_refresh_command():
     # Sendet den Command um Messdaten register zu refreshen, vor jeder messung nötig
     bus.write_byte(I2C_ADDR, REFRESH_COMMAND)
 
 
-def send_refresh_v_command():
+async def send_refresh_v_command():
     # Sendet den Command um Messdaten register zu refreshen, ohne akkumulatoren
     bus.write_byte(I2C_ADDR, REFRESH_V_COMMAND)
 
 
-def send_ctrlreg_command():
+async def send_ctrlreg_command():
     # ändert das controll register
     CONFIG_BYTE = 0x80  # 0b10000000
     bus.write_byte_data(I2C_ADDR, CTRL_REGISTER_ADDR, CONFIG_BYTE)
 
 
-def send_chdis_command():
+async def send_chdis_command():
     # Kanäle ein und ausschalten
     SET_BYTE = 0x70  # 0b01110000 #Schaltet Kanäle 2,3,4 inaktiv
     bus.write_byte_data(I2C_ADDR, CHDIS_REGISTER_ADDR, SET_BYTE)
 
 
-def send_negpwr_command():
+async def send_negpwr_command():
     # Bidirektionale messung einschalten
     SET_BYTE = 0x0
     bus.write_byte_data(I2C_ADDR, NEGPWR_REGISTER_ADDR, SET_BYTE)
 
 
-def read_voltage():
+async def read_voltage():
     # Beispiel: Lesen der Spannung, Anpassung erforderlich
 
     raw_voltage = bus.read_i2c_block_data(I2C_ADDR, REG_VOLTAGE, 2)
@@ -69,7 +69,7 @@ def read_voltage():
     return round(voltage, 2)
 
 
-def read_current():
+async def read_current():
     # Beispiel: Lesen des Stroms, Anpassung erforderlich
 
     raw_current = bus.read_i2c_block_data(I2C_ADDR, REG_CURRENT, 2)
@@ -78,7 +78,7 @@ def read_current():
     return round(current, 3)
 
 
-def read_power():
+async def read_power():
     # Beispiel: Lesen der Leistung, Anpassung erforderlich
 
     raw_power = bus.read_i2c_block_data(I2C_ADDR, REG_POWER, 4)
@@ -94,7 +94,7 @@ def read_power():
     return round(power, 2)
 
 
-def read_energy():
+async def read_energy():
 
     raw_energy = bus.read_i2c_block_data(I2C_ADDR, REG_POWER_ACC, 6)
     # acc_count = bus.read_i2c_block_data(I2C_ADDR, REG_ACC_COUNT, 3)
