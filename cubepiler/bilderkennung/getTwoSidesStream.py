@@ -61,7 +61,7 @@ class CubeFaceDetector:
             if not ret:
                 raise Exception("Es konnte kein Frame gelesen werden.")
 
-            if frame_counter % 15 == 0:
+            if frame_counter % 10 == 0:
                 results = self.model(frame)
                 for r in results:
                     if r.boxes.xyxyn.shape[0] > 0:
