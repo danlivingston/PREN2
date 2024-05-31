@@ -190,6 +190,19 @@ class CubePiLerGUI(customtkinter.CTk):
             text_color=COLORS["white"],
         )
 
+        self.debug_buzzer_button = customtkinter.CTkButton(
+            master=self.frame,
+            text="buzzer",
+            command=lambda: setattr(
+                self, "running_task", self.loop.create_task(self.start_buzzer())
+            ),
+            corner_radius=0,
+            font=self.regular_font,
+            fg_color=COLORS["green"],
+            hover_color=COLORS["green"],
+            text_color=COLORS["white"],
+        )
+
         self.back_button = customtkinter.CTkButton(
             master=self.frame,
             text="BACK",
@@ -370,6 +383,15 @@ class CubePiLerGUI(customtkinter.CTk):
             runner.eject_mag, (self.status,), "eject mag", STATES.DEBUG, STATES.DEBUG
         )
 
+    async def start_buzzer(self, event=None):
+        await self.run_process(
+            runner.test_buzzer,
+            (self.status,),
+            "buzzer test",
+            STATES.DEBUG,
+            STATES.DEBUG,
+        )
+
     async def dismiss_button(self):
         logger.debug("dismiss")
         self.state = STATES.READY
@@ -396,6 +418,7 @@ class CubePiLerGUI(customtkinter.CTk):
         self.debug_show_bed_button.grid_remove()
         self.debug_zero_bed_button.grid_remove()
         self.debug_zero_mag_button.grid_remove()
+        self.debug_buzzer_button.grid_remove()
 
     def state_switch_gui(self):
         self.remove_all_gui_elements()
@@ -456,7 +479,13 @@ class CubePiLerGUI(customtkinter.CTk):
 
             case STATES.DEBUG:
                 self.back_button.grid(
-                    sticky="nsew", column=0, row=0, rowspan=2, columnspan=2
+                    sticky="nsew", column=0, row=0, rowspan=2, columnspan=1
+                )
+                self.debug_buzzer_button.grid(
+                    sticky="nsew",
+                    column=1,
+                    row=0,
+                    rowspan=2,
                 )
                 self.debug_zero_mag_button.grid(
                     sticky="nsew", column=0, row=2, rowspan=2

@@ -187,6 +187,18 @@ def show_bed(status):
         loop.close()
 
 
+def test_buzzer(status):
+    status.value = b"testing buzzer"
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(sound.sound_start())
+        loop.run_until_complete(asyncio.sleep(1))
+        loop.run_until_complete(sound.sound_stop())
+    finally:
+        loop.close()
+
+
 def eject_mag(status):
     status.value = b"ejecting mag"
     # TODO: Implement ejection of all cubes (5x each mag slot)
