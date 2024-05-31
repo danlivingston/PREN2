@@ -23,6 +23,7 @@ else:
     gen_images = CubeFaceDetector()
     cube_reconstruction = CubeReconstruction()
 
+# TODO: fix not working anymore (multiprocessing problem?)
 is_reset = False
 
 
@@ -31,6 +32,7 @@ async def warmup_models():
 
 
 def run_mp(status):
+    logger.trace(f"is_reset {is_reset}")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
@@ -40,6 +42,7 @@ def run_mp(status):
 
 
 def reset_mp(status):
+    logger.trace(f"is_reset {is_reset}")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
