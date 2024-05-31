@@ -75,7 +75,7 @@ async def zero_bed():
 
 
 # async def show_bed(minrpm=30, maxrpm=600, steps=4050):
-async def show_bed(minrpm=30, maxrpm=550, steps=3880):
+async def show_bed(minrpm=30, maxrpm=400, steps=3880):
     maxsteps = steps
     actualsteps = 0
     acceltime = 0.2
