@@ -8,7 +8,7 @@ buzzer = 26
 GPIO.setup(buzzer, GPIO.OUT)
 
 
-async def sound_start(freq):
+async def sound_start(freq=300):
     i = 0
     delay = 0.5 / freq
     while i < 70:
@@ -27,7 +27,7 @@ async def sound_start(freq):
         i += 1
 
 
-async def sound_stop(freq):
+async def sound_stop(freq=500):
     i = 0
     delay = 0.05 / freq
     while i < 300:
