@@ -67,13 +67,15 @@ async def zero_bed():
     while GPIO.input(endschalter) == 0:
         Motor2.TurnStep(Dir="backward", steps=1, stepdelay=0.0005)
     asyncio.sleep(0.1)
-    Motor2.TurnStep(Dir="forward", steps=150, stepdelay=0.0005)
+    # Motor2.TurnStep(Dir="forward", steps=150, stepdelay=0.0005)
+    Motor2.TurnStep(Dir="forward", steps=220, stepdelay=0.0005)
 
     Motor2.Stop()
     return ()
 
 
-async def show_bed(minrpm=30, maxrpm=600, steps=4050):
+# async def show_bed(minrpm=30, maxrpm=600, steps=4050):
+async def show_bed(minrpm=30, maxrpm=600, steps=3880):
     maxsteps = steps
     actualsteps = 0
     acceltime = 0.2
@@ -83,7 +85,7 @@ async def show_bed(minrpm=30, maxrpm=600, steps=4050):
     targetrpm = minrpm
 
     while (targetrpm < maxrpm) & (actualsteps < maxsteps):
-        delay = 60 / (2 * 200 * targetrpm)
+        delay = 60 / (2 * 200 * targetrpm)  # <== de da?
         Motor2.TurnStep(Dir="forward", steps=1, stepdelay=delay)
         actualsteps += 1
 
@@ -91,7 +93,7 @@ async def show_bed(minrpm=30, maxrpm=600, steps=4050):
 
     print("Endgeschwindigkeit erreicht")
 
-    delayfix = 60 / (2 * 200 * maxrpm)
+    delayfix = 60 / (2 * 200 * maxrpm)  # <== und de da?
     # stepsfix = int(1 / (2 * delayfix))
     while actualsteps < maxsteps:
         Motor2.TurnStep(Dir="forward", steps=1, stepdelay=delayfix)
@@ -99,14 +101,14 @@ async def show_bed(minrpm=30, maxrpm=600, steps=4050):
 
     Motor2.Stop()
 
-    return ()
-
 
 async def zero_mag():
     global masterposition
     while GPIO.input(channelX) == 0:
-        Motor1.TurnStep(Dir="forward", steps=1, stepdelay=0.00005)
-    Motor1.TurnStep(Dir="forward", steps=210, stepdelay=0.00005)
+        # Motor1.TurnStep(Dir="forward", steps=1, stepdelay=0.00005)
+        Motor1.TurnStep(Dir="forward", steps=1, stepdelay=0.0001)
+    # Motor1.TurnStep(Dir="forward", steps=210, stepdelay=0.00005)
+    Motor1.TurnStep(Dir="forward", steps=210, stepdelay=0.0001)
     time.sleep(0.2)
     Motor1.Stop()
     masterposition = 0

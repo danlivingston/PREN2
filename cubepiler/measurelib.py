@@ -102,5 +102,6 @@ def read_energy():
     int_energy = int.from_bytes(raw_energy, byteorder="big")
     # int_count = int.from_bytes(acc_count, byteorder="big")
 
-    energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 1.25
+    # energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 1.25
+    energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 1.25 * 1.0662
     return round(energy, 8)
