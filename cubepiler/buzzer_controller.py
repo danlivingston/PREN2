@@ -8,7 +8,7 @@ buzzer = 26
 GPIO.setup(buzzer, GPIO.OUT)
 
 
-async def sound_start(freq=300):
+async def sound_start(freq=1700):
     i = 0
     delay = 0.5 / freq
     while i < 70:
@@ -27,7 +27,7 @@ async def sound_start(freq=300):
         i += 1
 
 
-async def sound_stop(freq=500):
+async def sound_stop(freq=2000):
     i = 0
     delay = 0.05 / freq
     while i < 300:
@@ -44,6 +44,9 @@ async def sound_stop(freq=500):
         GPIO.output(buzzer, 0)
         time.sleep(delay)
         i += 1
+
+
+# TODO: error sound
 
 
 async def sound_touch(freq):

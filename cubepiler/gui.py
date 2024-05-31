@@ -42,6 +42,7 @@ class CubePiLerGUI(customtkinter.CTk):
     def __init__(self, loop, autofullscreen=True):
         self.state = STATES.START
         self.status = mp.Array("c", 200)
+        self.is_reset = mp.Value("b", False)
         self.loop = loop
         self.fullscreen = False
         self.running_task = None
@@ -356,11 +357,25 @@ class CubePiLerGUI(customtkinter.CTk):
         logger.debug("cancelled task")
 
     async def start_build(self, event=None):
-        await self.run_process(runner.run_mp, (self.status,), "build")
+        await self.run_process(
+            runner.run_mp,
+            (
+                self.status,
+                self.is_reset,
+            ),
+            "build",
+        )
 
     async def reset_build(self, event=None):
         await self.run_process(
-            runner.reset_mp, (self.status,), "reset", STATES.READY, STATES.READY
+            runner.reset_mp,
+            (
+                self.status,
+                self.is_reset,
+            ),
+            "reset",
+            STATES.READY,
+            STATES.READY,
         )
 
     async def start_zero_mag(self, event=None):

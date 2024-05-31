@@ -24,40 +24,43 @@ else:
     cube_reconstruction = CubeReconstruction()
 
 # TODO: fix not working anymore (multiprocessing problem?)
-is_reset = False
+# is_reset = False
+# from multiprocessing import Manager
+
+# manager = Manager()
+# is_reset = manager.Value("b", False)
 
 
 async def warmup_models():
     await asyncio.gather(gen_images.warmupModels(), cube_reconstruction.warmupModels())
 
 
-def run_mp(status):
-    logger.trace(f"is_reset {is_reset}")
+def run_mp(status, is_reset):
+    logger.trace(f"is_reset {is_reset.value}")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(run(status))
+        loop.run_until_complete(run(status, is_reset))
     finally:
         loop.close()
 
 
-def reset_mp(status):
-    logger.trace(f"is_reset {is_reset}")
+def reset_mp(status, is_reset):
+    logger.trace(f"is_reset {is_reset.value}")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(reset(status))
+        loop.run_until_complete(reset(status, is_reset))
     finally:
         loop.close()
 
 
-async def run(status):
+async def run(status, is_reset):
     try:
-        global is_reset
-        if not is_reset:
+        if not is_reset.value:
             logger.warning("resetting as it was not previously reset")
-            await reset(status)
-        is_reset = False
+            await reset(status, is_reset)
+        is_reset.value = False
 
         logger.info("Starting build")
         loop = asyncio.get_event_loop()
@@ -132,8 +135,7 @@ async def run(status):
             pass
 
 
-async def reset(status):
-    global is_reset
+async def reset(status, is_reset):
     logger.info("Resetting")
 
     status.value = b"resetting"
@@ -156,8 +158,8 @@ async def reset(status):
     await sound.sound_stop()
 
     status.value = b"reset done"
-    is_reset = True
-    logger.info(f"reset {is_reset}")
+    is_reset.value = True
+    logger.info(f"reset {is_reset.value}")
 
 
 def zero_bed(status):
