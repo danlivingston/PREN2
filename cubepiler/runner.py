@@ -113,8 +113,8 @@ async def run(status, is_reset):
 
         energy = await measurelib.read_energy()
         endTime = datetime.now()
-        # asyncio.run_coroutine_threadsafe(api.send_end_signal(), loop)
-        await api.send_end_signal()
+        asyncio.run_coroutine_threadsafe(api.send_end_signal(), loop)
+        # await api.send_end_signal()
         await sound.sound_stop()
 
         # asyncio.run_coroutine_threadsafe(api.get_current_entries(), loop)

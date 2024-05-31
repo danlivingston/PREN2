@@ -56,9 +56,11 @@ class CubePiLerGUI(customtkinter.CTk):
             "WM_DELETE_WINDOW",
             lambda: self.loop.create_task(self.exit()),
         )
-        if autofullscreen:
-            # for use on pi for auto fullscreen when it starts; can disable for development in .env
-            self.root.after(1, lambda: self.loop.create_task(self.toggle_fullscreen()))
+
+        # for use on pi for auto fullscreen when it starts; can disable for development in .env
+        self.autofullscreen = autofullscreen
+        # if autofullscreen:
+        #     self.root.after(1, lambda: self.loop.create_task(self.toggle_fullscreen()))
         self.root.bind(
             "<F11>", lambda e=None: self.loop.create_task(self.toggle_fullscreen())
         )
@@ -276,6 +278,8 @@ class CubePiLerGUI(customtkinter.CTk):
     async def mainloop(self):
         # shows gui as early as possbile
         logger.debug("initializing")
+        if self.autofullscreen:
+            await self.toggle_fullscreen()
         self.state_switch_gui()
         self.root.update()
 
