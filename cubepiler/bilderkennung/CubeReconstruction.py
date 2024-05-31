@@ -19,7 +19,7 @@ class CubeReconstruction:
             f"{current_directory}/models/reference_segmentation_2.pt"
         )
         self.imgFrontPath = f"{current_directory}/front_frame.jpg"
-        self.imgBackPath = "back_frame.jpg"
+        self.imgBackPath = f"{current_directory}/back_frame.jpg"
         self.imgWarmup = f"{current_directory}/warmup.jpg"
         self.puffer = 0.03
 
