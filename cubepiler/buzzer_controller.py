@@ -1,6 +1,6 @@
-import RPi.GPIO as GPIO
 import time
 
+import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
 buzzer = 26
@@ -8,7 +8,7 @@ buzzer = 26
 GPIO.setup(buzzer, GPIO.OUT)
 
 
-def sound_start(freq):
+async def sound_start(freq):
     i = 0
     delay = 0.5 / freq
     while i < 70:
@@ -27,7 +27,7 @@ def sound_start(freq):
         i += 1
 
 
-def sound_stop(freq):
+async def sound_stop(freq):
     i = 0
     delay = 0.05 / freq
     while i < 300:
@@ -46,7 +46,7 @@ def sound_stop(freq):
         i += 1
 
 
-def sound_touch(freq):
+async def sound_touch(freq):
     i = 0
     frequency = freq
     delay = 1 / (2 * frequency)

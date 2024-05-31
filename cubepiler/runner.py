@@ -10,10 +10,9 @@ if os.getenv("MOCK") == "TRUE":
     logger.warning("MOCKING ENABLED")
     from cubepiler.mock import measurelib, motor_control, sound
 else:
+    # from cubepiler.mock import sound
+    from cubepiler import buzzer_controller as sound
     from cubepiler import measurelib, motor_control
-    from cubepiler.mock import sound
-
-    # from cubepiler import buzzer_controller as sound
 
 if os.getenv("MOCK_CUBES") == "TRUE":
     from cubepiler.mock import cube_reconstruction, gen_images

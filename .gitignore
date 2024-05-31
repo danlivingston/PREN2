@@ -161,3 +161,7 @@ cython_debug/
 
 # Dan - ignore testing wsl
 wsl/
+
+# image scans
+cubepiler/bilderkennung/front_frame.jpg
+cubepiler/bilderkennung/back_frame.jpg
