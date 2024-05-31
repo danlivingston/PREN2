@@ -217,6 +217,7 @@ async def get_current_entries():
     try:
         response = requests.get(get_url, timeout=8)
         if response.status_code == 200:
+            logger.trace(response.json())
             return response.json()
         else:
             raise Exception(
