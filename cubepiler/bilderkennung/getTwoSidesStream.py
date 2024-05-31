@@ -39,6 +39,7 @@ class CubeFaceDetector:
         for file in files_to_delete:
             if os.path.exists(file):
                 os.remove(file)
+                logger.trace(f"deleted {file}")
 
     def open_camera_profile(self):
         self.delete_existing_files()
@@ -72,6 +73,7 @@ class CubeFaceDetector:
                             and r.boxes.xyxyn[0][1] > 0.35
                         ):
                             cv2.imwrite(f"{current_directory}/front_frame.jpg", frame)
+                            logger.debug("saved front frame")
                             saved_front = True
 
                         if (
@@ -80,6 +82,7 @@ class CubeFaceDetector:
                             and r.boxes.xyxyn[0][3] < 0.41
                         ):
                             cv2.imwrite(f"{current_directory}/back_frame.jpg", frame)
+                            logger.debug("saved back frame")
                             saved_back = True
 
                         if saved_front and saved_back:
