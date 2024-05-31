@@ -197,9 +197,25 @@ def test_buzzer(status):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(sound.sound_start())
+        logger.debug("500hz")
+        loop.run_until_complete(sound.sound_start(500))
         loop.run_until_complete(asyncio.sleep(1))
-        loop.run_until_complete(sound.sound_stop())
+        logger.debug("1000hz")
+        loop.run_until_complete(sound.sound_start(1000))
+        loop.run_until_complete(asyncio.sleep(1))
+        logger.debug("2000hz")
+        loop.run_until_complete(sound.sound_start(2000))
+        loop.run_until_complete(asyncio.sleep(1))
+        logger.debug("4000hz")
+        loop.run_until_complete(sound.sound_start(4000))
+        loop.run_until_complete(asyncio.sleep(1))
+        logger.debug("5000hz")
+        loop.run_until_complete(sound.sound_start(5000))
+        loop.run_until_complete(asyncio.sleep(1))
+
+        # loop.run_until_complete(sound.sound_start())
+        # loop.run_until_complete(asyncio.sleep(1))
+        # loop.run_until_complete(sound.sound_stop())
     finally:
         loop.close()
 
