@@ -76,7 +76,7 @@ class CubeFaceDetector:
 
                         if (
                             not saved_back
-                            and r.boxes.xyxyn[0][2] < 0.65
+                            and r.boxes.xyxyn[0][2] < 0.53
                             and r.boxes.xyxyn[0][3] < 0.41
                         ):
                             cv2.imwrite(f"{current_directory}/back_frame.jpg", frame)
