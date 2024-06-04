@@ -65,7 +65,11 @@ class Platepositions(Enum):
 
 async def zero_bed():
     while GPIO.input(endschalter) == 0:
-        Motor2.TurnStep(Dir="backward", steps=1, stepdelay=0.0005)
+        
+        while GPIO.input(endschalter) == 0:
+            Motor2.TurnStep(Dir="backward", steps=1, stepdelay=0.0005)
+        await asyncio.sleep(0.2)
+  
     await asyncio.sleep(0.1)
     # Motor2.TurnStep(Dir="forward", steps=150, stepdelay=0.0005)
     Motor2.TurnStep(Dir="forward", steps=220, stepdelay=0.0005)
