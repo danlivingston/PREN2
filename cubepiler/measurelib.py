@@ -96,6 +96,7 @@ async def read_power():
 
 async def read_energy():
 
+    send_refresh_v_command()
     raw_energy = bus.read_i2c_block_data(I2C_ADDR, REG_POWER_ACC, 6)
     # acc_count = bus.read_i2c_block_data(I2C_ADDR, REG_ACC_COUNT, 3)
 
@@ -103,5 +104,5 @@ async def read_energy():
     # int_count = int.from_bytes(acc_count, byteorder="big")
 
     # energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 1.25
-    energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 1.25 * 1.0662
+    energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 0.1642
     return round(energy, 8)
