@@ -24,6 +24,8 @@ Then you can run the following script inside the cloned folder to install all th
 ./scripts/install.sh
 ```
 
+Note: This does not install the required Python version. And does not work out of the box on Debian 11 based distros.
+
 ### Windows
 
 For windows, you can use the following commands after [installing Python 3.11](https://www.python.org/downloads/) or higher:
@@ -38,9 +40,11 @@ python -m pipx ensurepath
 poetry install
 ```
 
+There may be issues installing certain dependencies on Windows, remove the dependencies from the `pyproject.toml` file temporarily and run `poetry install` again. Remember to mock the dependencies using `.env` if necessary.
+
 ## Configuration
 
-To configure the application you can copy the `.env.example` file to `.env` and change the values to your needs.
+To configure the application you can copy the `.env.example` file to `.env` and change the values to your needs. Mocking of the raspberry pi attached hardware can be done by setting the `MOCK` variable to `TRUE`. The image recognition can be mocked by setting the `MOCK_CUBES` variable to `TRUE`.
 
 ```bash
 cp .env.example .env
@@ -95,23 +99,6 @@ To remove a dependency, use the following command:
 poetry remove <package>
 ```
 
-### Testing
-
-For unit testing we use [pytest](https://docs.pytest.org/en/latest/).
-
-Tests should be placed in the `tests` directory and should be named `test_*.py`.
-
-```bash
-# Raspberry Pi
-./scripts/test.sh
-
-# Windows
-./scripts/test.bat
-
-# Or
-poetry run pytest
-```
-
 ### Formatting
 
 We use [black](https://black.readthedocs.io/en/stable/) for formatting and [isort](https://pycqa.github.io/isort/) for sorting imports.
@@ -126,6 +113,14 @@ We use [black](https://black.readthedocs.io/en/stable/) for formatting and [isor
 # Or
 poetry run isort
 poetry run black .
+```
+
+### Linting
+
+We use [flake8](https://flake8.pycqa.org/en/latest/) for linting together with [flake8-bugbear](https://github.com/PyCQA/flake8-bugbear).
+
+```bash
+poetry run flake8
 ```
 
 ### Logging

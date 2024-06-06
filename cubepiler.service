@@ -1,0 +1,13 @@
+[Unit]
+Description=PREN2 CubePiLer GUI Service
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/PREN2
+ExecStart=/bin/bash /home/pi/PREN2/scripts/service.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

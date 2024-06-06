@@ -1,34 +1,28 @@
+import asyncio
 import os
-import sys
-import time
 
 from dotenv import load_dotenv
 from loguru import logger
 
-from utils import foo
+from cubepiler import configure_logger
 
-# Load .env file
 load_dotenv()
 
 
-# Automatically catch and log as critical if main loop encounters an unhandled exception
-@logger.catch(level="CRITICAL")
-def main():
-    logger.success("main() executing")
-    foo.bar()
-    time.sleep(2)
-    raise NotImplementedError("main() Not Implemented Yet")
+class Main:
+    @logger.catch(level="CRITICAL")
+    async def exec(self):
+        from cubepiler.gui import CubePiLerGUI
+
+        autofullscreen = not os.getenv("AUTOFULLSCREEN", "TRUE") == "FALSE"
+        loop = asyncio.get_event_loop()
+        self.gui = CubePiLerGUI(loop, autofullscreen)
+        await self.gui.mainloop()
 
 
 if __name__ == "__main__":
-    # Set log file output
-    logger.add("logs/debug_{time}.log", enqueue=True, level="TRACE")
-    # Replace default logger with stdout (console) based on env level
-    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")  # Defaults to INFO if not set
-    logger.remove(0)
-    logger.add(sys.stdout, level=LOG_LEVEL)
+    configure_logger.configure("main")
 
-    # Run the main loop
-    logger.info("Starting...")
-    main()
-    logger.info("Stopping...")
+    logger.debug("starting main")
+    asyncio.run(Main().exec())
+    logger.debug("exiting main")
