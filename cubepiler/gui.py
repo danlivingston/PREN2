@@ -12,6 +12,7 @@ global runner
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
 
+# source: https://fonts.google.com/specimen/Source+Code+Pro
 customtkinter.FontManager.load_font("fonts/SourceCodePro-SemiBold.ttf")
 customtkinter.FontManager.load_font("fonts/SourceCodePro-Regular.ttf")
 
@@ -57,10 +58,7 @@ class CubePiLerGUI(customtkinter.CTk):
             lambda: self.loop.create_task(self.exit()),
         )
 
-        # for use on pi for auto fullscreen when it starts; can disable for development in .env
         self.autofullscreen = autofullscreen
-        # if autofullscreen:
-        #     self.root.after(1, lambda: self.loop.create_task(self.toggle_fullscreen()))
         self.root.bind(
             "<F11>", lambda e=None: self.loop.create_task(self.toggle_fullscreen())
         )
@@ -292,9 +290,11 @@ class CubePiLerGUI(customtkinter.CTk):
         logger.debug("showing GUI")
         self.state = STATES.READY
         self.state_switch_gui()
+
         while not self.state == STATES.STOP:
             self.root.update()
             await asyncio.sleep(0.1)
+
         logger.debug("destroying GUI")
         self.root.destroy()
         logger.debug("destroyed GUI")
@@ -486,7 +486,6 @@ class CubePiLerGUI(customtkinter.CTk):
                 self.exception_button.grid(
                     sticky="nsew", column=0, row=0, rowspan=3, columnspan=2
                 )
-                # self.status_button.configure(font=self.regular_font_s)
                 self.status_button.grid(
                     sticky="nsew", column=0, row=3, rowspan=3, columnspan=2
                 )

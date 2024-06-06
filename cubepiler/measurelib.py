@@ -62,7 +62,6 @@ async def read_voltage():
     # Beispiel: Lesen der Spannung, Anpassung erforderlich
 
     raw_voltage = bus.read_i2c_block_data(I2C_ADDR, REG_VOLTAGE, 2)
-    # print(((raw_voltage[0] << 8) | raw_voltage[1]))
     voltage = (
         FSV * ((raw_voltage[0] << 8) | raw_voltage[1]) / DENOMINATOR
     )  # (raw_voltage/DENOMINATOR)*FSV     #Versorgungsspannung berechnen
@@ -73,7 +72,6 @@ async def read_current():
     # Beispiel: Lesen des Stroms, Anpassung erforderlich
 
     raw_current = bus.read_i2c_block_data(I2C_ADDR, REG_CURRENT, 2)
-    # print(((raw_current[0] << 8) | raw_current[1]))
     current = FSC * ((raw_current[0] << 8) | raw_current[1]) / DENOMINATOR  #
     return round(current, 3)
 
@@ -98,11 +96,8 @@ async def read_energy():
 
     send_refresh_v_command()
     raw_energy = bus.read_i2c_block_data(I2C_ADDR, REG_POWER_ACC, 6)
-    # acc_count = bus.read_i2c_block_data(I2C_ADDR, REG_ACC_COUNT, 3)
 
     int_energy = int.from_bytes(raw_energy, byteorder="big")
-    # int_count = int.from_bytes(acc_count, byteorder="big")
 
-    # energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 1.25
     energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 0.1642
     return round(energy, 8)

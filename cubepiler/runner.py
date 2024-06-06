@@ -23,13 +23,6 @@ else:
     gen_images = CubeFaceDetector()
     cube_reconstruction = CubeReconstruction()
 
-# TODO: fix not working anymore (multiprocessing problem?)
-# is_reset = False
-# from multiprocessing import Manager
-
-# manager = Manager()
-# is_reset = manager.Value("b", False)
-
 
 async def warmup_models():
     await asyncio.gather(gen_images.warmupModels(), cube_reconstruction.warmupModels())

@@ -8,6 +8,9 @@ buzzer = 26
 GPIO.setup(buzzer, GPIO.OUT)
 
 
+# TODO: Find nice sounding sounds
+
+
 async def sound_start(freq=2500):
     i = 0
     delay = 0.5 / freq

@@ -164,28 +164,6 @@ async def send_cube_configuration(config_data):
         logger.debug("Ein Fehler ist aufgetreten:", e)
 
 
-# base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# config_file_path = os.path.join(base_dir, "config.json")
-
-# try:
-#     with open(config_file_path, "r") as file:
-#         config_data = json.load(file)
-# except FileNotFoundError:
-#     logger.debug("Die Konfigurationsdatei konnte nicht gefunden werden.")
-# except json.JSONDecodeError:
-#     logger.debug("Die Konfigurationsdatei konnte nicht korrekt geparst werden.")
-# except Exception as e:
-#     logger.debug(f"Ein unerwarteter Fehler ist aufgetreten: {e}")
-# else:
-#     # Beispielaufruf der Funktion mit den gelesenen Konfigurationsdaten
-#     send_cube_configuration(
-#         "https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com",
-#         "team12",
-#         "R5SfQQ6gKr9A",
-#         config_data,
-#     )
-
-
 async def test_server_reachability():
     get_url = f"{URL}/cubes"
 
@@ -206,9 +184,6 @@ async def test_server_reachability():
     except Exception as e:
         # Allgemeine Fehlerbehandlung
         logger.debug(f"Ein Fehler ist aufgetreten: {e}")
-
-
-# test_server_reachability("https://oawz3wjih1.execute-api.eu-central-1.amazonaws.com")
 
 
 async def get_current_entries():

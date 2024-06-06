@@ -1,8 +1,8 @@
 [tool.poetry]
 package-mode = false
-name = "pren2"
-license = "Proprietary"
-version = "0.0.1"
+name = "PREN2"
+license = "MIT"
+version = "1.0.0"
 description = "PREN2 CubePiLer"
 authors = [
     "Böhi Bianca <bianca.boehi@stud.hslu.ch>",
@@ -11,6 +11,7 @@ authors = [
     "Schnarwiler Ramon <ramon.schnarwiler@stud.hslu.ch>",
     "Scholz Philipp <philipp.scholz@stud.hslu.ch>",
     "Schön Christian <christian.schoen@stud.hslu.ch>",
+    "Zenhäusern Jonas <jonas.zenhaeusern@stud.hslu.ch>",
 ]
 readme = "README.md"
 repository = "https://github.com/danlivingston/PREN2"
@@ -34,4 +35,3 @@ black = { extras = ["jupyter"], version = "^24.2.0" }
 flake8 = "^7.0.0"
 flake8-bugbear = "^24.4.26"
 isort = "^5.13.2"
-pytest = "^8.0.2"

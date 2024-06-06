@@ -51,9 +51,9 @@ class DRV8825:
             "1/32step": (1, 0, 1),
         }
 
-        print("Control mode:", mode)
+        # print("Control mode:", mode)
         if mode == ControlMode[1]:
-            print("set pins")
+            # print("set pins")
             self.digital_write(self.mode_pins, microstep[stepformat])
 
     def TurnStep(self, Dir, steps, stepdelay=0.005):
@@ -94,7 +94,7 @@ class DRV8825:
             self.digital_write(self.enable_pin, 0)
             return
 
-        print("Turns infinite")
+        # print("Turns infinite")
         while True:
             self.digital_write(self.step_pin, True)
             time.sleep(stepdelay)
