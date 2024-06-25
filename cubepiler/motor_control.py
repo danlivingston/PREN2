@@ -65,11 +65,11 @@ class Platepositions(Enum):
 
 async def zero_bed():
     while GPIO.input(endschalter) == 0:
-        
+
         while GPIO.input(endschalter) == 0:
             Motor2.TurnStep(Dir="backward", steps=1, stepdelay=0.0005)
         await asyncio.sleep(0.2)
-  
+
     await asyncio.sleep(0.1)
     Motor2.TurnStep(Dir="forward", steps=220, stepdelay=0.0005)
 
@@ -85,7 +85,7 @@ async def show_bed(minrpm=30, maxrpm=400, steps=3880):
     targetrpm = minrpm
 
     while (targetrpm < maxrpm) & (actualsteps < maxsteps):
-        delay = 60 / (2 * 200 * targetrpm)  
+        delay = 60 / (2 * 200 * targetrpm)
         Motor2.TurnStep(Dir="forward", steps=1, stepdelay=delay)
         actualsteps += 1
 
@@ -93,7 +93,7 @@ async def show_bed(minrpm=30, maxrpm=400, steps=3880):
 
     logger.debug("Endgeschwindigkeit erreicht")
 
-    delayfix = 60 / (2 * 200 * maxrpm)  
+    delayfix = 60 / (2 * 200 * maxrpm)
     while actualsteps < maxsteps:
         Motor2.TurnStep(Dir="forward", steps=1, stepdelay=delayfix)
         actualsteps += 1
