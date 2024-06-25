@@ -94,7 +94,7 @@ async def read_power():
 
 async def read_energy():
 
-    send_refresh_v_command()
+    await send_refresh_v_command()
     raw_energy = bus.read_i2c_block_data(I2C_ADDR, REG_POWER_ACC, 6)
 
     int_energy = int.from_bytes(raw_energy, byteorder="big")
