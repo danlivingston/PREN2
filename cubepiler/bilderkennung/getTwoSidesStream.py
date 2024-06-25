@@ -70,8 +70,8 @@ class CubeFaceDetector:
                         if (
                             not saved_front
                             and r.boxes.xyxyn[0][0] > 0.45
-                            and r.boxes.xyxyn[0][1] > 0.36
-                            and r.boxes.xyxyn[0][1] < 0.39
+                            and r.boxes.xyxyn[0][1] > 0.358
+                            and r.boxes.xyxyn[0][1] < 0.395
                         ):
                             cv2.imwrite(f"{current_directory}/front_frame.jpg", frame)
                             logger.debug("saved front frame")
@@ -80,8 +80,8 @@ class CubeFaceDetector:
                         if (
                             not saved_back
                             and r.boxes.xyxyn[0][0] < 0.5
-                            and r.boxes.xyxyn[0][3] < 0.4
-                            and r.boxes.xyxyn[0][3] > 0.38
+                            and r.boxes.xyxyn[0][3] < 0.41
+                            and r.boxes.xyxyn[0][3] > 0.375
                         ):
                             cv2.imwrite(f"{current_directory}/back_frame.jpg", frame)
                             logger.debug("saved back frame")
