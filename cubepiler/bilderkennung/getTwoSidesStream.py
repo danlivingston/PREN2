@@ -1,8 +1,8 @@
 import os
-
 import cv2
 from loguru import logger
 from ultralytics import YOLO
+from collections import deque
 
 current_file_path = os.path.realpath(__file__)
 current_directory = os.path.dirname(current_file_path)
@@ -10,7 +10,6 @@ current_directory = os.path.dirname(current_file_path)
 ip = os.getenv("STREAM_IP")
 user = os.getenv("STREAM_USER")
 pwd = os.getenv("STREAM_PWD")
-
 
 class CubeFaceDetector:
     def __init__(
@@ -27,6 +26,7 @@ class CubeFaceDetector:
         self.username = username
         self.password = password
         self.profile = profile
+        self.frame_buffer = deque(maxlen=20)  # Puffer für 20 Frames
 
     async def warmupModels(self):
         warmupresultCube = self.model(self.imgWarmup)  # noqa: F841
@@ -57,10 +57,11 @@ class CubeFaceDetector:
 
         while True:
             ret, frame = cap.read()
-            frame_counter += 1
-
             if not ret:
                 raise Exception("Es konnte kein Frame gelesen werden.")
+
+            self.frame_buffer.append(frame)  # Frame in den Puffer legen
+            frame_counter += 1
 
             if frame_counter % 10 == 0:
                 results = self.model(frame)
@@ -69,19 +70,24 @@ class CubeFaceDetector:
                         logger.trace(r.boxes.xyxyn)
                         if (
                             not saved_front
-                            and r.boxes.xyxyn[0][0] > 0.35
-                            and r.boxes.xyxyn[0][1] > 0.35
+                            and r.boxes.xyxyn[0][0] > 0.45
+                            and r.boxes.xyxyn[0][1] > 0.36
+                            and r.boxes.xyxyn[0][1] < 0.39
                         ):
-                            cv2.imwrite(f"{current_directory}/front_frame.jpg", frame)
+                            front_frame = self.frame_buffer[-1]
+                            cv2.imwrite(f"{current_directory}/front_frame.jpg", front_frame)
                             logger.debug("saved front frame")
                             saved_front = True
 
                         if (
                             not saved_back
-                            and r.boxes.xyxyn[0][2] < 0.53
-                            and r.boxes.xyxyn[0][3] < 0.41
+                            and r.boxes.xyxyn[0][0] < 0.5
+                            and r.boxes.xyxyn[0][3] < 0.4
+                            and r.boxes.xyxyn[0][3] > 0.38
+
                         ):
-                            cv2.imwrite(f"{current_directory}/back_frame.jpg", frame)
+                            back_frame = self.frame_buffer[-1]
+                            cv2.imwrite(f"{current_directory}/back_frame.jpg", back_frame)
                             logger.debug("saved back frame")
                             saved_back = True
 
