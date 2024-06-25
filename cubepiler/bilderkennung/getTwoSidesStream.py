@@ -80,7 +80,7 @@ class CubeFaceDetector:
 
                             if (
                                 not saved_back
-                                and box[0] < 0.52
+                                and box[0] < 0.43
                                 and box[3] < 0.41
                                 and box[3] > 0.375
                             ):
