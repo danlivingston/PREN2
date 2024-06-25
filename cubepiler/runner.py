@@ -121,11 +121,18 @@ async def run(status, is_reset):
 
         logger.success("Completed build")
 
-        # logger.trace(currententries)
-        logger.info(f"time: {endTime-startTime}")
+        time_diff = endTime - startTime
+
+        minutes = time_diff.seconds // 60
+        seconds = time_diff.seconds % 60
+        milliseconds = time_diff.microseconds // 1000
+
+        formatted_time_diff = f"{minutes:02}:{seconds:02}.{milliseconds:03}"
+
+        logger.info(f"time: {formatted_time_diff}")
         logger.info(f"energy used: {energy}e-3 Wh")
 
-        status.value = f"time: {endTime-startTime}\nenergy: {energy}e-3 Wh".encode()
+        status.value = f"time: {formatted_time_diff}\nenergy: {energy}e-3 Wh".encode()
         # await api.get_current_entries()
     except Exception as e:
         logger.exception(e)
