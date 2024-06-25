@@ -74,7 +74,9 @@ class CubeFaceDetector:
                                 and box[1] > 0.358
                                 and box[1] < 0.395
                             ):
-                                cv2.imwrite(f"{current_directory}/front_frame.jpg", frame)
+                                cv2.imwrite(
+                                    f"{current_directory}/front_frame.jpg", frame
+                                )
                                 logger.debug("saved front frame")
                                 saved_front = True
 
@@ -84,7 +86,9 @@ class CubeFaceDetector:
                                 and box[3] < 0.41
                                 and box[3] > 0.375
                             ):
-                                cv2.imwrite(f"{current_directory}/back_frame.jpg", frame)
+                                cv2.imwrite(
+                                    f"{current_directory}/back_frame.jpg", frame
+                                )
                                 logger.debug("saved back frame")
                                 saved_back = True
 

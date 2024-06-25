@@ -10,101 +10,68 @@ TEAM_ID = os.getenv("TEAM_ID", "")
 AUTH_TOKEN = os.getenv("AUTH_TOKEN", "")
 
 
+def get_log_message(response):
+    match response.status_code:
+        case 200:
+            return "200 OK: Request wurde akzeptiert. Informationen im Body HTTP Meldung vorhanden."
+        case 204:
+            return "204 No Content: Request wurde akzeptiert. Keine weiteren Daten im HTTP Body."
+        case 405:
+            return "405 Method Not Allowed: Der Request auf die URL war kein POST."
+        case 401:
+            return (
+                "401 Unauthorized: Das Feld 'Auth' fehlt im Header des HTTP Request, der 'teamxx' Teil der URL "
+                "entspricht keinem gültigen Team, oder das Token im Feld 'Auth' entspricht nicht dem Passwort "
+                "des Teams xx."
+            )
+        case 415:
+            return "415 Media Type Not Supported: Der Content Type ist nicht 'application/json'."
+        case 400:
+            return (
+                "400 Bad Request: Der Body des Requests konnte nicht als json reparsed werden oder die übermittelten "
+                "Daten entsprechen nicht dem Schema."
+            )
+        case 500:
+            return (
+                "500 Internal Server Error: Fehler auf dem Applikations Server oder Versuch nicht existierende Daten "
+                "in der DB zu lesen oder zu schreiben."
+            )
+        case _:
+            return f"Unbekannter Statuscode {response.status_code}: {response.text}"
+
+
 async def send_start_signal():
+    logger.trace("sending start signal")
     headers = {"Content-Type": "application/json", "Auth": AUTH_TOKEN}
     post_url = f"{URL}/cubes/{TEAM_ID}/start"
 
     try:
-        # POST-Anfrage mit einem Timeout von 5 Sekunden
         response = requests.post(post_url, headers=headers, timeout=15)
-
-        # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
-        if response.status_code == 200:
-            logger.debug(
-                "200 OK: Request wurde akzeptiert. Informationen im Body der HTTP-Meldung vorhanden."
-            )
-        elif response.status_code == 204:
-            logger.debug(
-                "204 No Content: Request wurde akzeptiert. Keine weiteren Daten im HTTP Body."
-            )
-        elif response.status_code == 405:
-            logger.debug(
-                "405 Method Not Allowed: Der Request auf die URL war kein POST."
-            )
-        elif response.status_code == 401:
-            logger.debug(
-                "401 Unauthorized: Das Feld 'Auth' fehlt im Header des HTTP Request, der 'teamxx' Teil der URL entspricht keinem gültigen Team, oder das Token im Feld 'Auth' entspricht nicht dem Passwort des Teams xx."
-            )
-        elif response.status_code == 415:
-            logger.debug(
-                "415 Media Type Not Supported: Der Content Type ist nicht 'application/json'."
-            )
-        elif response.status_code == 400:
-            logger.debug(
-                "400 Bad Request: Der Body des Requests konnte nicht als json reparsed werden oder die übermittelten Daten entsprechen nicht dem Schema."
-            )
-        elif response.status_code == 500:
-            logger.debug(
-                "500 Internal Server Error: Fehler auf dem Applikations Server oder Versuch nicht existierende Daten in der DB zu lesen oder zu schreiben."
-            )
-        else:
-            logger.debug(
-                f"Unbekannter Statuscode {response.status_code}: {response.text}"
-            )
-
+        logger.trace("sent start signal")
+        logger.debug(get_log_message(response))
     except requests.exceptions.Timeout:
-        # Spezifische Behandlung für einen Timeout-Fehler
         logger.debug(
             "Die Anfrage hat zu lange gedauert. Server möglicherweise nicht erreichbar oder Antwort verzögert."
         )
     except Exception as e:
-        # Allgemeine Fehlerbehandlung
-        logger.debug("Ein Fehler ist aufgetreten:", e)
+        logger.exception(e)
 
 
 async def send_end_signal():
+    logger.trace("sending end signal")
     headers = {"Content-Type": "application/json", "Auth": AUTH_TOKEN}
     post_url = f"{URL}/cubes/{TEAM_ID}/end"
 
     try:
         response = requests.post(post_url, headers=headers, timeout=15)
-
-        # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
-        if response.status_code == 200:
-            logger.debug(
-                "200 OK: Request wurde akzeptiert. Informationen im Body der HTTP-Meldung vorhanden."
-            )
-        elif response.status_code == 204:
-            logger.debug(
-                "204 No Content: Request wurde akzeptiert. Keine weiteren Daten im HTTP Body."
-            )
-        elif response.status_code == 405:
-            logger.debug(
-                "405 Method Not Allowed: Der Request auf die URL war kein POST."
-            )
-        elif response.status_code == 401:
-            logger.debug(
-                "401 Unauthorized: Das Feld 'Auth' fehlt im Header des HTTP Request, der 'teamxx' Teil der URL entspricht keinem gültigen Team, oder das Token im Feld 'Auth' entspricht nicht dem Passwort des Teams xx."
-            )
-        elif response.status_code == 415:
-            logger.debug(
-                "415 Media Type Not Supported: Der Content Type ist nicht 'application/json'."
-            )
-        elif response.status_code == 400:
-            logger.debug(
-                "400 Bad Request: Der Body des Requests konnte nicht als json reparsed werden oder die übermittelten Daten entsprechen nicht dem Schema."
-            )
-        elif response.status_code == 500:
-            logger.debug(
-                "500 Internal Server Error: Fehler auf dem Applikations Server oder Versuch nicht existierende Daten in der DB zu lesen oder zu schreiben."
-            )
-        else:
-            logger.debug(
-                f"Unbekannter Statuscode {response.status_code}: {response.text}"
-            )
-
+        logger.trace("sent end signal")
+        logger.debug(get_log_message(response))
+    except requests.exceptions.Timeout:
+        logger.debug(
+            "Die Anfrage hat zu lange gedauert. Server möglicherweise nicht erreichbar oder Antwort verzögert."
+        )
     except Exception as e:
-        logger.debug("Ein Fehler ist aufgetreten:", e)
+        logger.exception(e)
 
 
 async def send_cube_configuration(config_data):
@@ -117,51 +84,16 @@ async def send_cube_configuration(config_data):
     post_url = f"{URL}/cubes/{TEAM_ID}/config"
 
     try:
-        # Senden des POST-Requests mit einem Timeout von 5 Sekunden
         response = requests.post(
             post_url, data=json.dumps(config_data), headers=headers, timeout=15
         )
-
-        # Auswertung des Statuscodes und Ausgabe der entsprechenden Nachricht
-        if response.status_code == 200:
-            logger.debug(
-                "200 OK: Request wurde akzeptiert. Informationen im Body HTTP Meldung vorhanden."
-            )
-        elif response.status_code == 204:
-            logger.debug(
-                "204 No Content: Request wurde akzeptiert. Keine weiteren Daten im HTTP Body."
-            )
-        elif response.status_code == 405:
-            logger.debug(
-                "405 Method Not Allowed: Der Request auf die URL war kein POST."
-            )
-        elif response.status_code == 401:
-            logger.debug(
-                "401 Unauthorized: Das Feld 'Auth' fehlt im Header des HTTP Request, der 'teamxx' Teil der URL entspricht keinem gültigen Team, oder das Token im Feld 'Auth' entspricht nicht dem Passwort des Teams xx."
-            )
-        elif response.status_code == 415:
-            logger.debug(
-                "415 Media Type Not Supported: Der Content Type ist nicht 'application/json'."
-            )
-        elif response.status_code == 400:
-            logger.debug(
-                "400 Bad Request: Der Body des Requests konnte nicht als json reparsed werden oder die übermittelten Daten entsprechen nicht dem Schema."
-            )
-        elif response.status_code == 500:
-            logger.debug(
-                "500 Internal Server Error: Fehler auf dem Applikations Server oder Versuch nicht existierende Daten in der DB zu lesen oder zu schreiben."
-            )
-        else:
-            logger.debug(
-                f"Unbekannter Statuscode {response.status_code}: {response.text}"
-            )
-
+        logger.debug(get_log_message(response))
     except requests.exceptions.Timeout:
         logger.debug(
             "Die Anfrage hat zu lange gedauert. Server möglicherweise nicht erreichbar oder Antwort verzögert."
         )
     except Exception as e:
-        logger.debug("Ein Fehler ist aufgetreten:", e)
+        logger.exception(e)
 
 
 async def test_server_reachability():
