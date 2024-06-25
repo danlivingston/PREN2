@@ -75,6 +75,7 @@ async def send_end_signal():
 
 
 async def send_cube_configuration(config_data):
+    logger.trace("sending config")
     # Aktualisieren der Zeit im config_data vor dem Senden
     config_data = json.loads(config_data)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -87,6 +88,7 @@ async def send_cube_configuration(config_data):
         response = requests.post(
             post_url, data=json.dumps(config_data), headers=headers, timeout=15
         )
+        logger.trace("sent config")
         logger.debug(get_log_message(response))
     except requests.exceptions.Timeout:
         logger.debug(
@@ -119,10 +121,12 @@ async def test_server_reachability():
 
 
 async def get_current_entries():
+    logger.trace("request entries")
     get_url = f"{URL}/cubes/{TEAM_ID}"
 
     try:
         response = requests.get(get_url, timeout=8)
+        logger.trace("received entries")
         if response.status_code == 200:
             logger.trace(response.json())
             return response.json()

@@ -68,7 +68,8 @@ async def run(status, is_reset):
         await sound.sound_start()
         await measurelib.send_refresh_command()  # Starts energy measurement
 
-        asyncio.run_coroutine_threadsafe(api.send_start_signal(), loop)
+        # asyncio.run_coroutine_threadsafe(api.send_start_signal(), loop)
+        await api.send_start_signal()
 
         startTime = datetime.now()
 
@@ -80,9 +81,10 @@ async def run(status, is_reset):
         status.value = b"analyzing cubes"
         scanned_cubes = await cube_reconstruction.run_detection()
 
-        asyncio.run_coroutine_threadsafe(
-            api.send_cube_configuration(scanned_cubes), loop
-        )
+        # asyncio.run_coroutine_threadsafe(
+        #     api.send_cube_configuration(scanned_cubes), loop
+        # )
+        await api.send_cube_configuration()
 
         logger.trace(scanned_cubes)
 
@@ -113,8 +115,8 @@ async def run(status, is_reset):
 
         energy = await measurelib.read_energy()
         endTime = datetime.now()
-        asyncio.run_coroutine_threadsafe(api.send_end_signal(), loop)
-        # await api.send_end_signal()
+        # asyncio.run_coroutine_threadsafe(api.send_end_signal(), loop)
+        await api.send_end_signal()
         await sound.sound_stop()
 
         # asyncio.run_coroutine_threadsafe(api.get_current_entries(), loop)
