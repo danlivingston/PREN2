@@ -84,7 +84,7 @@ async def run(status, is_reset):
         # asyncio.run_coroutine_threadsafe(
         #     api.send_cube_configuration(scanned_cubes), loop
         # )
-        await api.send_cube_configuration()
+        await api.send_cube_configuration(scanned_cubes)
 
         logger.trace(scanned_cubes)
 
