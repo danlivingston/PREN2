@@ -209,5 +209,27 @@ def test_buzzer(status):
 
 def eject_mag(status):
     status.value = b"ejecting mag"
-    # TODO: Implement ejection of all cubes (5x each mag slot)
-    status.value = b"!!!ERR!!!Not Implemented Yet"
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(motor_control.zero_mag())
+
+        loop.run_until_complete(motor_control.place_cube(0, 0))
+        loop.run_until_complete(motor_control.place_cube(0, 0))
+        loop.run_until_complete(motor_control.place_cube(0, 0))
+        loop.run_until_complete(motor_control.place_cube(0, 0))
+        loop.run_until_complete(motor_control.place_cube(0, 0))
+
+        loop.run_until_complete(motor_control.place_cube(1, 1))
+        loop.run_until_complete(motor_control.place_cube(1, 1))
+        loop.run_until_complete(motor_control.place_cube(1, 1))
+        loop.run_until_complete(motor_control.place_cube(1, 1))
+        loop.run_until_complete(motor_control.place_cube(1, 1))
+
+        loop.run_until_complete(motor_control.place_cube(2, 2))
+        loop.run_until_complete(motor_control.place_cube(2, 2))
+        loop.run_until_complete(motor_control.place_cube(2, 2))
+        loop.run_until_complete(motor_control.place_cube(2, 2))
+        loop.run_until_complete(motor_control.place_cube(2, 2))
+    finally:
+        loop.close()
