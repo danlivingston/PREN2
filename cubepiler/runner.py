@@ -122,10 +122,12 @@ async def run(status, is_reset):
         logger.success("Completed build")
 
         # logger.trace(currententries)
-        logger.info(f"time: {endTime-startTime}")
-        logger.info(f"energy used: {energy} W*s")
+        logger.info(f"time: {round(endTime-startTime,4)}")
+        logger.info(f"energy used: {energy}e-3 Wh")
 
-        status.value = f"time: {endTime-startTime}\nenergy: {energy} W*s".encode()
+        status.value = (
+            f"time: {round(endTime-startTime,4)}\nenergy: {energy}e-3 Wh".encode()
+        )
         # await api.get_current_entries()
     except Exception as e:
         logger.exception(e)

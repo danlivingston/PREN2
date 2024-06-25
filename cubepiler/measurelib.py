@@ -100,4 +100,4 @@ async def read_energy():
     int_energy = int.from_bytes(raw_energy, byteorder="big")
 
     energy = (((int_energy / 268435455) * POWER_FSR) * (1 / 1024)) * 100 * 0.1642
-    return round(energy, 8)
+    return round(energy / 3.6, 8)
