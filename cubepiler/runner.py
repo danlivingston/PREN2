@@ -202,6 +202,7 @@ def test_buzzer(status):
         loop.run_until_complete(sound.sound_stop())
         loop.run_until_complete(asyncio.sleep(1))
         loop.run_until_complete(sound.sound_touch())
+        loop.run_until_complete(asyncio.sleep(1))
     finally:
         loop.close()
 
