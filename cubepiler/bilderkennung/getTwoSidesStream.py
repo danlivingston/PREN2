@@ -65,32 +65,33 @@ class CubeFaceDetector:
             if frame_counter % 10 == 0:
                 results = self.model(frame)
                 for r in results:
-                    if r.boxes.xyxyn.shape[0] > 0:
-                        logger.trace(r.boxes.xyxyn)
-                        if (
-                            not saved_front
-                            and r.boxes.xyxyn[0][0] > 0.45
-                            and r.boxes.xyxyn[0][1] > 0.358
-                            and r.boxes.xyxyn[0][1] < 0.395
-                        ):
-                            cv2.imwrite(f"{current_directory}/front_frame.jpg", frame)
-                            logger.debug("saved front frame")
-                            saved_front = True
+                    for box in r.boxes.xyxyn:  # Überprüfung aller Einträge
+                        if box.shape[0] > 0:
+                            logger.trace(box)
+                            if (
+                                not saved_front
+                                and box[0] > 0.45
+                                and box[1] > 0.358
+                                and box[1] < 0.395
+                            ):
+                                cv2.imwrite(f"{current_directory}/front_frame.jpg", frame)
+                                logger.debug("saved front frame")
+                                saved_front = True
 
-                        if (
-                            not saved_back
-                            and r.boxes.xyxyn[0][0] < 0.5
-                            and r.boxes.xyxyn[0][3] < 0.41
-                            and r.boxes.xyxyn[0][3] > 0.375
-                        ):
-                            cv2.imwrite(f"{current_directory}/back_frame.jpg", frame)
-                            logger.debug("saved back frame")
-                            saved_back = True
+                            if (
+                                not saved_back
+                                and box[0] < 0.5
+                                and box[3] < 0.41
+                                and box[3] > 0.375
+                            ):
+                                cv2.imwrite(f"{current_directory}/back_frame.jpg", frame)
+                                logger.debug("saved back frame")
+                                saved_back = True
 
-                        if saved_front and saved_back:
-                            cap.release()
-                            cv2.destroyAllWindows()
-                            return
+                            if saved_front and saved_back:
+                                cap.release()
+                                cv2.destroyAllWindows()
+                                return
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
