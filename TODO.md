@@ -1,10 +1,10 @@
 # TODO
 
-- [ ] Buzzer
+- [x] Buzzer
 - [ ] Bilderkennung
-- [ ] Energiemessung
+- [x] Energiemessung
 - [ ] Fix bed zeroing
-- [ ] Fix stop sound stuck
-- [ ] (optional) Mag eject
+- [x] Fix stop sound stuck
+- [x] (optional) Mag eject
 - [ ] (optional) Touch sound
 - [ ] (optional) Timeout failsafe
