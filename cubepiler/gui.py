@@ -178,16 +178,16 @@ class CubePiLerGUI(customtkinter.CTk):
             text_color=COLORS["white"],
         )
 
-        self.debug_eject_mag_button = customtkinter.CTkButton(
+        self.debug_test_api_button = customtkinter.CTkButton(
             master=self.frame,
-            text="eject mag",
+            text="test api",
             command=lambda: setattr(
-                self, "running_task", self.loop.create_task(self.start_eject_mag())
+                self, "running_task", self.loop.create_task(self.start_test_api())
             ),
             corner_radius=0,
             font=self.regular_font,
-            fg_color=COLORS["red"],
-            hover_color=COLORS["red"],
+            fg_color=COLORS["green"],
+            hover_color=COLORS["green"],
             text_color=COLORS["white"],
         )
 
@@ -397,9 +397,9 @@ class CubePiLerGUI(customtkinter.CTk):
             runner.show_bed, (self.status,), "show bed", STATES.DEBUG, STATES.DEBUG
         )
 
-    async def start_eject_mag(self, event=None):
+    async def start_test_api(self, event=None):
         await self.run_process(
-            runner.eject_mag, (self.status,), "eject mag", STATES.DEBUG, STATES.DEBUG
+            runner.test_api, (self.status,), "eject mag", STATES.DEBUG, STATES.DEBUG
         )
 
     async def start_buzzer(self, event=None):
@@ -433,7 +433,7 @@ class CubePiLerGUI(customtkinter.CTk):
         self.status_button.grid_remove()
         self.progress_bar.grid_remove()
         self.progress_bar.stop()
-        self.debug_eject_mag_button.grid_remove()
+        self.debug_test_api_button.grid_remove()
         self.debug_show_bed_button.grid_remove()
         self.debug_zero_bed_button.grid_remove()
         self.debug_zero_mag_button.grid_remove()
@@ -508,7 +508,7 @@ class CubePiLerGUI(customtkinter.CTk):
                 self.debug_zero_mag_button.grid(
                     sticky="nsew", column=0, row=2, rowspan=2
                 )
-                self.debug_eject_mag_button.grid(
+                self.debug_test_api_button.grid(
                     sticky="nsew", column=1, row=2, rowspan=2
                 )
                 self.debug_zero_bed_button.grid(
