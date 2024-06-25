@@ -214,22 +214,29 @@ def eject_mag(status):
     try:
         loop.run_until_complete(motor_control.zero_mag())
 
-        loop.run_until_complete(motor_control.place_cube(0, 0))
-        loop.run_until_complete(motor_control.place_cube(0, 0))
-        loop.run_until_complete(motor_control.place_cube(0, 0))
-        loop.run_until_complete(motor_control.place_cube(0, 0))
-        loop.run_until_complete(motor_control.place_cube(0, 0))
+        # loop.run_until_complete(motor_control.place_cube(0, 0))
+        # loop.run_until_complete(motor_control.place_cube(0, 0))
+        # loop.run_until_complete(motor_control.place_cube(0, 0))
+        # loop.run_until_complete(motor_control.place_cube(0, 0))
+        # loop.run_until_complete(motor_control.place_cube(0, 0))
 
-        loop.run_until_complete(motor_control.place_cube(1, 1))
-        loop.run_until_complete(motor_control.place_cube(1, 1))
-        loop.run_until_complete(motor_control.place_cube(1, 1))
-        loop.run_until_complete(motor_control.place_cube(1, 1))
-        loop.run_until_complete(motor_control.place_cube(1, 1))
+        # loop.run_until_complete(motor_control.place_cube(1, 1))
+        # loop.run_until_complete(motor_control.place_cube(1, 1))
+        # loop.run_until_complete(motor_control.place_cube(1, 1))
+        # loop.run_until_complete(motor_control.place_cube(1, 1))
+        # loop.run_until_complete(motor_control.place_cube(1, 1))
 
-        loop.run_until_complete(motor_control.place_cube(2, 2))
-        loop.run_until_complete(motor_control.place_cube(2, 2))
-        loop.run_until_complete(motor_control.place_cube(2, 2))
-        loop.run_until_complete(motor_control.place_cube(2, 2))
-        loop.run_until_complete(motor_control.place_cube(2, 2))
+        # loop.run_until_complete(motor_control.place_cube(2, 2))
+        # loop.run_until_complete(motor_control.place_cube(2, 2))
+        # loop.run_until_complete(motor_control.place_cube(2, 2))
+        # loop.run_until_complete(motor_control.place_cube(2, 2))
+        # loop.run_until_complete(motor_control.place_cube(2, 2))
+
+        for i in range(2):
+            action = (i, i)
+            for j in range(3):
+                loop.run_until_complete(motor_control.execute_action(action))
+
+        loop.run_until_complete(motor_control.motor_stop())
     finally:
         loop.close()
