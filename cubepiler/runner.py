@@ -209,34 +209,4 @@ def test_buzzer(status):
 
 def eject_mag(status):
     status.value = b"ejecting mag"
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
-        loop.run_until_complete(motor_control.zero_mag())
-
-        # loop.run_until_complete(motor_control.place_cube(0, 0))
-        # loop.run_until_complete(motor_control.place_cube(0, 0))
-        # loop.run_until_complete(motor_control.place_cube(0, 0))
-        # loop.run_until_complete(motor_control.place_cube(0, 0))
-        # loop.run_until_complete(motor_control.place_cube(0, 0))
-
-        # loop.run_until_complete(motor_control.place_cube(1, 1))
-        # loop.run_until_complete(motor_control.place_cube(1, 1))
-        # loop.run_until_complete(motor_control.place_cube(1, 1))
-        # loop.run_until_complete(motor_control.place_cube(1, 1))
-        # loop.run_until_complete(motor_control.place_cube(1, 1))
-
-        # loop.run_until_complete(motor_control.place_cube(2, 2))
-        # loop.run_until_complete(motor_control.place_cube(2, 2))
-        # loop.run_until_complete(motor_control.place_cube(2, 2))
-        # loop.run_until_complete(motor_control.place_cube(2, 2))
-        # loop.run_until_complete(motor_control.place_cube(2, 2))
-
-        for i in range(2):
-            action = (i, i)
-            for j in range(3):
-                loop.run_until_complete(motor_control.execute_action(action))
-
-        loop.run_until_complete(motor_control.motor_stop())
-    finally:
-        loop.close()
+    status.value = b"!!!ERR!!!No you don't"
