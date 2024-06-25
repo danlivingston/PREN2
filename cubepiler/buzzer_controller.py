@@ -1,4 +1,4 @@
-import time
+import asyncio
 
 import RPi.GPIO as GPIO
 
@@ -10,28 +10,28 @@ GPIO.setup(buzzer, GPIO.OUT)
 
 async def sound_beep(delay=0.1):
     GPIO.output(buzzer, 1)
-    time.sleep(delay)
+    await asyncio.sleep(delay)
     GPIO.output(buzzer, 0)
 
 
 async def sound_start():
     delay = 0.05
-    sound_beep(0.1)
-    time.sleep(delay)
-    sound_beep(0.2)
+    await sound_beep(0.1)
+    await asyncio.sleep(delay)
+    await sound_beep(0.2)
 
 
 async def sound_stop():
     delay = 0.05
-    sound_beep(0.1)
-    time.sleep(delay)
-    sound_beep(0.1)
-    time.sleep(delay)
-    sound_beep(0.1)
+    await sound_beep(0.1)
+    await asyncio.sleep(delay)
+    await sound_beep(0.1)
+    await asyncio.sleep(delay)
+    await sound_beep(0.1)
 
 
 # TODO: error sound
 
 
 async def sound_touch(freq):
-    sound_beep(0.1)
+    await sound_beep(0.1)
