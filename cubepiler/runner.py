@@ -66,7 +66,7 @@ async def run(status, is_reset):
         loop = asyncio.get_event_loop()
 
         await sound.sound_start()
-        measurelib.send_refresh_command()  # Starts energy measurement
+        await measurelib.send_refresh_command()  # Starts energy measurement
 
         asyncio.run_coroutine_threadsafe(api.send_start_signal(), loop)
 
