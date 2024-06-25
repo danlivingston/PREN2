@@ -160,9 +160,11 @@ async def reset(status, is_reset):
     await measurelib.send_chdis_command()
     await measurelib.send_negpwr_command()
 
-    # status.value = b"api test"
+    status.value = b"api test"
     # loop = asyncio.get_event_loop()
     # asyncio.run_coroutine_threadsafe(api.test_server_reachability(), loop)
+    await api.test_server_reachability()
+    await api.get_current_entries()
 
     await sound.sound_stop()
 
