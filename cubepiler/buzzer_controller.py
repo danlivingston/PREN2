@@ -30,8 +30,8 @@ async def sound_stop():
     await sound_beep(0.1)
 
 
-# TODO: error sound
+# TODO: error sound?
 
 
-async def sound_touch(freq):
+async def sound_touch():
     await sound_beep(0.1)
