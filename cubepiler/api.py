@@ -46,7 +46,7 @@ async def send_start_signal():
     post_url = f"{URL}/cubes/{TEAM_ID}/start"
 
     try:
-        response = requests.post(post_url, headers=headers, timeout=15)
+        response = requests.post(post_url, headers=headers, timeout=5)
         logger.trace("sent start signal")
         logger.debug(get_log_message(response))
     except requests.exceptions.Timeout:
@@ -63,7 +63,7 @@ async def send_end_signal():
     post_url = f"{URL}/cubes/{TEAM_ID}/end"
 
     try:
-        response = requests.post(post_url, headers=headers, timeout=15)
+        response = requests.post(post_url, headers=headers, timeout=5)
         logger.trace("sent end signal")
         logger.debug(get_log_message(response))
     except requests.exceptions.Timeout:
@@ -86,7 +86,7 @@ async def send_cube_configuration(config_data):
 
     try:
         response = requests.post(
-            post_url, data=json.dumps(config_data), headers=headers, timeout=15
+            post_url, data=json.dumps(config_data), headers=headers, timeout=5
         )
         logger.trace("sent config")
         logger.debug(get_log_message(response))
@@ -103,7 +103,7 @@ async def test_server_reachability():
 
     try:
         # Anfrage mit einem Timeout von 5 Sekunden
-        response = requests.get(get_url, timeout=8)
+        response = requests.get(get_url, timeout=5)
         if response.status_code == 200:
             logger.debug("Server ist erreichbar. Antwort:", response.text)
         else:
@@ -125,7 +125,7 @@ async def get_current_entries():
     get_url = f"{URL}/cubes/{TEAM_ID}"
 
     try:
-        response = requests.get(get_url, timeout=8)
+        response = requests.get(get_url, timeout=5)
         logger.trace("received entries")
         if response.status_code == 200:
             logger.trace(response.json())

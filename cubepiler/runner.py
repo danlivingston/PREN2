@@ -63,7 +63,7 @@ async def run(status, is_reset):
         is_reset.value = False
 
         logger.info("Starting build")
-        loop = asyncio.get_event_loop()
+        # loop = asyncio.get_event_loop()
 
         await sound.sound_start()
         await measurelib.send_refresh_command()  # Starts energy measurement
