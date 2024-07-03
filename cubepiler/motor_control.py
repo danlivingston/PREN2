@@ -75,7 +75,7 @@ async def zero_bed():
     Motor2.Stop()
 
 
-async def show_bed(minrpm=100, maxrpm=1000, steps=3880):
+async def show_bed(minrpm=100, maxrpm=600, steps=3880):
     maxsteps = steps
     actualsteps = 0
     acceltime = 0.2
