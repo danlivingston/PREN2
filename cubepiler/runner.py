@@ -58,10 +58,9 @@ async def run(status, is_reset):
         logger.info("Starting build")
         loop = asyncio.get_event_loop()
 
-        await sound.sound_start()
-
         # asyncio.run_coroutine_threadsafe(api.send_start_signal(), loop)
         await api.send_start_signal()
+        await sound.sound_start()
 
         startTime = datetime.now()
 
@@ -110,8 +109,8 @@ async def run(status, is_reset):
         energy = await measurelib.read_energy()
         endTime = datetime.now()
         # asyncio.run_coroutine_threadsafe(api.send_end_signal(), loop)
-        await api.send_end_signal()
         await sound.sound_stop()
+        await api.send_end_signal()
 
         # asyncio.run_coroutine_threadsafe(api.get_current_entries(), loop)
 

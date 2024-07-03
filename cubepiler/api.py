@@ -46,7 +46,7 @@ async def send_start_signal():
     post_url = f"{URL}/cubes/{TEAM_ID}/start"
 
     try:
-        response = requests.post(post_url, headers=headers, timeout=5)
+        response = requests.post(post_url, headers=headers, timeout=2)
         logger.trace("sent start signal")
         logger.debug(get_log_message(response))
     except requests.exceptions.Timeout:
@@ -63,7 +63,7 @@ async def send_end_signal():
     post_url = f"{URL}/cubes/{TEAM_ID}/end"
 
     try:
-        response = requests.post(post_url, headers=headers, timeout=5)
+        response = requests.post(post_url, headers=headers, timeout=2)
         logger.trace("sent end signal")
         logger.debug(get_log_message(response))
     except requests.exceptions.Timeout:
@@ -86,7 +86,7 @@ async def send_cube_configuration(config_data):
 
     try:
         response = requests.post(
-            post_url, data=json.dumps(config_data), headers=headers, timeout=5
+            post_url, data=json.dumps(config_data), headers=headers, timeout=2
         )
         logger.trace("sent config")
         logger.debug(get_log_message(response))
