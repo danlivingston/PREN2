@@ -23,13 +23,6 @@ else:
     gen_images = CubeFaceDetector()
     cube_reconstruction = CubeReconstruction()
 
-# TODO: fix not working anymore (multiprocessing problem?)
-# is_reset = False
-# from multiprocessing import Manager
-
-# manager = Manager()
-# is_reset = manager.Value("b", False)
-
 
 async def warmup_models():
     await asyncio.gather(gen_images.warmupModels(), cube_reconstruction.warmupModels())
@@ -63,15 +56,16 @@ async def run(status, is_reset):
         is_reset.value = False
 
         logger.info("Starting build")
-        # loop = asyncio.get_event_loop()
+        loop = asyncio.get_event_loop()
 
         await sound.sound_start()
-        await measurelib.send_refresh_command()  # Starts energy measurement
 
         # asyncio.run_coroutine_threadsafe(api.send_start_signal(), loop)
         await api.send_start_signal()
 
         startTime = datetime.now()
+
+        await measurelib.send_refresh_command()  # Starts energy measurement
 
         logger.info("Scanning cubes")
         status.value = b"scanning cubes"
@@ -81,10 +75,10 @@ async def run(status, is_reset):
         status.value = b"analyzing cubes"
         scanned_cubes = await cube_reconstruction.run_detection()
 
-        # asyncio.run_coroutine_threadsafe(
-        #     api.send_cube_configuration(scanned_cubes), loop
-        # )
-        await api.send_cube_configuration(scanned_cubes)
+        asyncio.run_coroutine_threadsafe(
+            api.send_cube_configuration(scanned_cubes), loop
+        )
+        # await api.send_cube_configuration(scanned_cubes)
 
         logger.trace(scanned_cubes)
 
